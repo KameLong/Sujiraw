@@ -1,0 +1,133 @@
+@font-face {
+  font-family: 'Noto Sans JP';   /* フォント名 */
+  src: url('../public/font/NotoSansJP.ttf') format('truetype');   /* フォントファイル */
+}
+
+@font-face {
+  font-family: 'DiaPro';   /* フォント名 */
+  src: url('../public/font/DiaPro-Regular.ttf') format('truetype');   /* フォントファイル */
+}
+*{
+  overscroll-behavior: none;
+}
+html{
+  height:100%;
+}
+body {
+  margin: 0;
+  font-family: 'Noto Sans JP';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+   height:100%;
+}
+#root{
+  height:100%;
+}
+
+.DiaPro{
+  font-family: 'DiaPro';
+}
+
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+
+.text {
+  display: inline-block;
+  white-space: nowrap;
+  transform-origin: left;
+  min-width:100%;
+  text-align-last: justify;
+}
+.selected{
+  background-color: #FFFFBB;
+}
+*{
+  box-sizing: border-box;
+  /*overflow: hidden;*/
+}
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+
+/*モーダルスライドイン*/
+.modal-enter {
+  transform: translateY(100%);
+}
+
+.modal-enter-active {
+  transform: translateY(0);
+  transition: transform 1000ms;
+}
+
+
+.arrow_row::before { /* くの字の表示設定 */
+  content: "";
+  margin: auto;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 7px;    /* くの字を山なりに見た時、左側の長さ */
+  height: 7px;   /* くの字を山なりに見た時、右側の長さ */
+  border-top: 1px solid #000;     /* くの字を山なりに見た時、左側の太さと色 */
+  border-right: 1px solid #000;   /* くの字を山なりに見た時、右側の太さと色 */
+  transform: rotate(45deg);    /* くの字の向き */
+}
+.arrow_row::after { /* 棒の表示設定 */
+  content: "";
+  margin: auto;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 7px;    /* くの字を山なりに見た時、左側の長さ */
+  height: 7px;   /* くの字を山なりに見た時、右側の長さ */
+  border-bottom: 1px solid #000;     /* くの字を山なりに見た時、左側の太さと色 */
+  border-left: 1px solid #000;   /* くの字を山なりに見た時、右側の太さと色 */
+  transform: rotate(45deg);    /* くの字の向き */
+}
+
+.arrow_col::before { /* くの字の表示設定 */
+  content: "";
+  margin: auto;
+  position: absolute;
+  bottom: 0;
+  left: -3.5px;
+  right: 0;
+  width: 7px;    /* くの字を山なりに見た時、左側の長さ */
+  height: 7px;   /* くの字を山なりに見た時、右側の長さ */
+  border-bottom: 1px solid #000;     /* くの字を山なりに見た時、左側の太さと色 */
+  border-right: 1px solid #000;   /* くの字を山なりに見た時、右側の太さと色 */
+  transform: rotate(45deg);    /* くの字の向き */
+}
+.arrow_col::after { /* 棒の表示設定 */
+  content: "";
+  margin: auto;
+  position: absolute;
+  top: 0;
+  left: -3.5px;
+  right: 0;
+  width: 7px;    /* くの字を山なりに見た時、左側の長さ */
+  height: 7px;   /* くの字を山なりに見た時、右側の長さ */
+  border-top: 1px solid #000;     /* くの字を山なりに見た時、左側の太さと色 */
+  border-left: 1px solid #000;   /* くの字を山なりに見た時、右側の太さと色 */
+  transform: rotate(45deg);    /* くの字の向き */
+}
+
+.dialog, .dialog-content{
+display: flex !important;
+justify-content: center !important;
+align-items: center !important;
+padding-top: 0px !important;
+transform: initial !important;
+}

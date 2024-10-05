@@ -1,0 +1,37 @@
+{
+  "common": {
+    "appName": "Sujiraw",
+    "fontSize": "フォントサイズ",
+    "lineWidth": "線の太さ"
+  },
+  "timetablePDF":{
+    "tripInParagraph": "1段の列車数",
+    "lineHeight": "1行の高さ(フォントサイズ*倍率)",
+    "paragraphPerPage"  : "1ページの段数",
+    "arrangement": "時刻表の配置",
+    "alternately": "下り/上り交互に配置",
+    "order": "まとめて配置"
+  },
+  "diagram": {
+    "axisType":
+    {
+      "60min": "60分目",
+      "30min": "30分目",
+      "20min": "20分目",
+      "15min": "15分目",
+      "10min": "10分目",
+      "5min": "5分目",
+      "2min": "2分目",
+      "1min": "1分目",
+      "name": "軸目盛"
+    },
+    "startTime": "ダイヤ開始時刻",
+    "spanTime": "ダイヤの幅(時/分)",
+    "borderColor": "罫線色"
+  },
+  "license": {
+    "license": "ライセンス",
+    "otherLicenses(npm)": "他のライセンス(npm)",
+    "thisLicense": "はAGPLライセンスで公開しています。"
+  }
+}

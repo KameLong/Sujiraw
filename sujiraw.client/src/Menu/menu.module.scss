@@ -1,0 +1,7 @@
+.menuItem{
+    cursor: pointer;
+    border-bottom:'1px solid gray';
+    &:hover {
+        font-weight: bold;
+    }
+}
