@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Sujiraw.Server.SignalR;
+using Sujiro.WebAPI.SignalR;
 using System.Security.Claims;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -90,6 +90,6 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHub<SujirawHub>("/ws/sujiraw");
 
-app.MapFallbackToFile("index.html");
+app.MapFallbackToFile("/index.html");
 
 app.Run();
