@@ -32,6 +32,6 @@ jobs:
         server: '157.120.44.63'
         port: '22'
         local_path: './Release/*'
-        remote_path: '/Sujiraw/'
+        remote_path: '/ftp_kamelong/Sujiraw/'
         sftp_only: true
         password: ${{ secrets.FTP_PASSWORD }}
