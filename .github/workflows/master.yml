@@ -23,15 +23,15 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-restore --verbosity normal
-    - name: Use Node.js 20
-      uses: actions/setup-node@v3
-      with:
-        node-version: "20.x"
-    - name: Build Project 
-      run: |
-        cd sujiraw.client
-        npm install
-        npm run build
+    # - name: Use Node.js 20
+    #   uses: actions/setup-node@v3
+    #   with:
+    #     node-version: "20.x"
+    # - name: Build Project 
+    #   run: |
+    #     cd sujiraw.client
+    #     npm install
+    #     npm run build
     - name: Publish
       run: dotnet publish -c Release --os linux --output ./Release
     # - name: deploy file
