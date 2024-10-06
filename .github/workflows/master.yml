@@ -1,0 +1,37 @@
+name: BuildAndTest
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 8.0.303
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build with dotnet
+      run: dotnet build --configuration Release --no-restore
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+    - name: Publish
+      run: dotnet publish -c Release --output ./Release
+    - name: deploy file
+      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      with:
+        username: ${{ secrets.FTP_USERNAME }}
+        server: '157.120.44.63'
+        port: '22'
+        local_path: './Release/*'
+        remote_path: '/ftp_kamelong/Sujiraw/'
+        sftp_only: true
+        password: ${{ secrets.FTP_PASSWORD }}
