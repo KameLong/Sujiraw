@@ -13,8 +13,7 @@ function App() {
       <BrowserRouter>
       <Routes>
         <Route path="/" element={
-          // <TimeTablePage/>
-            <OuDiaOpenDialog/>
+            <TimeTablePage/>
         }/>
           <Route path="/TimeTable/:routeID/:direct" element={
               <TimeTablePage/>
@@ -30,6 +29,9 @@ function App() {
           }></Route>
           <Route path="/License" element={
               <LicensePage/>
+          }></Route>
+          <Route path="/Oudia" element={
+              <OuDiaOpenDialog/>
           }></Route>
 
       </Routes>

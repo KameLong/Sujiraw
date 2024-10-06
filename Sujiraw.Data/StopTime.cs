@@ -40,9 +40,9 @@ namespace Sujiro.Data
             {
                 command.CommandText =
                     $"INSERT INTO {TABLE_NAME} ({nameof(TripID)},{nameof(Sequence)},{nameof(DepTime)},{nameof(AriTime)},{nameof(StopType)}) " +
-                    $"values (@{nameof(TripID)},@{nameof(Sequence)},@{nameof(DepTime)},@{nameof(AriTime)},@{nameof(StopType)}) " +
-                    $"ON CONFLICT ON CONSTRAINT {TABLE_NAME}_pkey " +
-                    $"DO UPDATE SET {nameof(Sequence)} = EXCLUDED.{nameof(Sequence)},{nameof(DepTime)} = EXCLUDED.{nameof(DepTime)},{nameof(AriTime)} = EXCLUDED.{nameof(AriTime)},{nameof(StopType)} = EXCLUDED.{nameof(StopType)}";
+                    $"values (@{nameof(TripID)},@{nameof(Sequence)},@{nameof(DepTime)},@{nameof(AriTime)},@{nameof(StopType)})";
+                    //$"ON CONFLICT ON CONSTRAINT {TABLE_NAME}_pkey " +
+                    //$"DO UPDATE SET {nameof(Sequence)} = EXCLUDED.{nameof(Sequence)},{nameof(DepTime)} = EXCLUDED.{nameof(DepTime)},{nameof(AriTime)} = EXCLUDED.{nameof(AriTime)},{nameof(StopType)} = EXCLUDED.{nameof(StopType)}";
 
 
                 command.Parameters.Add(CreateParameter(command, nameof(TripID), DbType.Int64));

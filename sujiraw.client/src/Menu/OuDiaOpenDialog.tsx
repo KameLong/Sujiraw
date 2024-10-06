@@ -1,6 +1,6 @@
 import {useNavigate} from "react-router-dom";
-import {Box, Card, CardContent, Input, List, Typography} from "@mui/material";
-import {ChangeEvent} from "react";
+import {Box, Button, Card, CardContent, Input, List, Typography} from "@mui/material";
+import React, {ChangeEvent, useState} from "react";
 import {O_O} from "@route-builders/oud-operator";
 import {
     Company,
@@ -14,9 +14,11 @@ import {
     TrainType,
     Trip
 } from "../DiaData/DiaData";
+import * as axios from "axios";
 import {StHandling} from "@route-builders/oud-operator/src/models/StHandling";
+import {axiosClient} from "../CMN/axiosHook.ts";
 
-function oudParser(oud:O_O) {
+function oudParser(oud:O_O):string {
     const stations:Station[]=[];
     const routeStations:RouteStation[]=[];
     const trainTypes:TrainType[]=[];
@@ -32,7 +34,7 @@ function oudParser(oud:O_O) {
             stationID:Math.floor(Number.MAX_SAFE_INTEGER*Math.random())
         });
         routeStations.push({
-            stationID:stations.length-1,
+            stationID:stations[stations.length-1].stationID,
             rsID:Math.floor(Number.MAX_SAFE_INTEGER*Math.random()),
             stationIndex:routeStations.length,
             showStyle:(()=>{
@@ -72,7 +74,7 @@ function oudParser(oud:O_O) {
         const tripID=Math.floor(Number.MAX_SAFE_INTEGER*Math.random());
         while(train.stHandlings.length<routeStations.length){
             train.stHandlings.push(
-                //@ts-ignore
+                //@ts-expect-error oud-operatorの型定義依存
                 new StHandling());
         }
 
@@ -123,7 +125,7 @@ function oudParser(oud:O_O) {
         const tripID=Math.floor(Number.MAX_SAFE_INTEGER*Math.random());
         while(train.stHandlings.length<routeStations.length){
             train.stHandlings.push(
-                //@ts-ignore
+                //@ts-expect-error oud-operatorの型定義依存
                 new StHandling());
         }
         const trip:Trip={
@@ -169,7 +171,7 @@ function oudParser(oud:O_O) {
         });
     });
 
-    const company:Company= {
+    const company:any= {
         routes: {},
         stations: {},
         trains: {},
@@ -202,12 +204,20 @@ function oudParser(oud:O_O) {
         downTrips:downTrips,
         upTrips:upTrips
     }
-    console.log(JSON.stringify(route));
+    company.routes[routeID]=route;
+    return JSON.stringify(company);
+    //サーバーに送信する。
+    // axiosClient.post(`api/CompanyJson/OuDia/${companyID}`,company).then((res)=>{
+    //     console.log(res);
+    // });
+
 
 
 }
 export function OuDiaOpenDialog() {
     const navigate = useNavigate();
+    const [json,setJson]=useState<string>("");
+
     return (
         <Card style={{margin: '10px 10px 50px 10px', height: 'calc(100% - 60px)'}}>
             <CardContent>
@@ -228,9 +238,7 @@ export function OuDiaOpenDialog() {
                                 const o_o=new O_O();
                                 o_o.fromOud(data);
                                 console.log(o_o);
-                                oudParser(o_o);
-
-
+                                setJson(oudParser(o_o));
                             };
 
                             // const encoding = Encoder.detect(e.target.files[0], ['SJIS', 'UTF8','SJIS']);
@@ -242,6 +250,15 @@ export function OuDiaOpenDialog() {
                     }}>
 
                 </Input>
+
+                <Button onClick={()=>{
+                    console.log(json);
+                    axiosClient.post(`api/CompanyJson/OuDia/${0}`,json).then((res)=>{
+                        console.log(res);
+                    });
+                }}>
+                    サーバーに送信
+                </Button>
             </CardContent>
         </Card>
     )

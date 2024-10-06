@@ -11,6 +11,8 @@ namespace Sujiro.Data
     {
 
         private NpgsqlConnection conn;
+
+        private NpgsqlTransaction? tran=null;
         public PostgresDbService(string connectionString)
         {
             this.conn = new NpgsqlConnection(connectionString);
@@ -23,6 +25,26 @@ namespace Sujiro.Data
             {
                 this.conn.Dispose();
             }
+            if (tran != null)
+            {
+                this.tran.Dispose();
+            }
+        }
+        public void BeginTransaction()
+        {
+            if(tran!=null)
+            {
+                tran.Dispose();
+            }
+            tran =this.conn.BeginTransaction();
+        }
+        public void Commit()
+        {
+            tran?.Commit();
+        }
+        public void Rollback()
+        {
+            tran?.Rollback();
         }
     }
 }

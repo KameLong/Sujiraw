@@ -18,8 +18,8 @@ const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
 
 if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
     if (0 !== child_process.spawnSync('dotnet', [
-        'dev-certs',
-        'https',
+        // 'dev-certs',
+        // 'https',
         '--export-path',
         certFilePath,
         '--format',
@@ -42,17 +42,17 @@ export default defineConfig({
         }
     },
     server: {
-        proxy: {
-            '^/weatherforecast': {
-                target,
-                secure: false
-            }
-        },
-        port: 5173,
-        https: {
-            key: fs.readFileSync(keyFilePath),
-            cert: fs.readFileSync(certFilePath),
-        }
+        // proxy: {
+        //     '^/weatherforecast': {
+        //         target,
+        //         secure: false
+        //     }
+        // },
+        port: 80,
+        // https: {
+        //     key: fs.readFileSync(keyFilePath),
+        //     cert: fs.readFileSync(certFilePath),
+        // }
     },
     css: {
         modules: {

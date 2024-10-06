@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Sujiraw.Server/appsettings.json
+/Sujiraw.Server/appsettings.Development.json
