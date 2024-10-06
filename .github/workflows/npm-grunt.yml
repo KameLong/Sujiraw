@@ -25,14 +25,13 @@ jobs:
       run: dotnet test --no-restore --verbosity normal
     - name: Publish
       run: dotnet publish -c Release --output ./Release
-    - name: FTP Deploy
-      uses: SamKirkland/FTP-Deploy-Action@3.0.0
+    - name: deploy file
+      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
       with:
-        # Deployment destination server & path. Formatted as protocol://domain.com:port/full/destination/path/
-        ftp-server: ${{ secrets.FTP_SERVER }}
-        # FTP account username
-        ftp-username: ${{ secrets.FTP_USERNAME }}
-        # FTP account password
-        ftp-password: ${{ secrets.FTP_PASSWORD }}
-        # The local folder to copy, defaults to root project folder
-        local-dir: /home/runner/work/MyApp/MyApp/publish/
+        username: ${{ secrets.FTP_USERNAME }}
+        server: 'sujiraw.kamelong.com'
+        port: '22'
+        local_path: './Release'
+        remote_path: '/www/Sujiraw'
+        sftp_only: true
+        password: ${{ secrets.FTP_PASSWORD }}
