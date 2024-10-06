@@ -1,5 +1,11 @@
 import axios from 'axios'
-const BaseUrl = "http://localhost:5000";
+
+
+let BaseUrl = "http://localhost:5000";
+//@ts-ignore
+if(import.meta.env.MODE==='production'){
+    BaseUrl = "https://sujiraw.kamelong.com";
+}
 
 // デフォルト config の設定
 export const axiosClient = axios.create({
