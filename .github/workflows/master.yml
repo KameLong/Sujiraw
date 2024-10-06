@@ -31,7 +31,7 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         server: 'sujiraw.kamelong.com'
         port: '22'
-        local_path: './Release'
-        remote_path: '/www/Sujiraw'
+        local_path: './Release/*'
+        remote_path: '/www/Sujiraw/'
         sftp_only: true
         password: ${{ secrets.FTP_PASSWORD }}
