@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
+﻿
 using Sujiro.Data.Common;
 using System;
 using System.Collections.Generic;
@@ -39,7 +39,7 @@ namespace Sujiro.Data
             using (var command = conn.CreateCommand())
             {
                 command.CommandText = $"SELECT * FROM {TABLE_NAME} where {nameof(RouteID)}=@{nameof(RouteID)}";
-                command.Parameters.Add(new SqliteParameter(nameof(RouteID), id));
+                command.Parameters.Add(new NpgsqlParameter(nameof(RouteID), id));
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -111,7 +111,7 @@ namespace Sujiro.Data
         {
             return Route.GetAll(this.conn).ToList();
         }
-        public List<Route> GetFromCompany(long companyID)
+        public List<Route> GetRouteByCompany(long companyID)
         {
             return Route.GetFromCompany(this.conn,companyID).ToList();
         }

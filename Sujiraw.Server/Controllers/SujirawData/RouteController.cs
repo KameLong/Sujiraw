@@ -23,7 +23,7 @@ namespace Sujiraw.Server.Controllers.SujirawData
                 string connectionString = Configuration["ConnectionStrings:postgres"]!;
                 using (var service = new PostgresDbService(connectionString))
                 {
-                    var routes= service.GetFromCompany(companyID);
+                    var routes= service.GetRouteByCompany(companyID);
                     return Ok(routes);
                 }
             }

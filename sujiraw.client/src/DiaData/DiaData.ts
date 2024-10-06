@@ -1,3 +1,5 @@
+import {axiosClient} from "../CMN/axiosHook.ts";
+
 export async function fetchGzipJson(url: string): Promise<any> {
     const response = await fetch(url);
     //@ts-ignore
@@ -12,19 +14,19 @@ export async function fetchGzipJson(url: string): Promise<any> {
        return response.json();
     }
 }
-export async function  loadRoute(id:number):Promise<Route>{
+export async function  loadRoute(companyID:number,routeID:number):Promise<Route>{
     try{
-    return await fetchGzipJson(`/route_${id}.json.gz`) as Route;
-}catch(ex){
+        return (await axiosClient.get(`/api/RouteJson/${companyID}/${routeID}`)).data;
+    }catch(ex){
         console.error(ex);
         return new Promise((resolve, reject) => {
-            resolve({routeID: id, name: "読み込みエラー", routeStations: [], downTrips: [], upTrips: []});
+            resolve({routeID: routeID, name: "読み込みエラー", routeStations: [], downTrips: [], upTrips: []});
         });
     }
 }
-export async function loadCompany():Promise<Company>{
+export async function loadCompany(companyID:number,routeID:number|undefined):Promise<Company>{
     try{
-    return await fetchGzipJson(`/company.json.gz`);
+        return (await axiosClient.get(`/api/CompanyJson/Company/${companyID}/${routeID??0}`)).data;
     }catch(ex){
         console.error(ex);
         return new Promise((resolve, reject) => {

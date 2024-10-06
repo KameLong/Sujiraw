@@ -39,7 +39,8 @@ export default function TimeTablePage() {
 
     const MemoTripView = memo(TripView);
     const MemoTripNameView = memo(TripNameView);
-    const param = useParams<{ routeID:string,direct: string  }>();
+    const param = useParams<{ companyID:string,routeID:string,direct: string  }>();
+    const companyID=parseInt(param.companyID??"0");
     const routeID=parseInt(param.routeID??"0");
     const direct=parseInt(param.direct??"0");
 
@@ -58,7 +59,8 @@ export default function TimeTablePage() {
         setSelectedTrip(tripID);
     }, [tripID,routes]);
    useEffect(() => {
-       loadCompany().then((company)=>{
+       loadCompany(companyID,routeID).then((company)=>{
+           console.log(company);
            setStations(company.stations);
            // console.log(stations);
            setTrainTypes(company.trainTypes);
@@ -71,11 +73,13 @@ export default function TimeTablePage() {
             return routeInfo.name==="阪急宝塚本線";
         });
         if(routeID===0&&res!==undefined){
-            navigate(`/TimeTable/${res.routeID}/${direct}`);
+            navigate(`/TimeTable/${companyID}/${res.routeID}/${direct}`);
             return;
         }
         if(routes[routeID]===undefined){
-            loadRoute(routeID).then((route)=>{
+            loadRoute(companyID,routeID).then((route)=>{
+                console.log(route);
+
                 EditRoute.sortTrips(route,0,0);
                 setRoutes((prev)=>{
                     const next  = {...prev};
@@ -87,7 +91,7 @@ export default function TimeTablePage() {
             });
         }
 
-    }, [routeInfo,routeID]);
+    }, [routeID]);
 
     function getTrips() {
         if(direct===0){
@@ -100,7 +104,7 @@ export default function TimeTablePage() {
     const getStationProps=useMemo(()=>{
         if(routes[routeID]===undefined){
             return [];
-    }
+        }
         return routes[routeID].routeStations.map((item)=>{
             return {
                 rsID:item.rsID,
@@ -113,7 +117,7 @@ export default function TimeTablePage() {
     if(routes[routeID]===undefined){
         return (
             <div style={{fontSize: `${setting.fontSize}px`, lineHeight: `${setting.fontSize * setting.lineHeight}px`}}>
-            <BottomMenu routeID={routeID} routeInfo={routeInfo}/>
+            <BottomMenu companyID={companyID} routeID={routeID} routeInfo={routeInfo}/>
             </div>
         )
     }
@@ -225,7 +229,7 @@ export default function TimeTablePage() {
 
                 </div>
             </div>
-                <BottomMenu routeID={routeID} routeInfo={routeInfo}/>
+                <BottomMenu companyID={companyID} routeID={routeID} routeInfo={routeInfo}/>
         </div>
     );
 }

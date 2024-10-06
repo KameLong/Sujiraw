@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿
+using Npgsql;
 using Sujiro.Data.Common;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
@@ -87,7 +88,7 @@ namespace Sujiro.Data
             using (var command = conn.CreateCommand())
             {
                 command.CommandText = $"SELECT * FROM {TABLE_NAME} where {nameof(TrainTypeID)}=@{nameof(TrainTypeID)}";
-                command.Parameters.Add(new SqliteParameter(nameof(TrainTypeID), id));
+                command.Parameters.Add(new NpgsqlParameter(nameof(TrainTypeID), id));
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -112,6 +113,22 @@ namespace Sujiro.Data
                 }
             }
         }
+
+        static public IEnumerable<TrainType> GetByCompany(DbConnection conn,long companyID)
+        {
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = $"SELECT * FROM {TABLE_NAME} where {nameof(CompanyID)} = @{nameof(CompanyID)}";
+                command.Parameters.Add(new NpgsqlParameter(nameof(CompanyID), companyID));
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        yield return new TrainType(reader);
+                    }
+                }
+            }
+        }
     }
     partial class PostgresDbService
     {
@@ -119,13 +136,17 @@ namespace Sujiro.Data
         {
             return TrainType.GetAll(this.conn).ToList();
         }
-        public TrainType GetTrainType(long stationID)
+        public TrainType GetTrainType(long TrainTypeID)
         {
-            return TrainType.GetByID(this.conn, stationID);
+            return TrainType.GetByID(this.conn, TrainTypeID);
         }
-        public void InsertTrainType(List<TrainType> stations)
+        public void InsertTrainType(List<TrainType> trainTypes)
         {
-            TrainType.Insert(this.conn, stations);
+            TrainType.Insert(this.conn, trainTypes);
+        }
+        public List<TrainType> GetTrainTypeByCompany(long companyID)
+        {
+            return TrainType.GetByCompany(this.conn, companyID).ToList();
         }
     }
 }

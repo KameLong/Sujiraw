@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
-using Sujiro.Data.Common;
+﻿using Sujiro.Data.Common;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -9,6 +8,7 @@ using System.Reflection.Metadata;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using Npgsql;
 
 namespace Sujiro.Data
 {
@@ -18,6 +18,8 @@ namespace Sujiro.Data
 
         public long TripID { get; set; }
         public long RouteID { get; set; }
+
+        public long TrainID { get; set; }
         public int Direction { get; set; }
         public int TripSeq { get; set; }
 
@@ -34,10 +36,11 @@ namespace Sujiro.Data
 
 
 
-        public Trip(long routeID,long trainTypeID)
+        public Trip(long routeID,long trainID,long trainTypeID)
         {
             TripID = MyRandom.NextSafeLong();
             RouteID = routeID;
+            TrainID = trainID;
             TrainTypeID = trainTypeID;
 
         }
@@ -45,6 +48,7 @@ namespace Sujiro.Data
         {
             TripID = reader.GetInt64(nameof(TripID));
             RouteID = reader.GetInt64(nameof(RouteID));
+            TrainID = reader.GetInt64(nameof(TrainID));
             Direction = reader.GetInt32(nameof(Direction));
             TripSeq = reader.GetInt32(nameof(TripSeq));
             TrainTypeID = reader.GetInt64(nameof(TrainTypeID));
@@ -62,7 +66,7 @@ namespace Sujiro.Data
             using (var command = conn.CreateCommand())
             {
                 command.CommandText = $"SELECT * FROM {TABLE_NAME} where {nameof(TripID)}=@{nameof(TripID)}";
-                command.Parameters.Add(new SqliteParameter(nameof(TripID), id));
+                command.Parameters.Add(new NpgsqlParameter(nameof(TripID), id));
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -78,13 +82,14 @@ namespace Sujiro.Data
             using (var command = conn.CreateCommand())
             {
                 command.CommandText =
-                    $"INSERT INTO {TABLE_NAME} ({nameof(TripID)},{nameof(RouteID)},{nameof(Direction)},{nameof(TripSeq)},{nameof(TrainTypeID)},{nameof(Name)},{nameof(Number)},{nameof(Comment)},{nameof(DepStationID)},{nameof(AriStationID)},{nameof(DepTime)},{nameof(AriTime)}) " +
-                    $"values (@{nameof(TripID)},@{nameof(RouteID)},@{nameof(Direction)},@{nameof(TripSeq)},@{nameof(TrainTypeID)},@{nameof(Name)},@{nameof(Number)},@{nameof(Comment)},@{nameof(DepStationID)},@{nameof(AriStationID)},@{nameof(DepTime)},@{nameof(AriTime)}) " +
+                    $"INSERT INTO {TABLE_NAME} ({nameof(TripID)},{nameof(RouteID)},{nameof(TrainID)},{nameof(Direction)},{nameof(TripSeq)},{nameof(TrainTypeID)},{nameof(Name)},{nameof(Number)},{nameof(Comment)},{nameof(DepStationID)},{nameof(AriStationID)},{nameof(DepTime)},{nameof(AriTime)}) " +
+                    $"values (@{nameof(TripID)},@{nameof(RouteID)},@{nameof(TrainID)},@{nameof(Direction)},@{nameof(TripSeq)},@{nameof(TrainTypeID)},@{nameof(Name)},@{nameof(Number)},@{nameof(Comment)},@{nameof(DepStationID)},@{nameof(AriStationID)},@{nameof(DepTime)},@{nameof(AriTime)}) " +
                     $"ON CONFLICT ON CONSTRAINT {TABLE_NAME}_pkey " +
-                    $"DO UPDATE SET {nameof(RouteID)} = EXCLUDED.{nameof(RouteID)},{nameof(Direction)} = EXCLUDED.{nameof(Direction)},{nameof(TripSeq)} = EXCLUDED.{nameof(TripSeq)},{nameof(TrainTypeID)} = EXCLUDED.{nameof(TrainTypeID)},{nameof(Name)} = EXCLUDED.{nameof(Name)},{nameof(Number)} = EXCLUDED.{nameof(Number)},{nameof(Comment)} = EXCLUDED.{nameof(Comment)},{nameof(DepStationID)} = EXCLUDED.{nameof(DepStationID)},{nameof(AriStationID)} = EXCLUDED.{nameof(AriStationID)},{nameof(DepTime)} = EXCLUDED.{nameof(DepTime)},{nameof(AriTime)} = EXCLUDED.{nameof(AriTime)}";
+                    $"DO UPDATE SET {nameof(RouteID)} = EXCLUDED.{nameof(RouteID)},{nameof(TrainID)} = EXCLUDED.{nameof(TrainID)},{nameof(Direction)} = EXCLUDED.{nameof(Direction)},{nameof(TripSeq)} = EXCLUDED.{nameof(TripSeq)},{nameof(TrainTypeID)} = EXCLUDED.{nameof(TrainTypeID)},{nameof(Name)} = EXCLUDED.{nameof(Name)},{nameof(Number)} = EXCLUDED.{nameof(Number)},{nameof(Comment)} = EXCLUDED.{nameof(Comment)},{nameof(DepStationID)} = EXCLUDED.{nameof(DepStationID)},{nameof(AriStationID)} = EXCLUDED.{nameof(AriStationID)},{nameof(DepTime)} = EXCLUDED.{nameof(DepTime)},{nameof(AriTime)} = EXCLUDED.{nameof(AriTime)}";
 
                 command.Parameters.Add(CreateParameter(command, nameof(TripID), DbType.Int64));
                 command.Parameters.Add(CreateParameter(command, nameof(RouteID), DbType.Int64));
+                command.Parameters.Add(CreateParameter(command, nameof(TrainID), DbType.Int64));
                 command.Parameters.Add(CreateParameter(command, nameof(Direction), DbType.Int32));
                 command.Parameters.Add(CreateParameter(command, nameof(TripSeq), DbType.Int32));
                 command.Parameters.Add(CreateParameter(command, nameof(TrainTypeID), DbType.Int64));
@@ -101,6 +106,7 @@ namespace Sujiro.Data
                 {
                     command.Parameters[nameof(TripID)].Value = item.TripID;
                     command.Parameters[nameof(RouteID)].Value = item.RouteID;
+                    command.Parameters[nameof(TrainID)].Value = item.TrainID;
                     command.Parameters[nameof(Direction)].Value = item.Direction;
                     command.Parameters[nameof(TripSeq)].Value = item.TripSeq;
                     command.Parameters[nameof(TrainTypeID)].Value = item.TrainTypeID;
@@ -130,6 +136,23 @@ namespace Sujiro.Data
                 }
             }
         }
+        static public IEnumerable<Trip> GetByRoute(DbConnection conn,long routeID,int direction)
+        {
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = $"SELECT * FROM {TABLE_NAME} where {nameof(RouteID)}=@routeID and {nameof(Direction)}=@direction order by {nameof(TripSeq)}";
+                command.Parameters.Add(new NpgsqlParameter("@routeID", routeID));
+                command.Parameters.Add(new NpgsqlParameter("@direction", direction));
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        yield return new Trip(reader);
+                    }
+                }
+            }
+        }
+
     }
     partial class PostgresDbService
     {
@@ -145,6 +168,11 @@ namespace Sujiro.Data
         {
             Trip.Insert(this.conn, stations);
         }
+        public List<Trip> GetTripByRoute(long routeID,int direction)
+        {
+            return Trip.GetByRoute(this.conn, routeID, direction).ToList();
+        }
     }
+    
 
 }

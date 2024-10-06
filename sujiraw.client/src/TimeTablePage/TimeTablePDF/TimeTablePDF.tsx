@@ -57,7 +57,8 @@ export function TimeTablePDF() {
     const navigate=useNavigate();
     const [settingOpen,setSettingOpen]=useState(false);
 
-    const param = useParams<{ routeID:string,direct: string  }>();
+    const param = useParams<{ companyID:string,routeID:string }>();
+    const companyID=parseInt(param.companyID??"0");
     const routeID=parseInt(param.routeID??"0");
 
     const [openDownloadModal, setOpenDownloadModal] = useState(false);
@@ -65,7 +66,7 @@ export function TimeTablePDF() {
 
 
     useEffect(() => {
-        loadCompany().then((company)=>{
+        loadCompany(companyID,routeID).then((company)=>{
             setStations(company.stations);
             setTrainTypes(company.trainTypes);
             setTrains(company.trains);
@@ -82,7 +83,7 @@ export function TimeTablePDF() {
             navigate(`/TimeTablePDF/${res.routeID}`);
         }
         if(routes[routeID]===undefined){
-            loadRoute(routeID).then((route)=>{
+            loadRoute(companyID,routeID).then((route)=>{
                 EditRoute.sortTrips(route,0,0);
                 setRoutes((prev)=>{
                     const next  = {...prev};

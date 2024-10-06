@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
+﻿
 using Sujiro.Data.Common;
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ using System.Reflection.Metadata;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using Npgsql;
 
 namespace Sujiro.Data
 {
@@ -45,7 +46,7 @@ namespace Sujiro.Data
             using (var command = conn.CreateCommand())
             {
                 command.CommandText = $"SELECT * FROM {TABLE_NAME} where {nameof(TrainID)}=@{nameof(TrainID)}";
-                command.Parameters.Add(new SqliteParameter(nameof(TrainID), id));
+                command.Parameters.Add(new NpgsqlParameter(nameof(TrainID), id));
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -115,6 +116,25 @@ namespace Sujiro.Data
         public void InsertTrain(List<Train> stations)
         {
             Train.Insert(this.conn, stations);
+        }
+        public IEnumerable<Train> GetTrainByRoute(long companyID, long routeID)
+        {
+            using (var command = conn.CreateCommand())
+            {
+                //まず、routeIDに含まれるTripを取得し、そのTripに含まれるTrainを取得する
+
+                command.CommandText = $"select DISTINCT {Train.TABLE_NAME}.* from {Trip.TABLE_NAME} left join {Train.TABLE_NAME} " +
+                    $"on {Trip.TABLE_NAME}.{nameof(Trip.TrainID)}={Train.TABLE_NAME}.{nameof(Train.TrainID)} where {nameof(Trip.RouteID)}=@routeID";
+                command.Parameters.Add(new NpgsqlParameter("routeID", routeID));
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        yield return new Train(reader);
+                    }
+                }
+
+            }
         }
     }
 

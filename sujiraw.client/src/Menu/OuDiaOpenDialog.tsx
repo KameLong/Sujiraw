@@ -1,5 +1,5 @@
 import {useNavigate} from "react-router-dom";
-import {Box, Button, Card, CardContent, Input, List, Typography} from "@mui/material";
+import {Backdrop, Box, Button, Card, CardContent, CircularProgress, Input, List, Typography} from "@mui/material";
 import React, {ChangeEvent, useState} from "react";
 import {O_O} from "@route-builders/oud-operator";
 import {
@@ -83,7 +83,8 @@ function oudParser(oud:O_O):string {
             direction:0,
             routeID:routeID,
             tripID:tripID,
-            trainTypeID:train.typeIdx,
+            trainTypeID:trainTypes[train.typeIdx].trainTypeID,
+
             times:train.stHandlings.map((st,_i)=>{
                 const time:StopTime= {
                     ariTime:st.arrival.getTime(),
@@ -133,7 +134,7 @@ function oudParser(oud:O_O):string {
             direction:1,
             routeID:routeID,
             tripID:tripID,
-            trainTypeID:train.typeIdx,
+            trainTypeID:trainTypes[train.typeIdx].trainTypeID,
             times:train.stHandlings.toReversed().map((st,_i)=>{
                 const time:StopTime= {
                     ariTime:st.arrival.getTime(),
@@ -216,6 +217,7 @@ function oudParser(oud:O_O):string {
 export function OuDiaOpenDialog() {
     const navigate = useNavigate();
     const [json,setJson]=useState<string>("");
+    const [open, setOpen] = React.useState(false);
 
     return (
         <Card style={{margin: '10px 10px 50px 10px', height: 'calc(100% - 60px)'}}>
@@ -253,11 +255,21 @@ export function OuDiaOpenDialog() {
                 <Button onClick={()=>{
                     console.log(json);
                     axiosClient.post(`api/CompanyJson/OuDia/${0}`,json).then((res)=>{
-                        console.log(res);
+                        navigate(`/TimeTable/${res.data.companyID}/${res.data.routeID}/0`);
+                        setOpen(false);
+                    }).catch((ex)=>{
+                       setOpen(false);
                     });
+                    setOpen(true);
                 }}>
                     サーバーに送信
                 </Button>
+                <Backdrop
+                    sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+                    open={open}
+                >
+                    <CircularProgress color="inherit" />
+                </Backdrop>
             </CardContent>
         </Card>
     )

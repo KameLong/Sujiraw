@@ -22,8 +22,10 @@ const CustomDialog = styled(Dialog)({
 const MemoDiagramPDFDocument=memo(DiagramPDFDocument);
 
 export function DiagramPDFPage(){
-    const param = useParams<{ routeID:string }>();
-    const routeID=parseInt(param.routeID??"0");
+    const params = useParams<{ routeID: string,companyID:string }>();
+    const routeID = Number.parseInt(params.routeID??"0");
+    const companyID = Number.parseInt(params.companyID??"0");
+
     const [layout,setLayout]=React.useState<DiagramPDFSetting>({
         fontSize:3,
         leftPadding:10,
@@ -41,7 +43,7 @@ export function DiagramPDFPage(){
     });
     const [settingOpen,setSettingOpen]=useState(false);
 
-    const {routeStations, downLines, upLines, routeInfo} = useDiagramHook(routeID);
+    const {routeStations, downLines, upLines, routeInfo} = useDiagramHook(companyID,routeID);
 
     if(routeStations.length===0){
         return <div>loading...</div>

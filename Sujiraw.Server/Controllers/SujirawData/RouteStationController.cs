@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Data.Sqlite;
 using Sujiraw.Server.SignalR;
 using Sujiro.Data;
 using Route = Sujiro.Data.Route;

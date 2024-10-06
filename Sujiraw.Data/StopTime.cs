@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
+﻿
 using Sujiro.Data.Common;
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ using System.Reflection.Metadata;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using Npgsql;
 
 namespace Sujiro.Data
 {
@@ -17,10 +18,10 @@ namespace Sujiro.Data
         public static readonly string TABLE_NAME = "StopTime";
 
         public long TripID { get; set; }
-        public int Sequence { get; set; }
-        public int DepTime { get; set; }
-        public int AriTime { get; set; }
-        public int StopType { get; set; }
+        public int Sequence { get; set; } = 0;
+        public int DepTime { get; set; } = -1;
+        public int AriTime { get; set; } = -1;
+        public int StopType { get; set; } = 0;
         public StopTime(long tripID)
         {
             TripID = tripID;
@@ -88,6 +89,26 @@ namespace Sujiro.Data
         public void InsertStopTime(List<StopTime> stations)
         {
             StopTime.Insert(this.conn, stations);
+        }
+        public Dictionary<long, List<StopTime>> GetStopTimeFromRoute(long routeID)
+        {
+            var result = new Dictionary<long, List<StopTime>>();
+            var command = conn.CreateCommand();
+            command.CommandText = $"select {StopTime.TABLE_NAME}.* from {StopTime.TABLE_NAME} left join {Trip.TABLE_NAME} on {StopTime.TABLE_NAME}.{nameof(StopTime.TripID)} = {Trip.TABLE_NAME}.{nameof(Trip.TripID)} where {nameof(Trip.RouteID)}= @routeID order by {nameof(StopTime.TripID)},{nameof(StopTime.Sequence)};";
+            command.Parameters.Add(new NpgsqlParameter("routeID", routeID));
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    var stopTime = new StopTime(reader);
+                    if (!result.ContainsKey(stopTime.TripID))
+                    {
+                        result[stopTime.TripID] = new List<StopTime>();
+                    }
+                    result[stopTime.TripID].Add(stopTime);
+                }
+            }
+            return result;
         }
     }
 

@@ -20,7 +20,7 @@ const makeDiagramLine=(trips:DiagramTrip[],routeStations:DiagramStation[]):Diagr
     const diagramLines:DiagramLine[]=[];
     trips.forEach(trip=>{
 
-        let diagramLine:DiagramLine={
+        const diagramLine:DiagramLine={
             color:trip.trainType.color,
             points:[],
             number:"",
@@ -47,20 +47,20 @@ const makeDiagramLine=(trips:DiagramTrip[],routeStations:DiagramStation[]):Diagr
 
 }
 
-export function useDiagramHook(routeID:number){
+export function useDiagramHook(companyID:number,routeID:number){
     const [routeStations, setRouteStations] = useState<DiagramStation[]>([]);
     const [downLines,setDownLines]=useState<DiagramLine[]>([]);
     const [upLines,setUpLines]=useState<DiagramLine[]>([]);
     const [routeInfo, setRouteInfo] = useState<{[key:number]:RouteInfo}>({});
     useEffect(() => {
-        loadCompany().then(async(company)=>{
+        loadCompany(companyID,routeID).then(async(company)=>{
             const stations=company.stations;
             const trainTypes=company.trainTypes;
 
             const trains=company.trains;
             setRouteInfo(company.routes);
 
-            const route=await loadRoute(routeID);
+            const route=await loadRoute(companyID,routeID);
             //routeの処理
             const rs:DiagramStation[]=[];
             rs.push({...route.routeStations[0],stationTime:0,station:stations[route.routeStations[0].stationID]});

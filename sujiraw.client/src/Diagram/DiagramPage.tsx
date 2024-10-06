@@ -35,9 +35,11 @@ const zoomY:Gesture={
 }
 
 function DiagramPage() {
-    const params = useParams<{ routeID: string }>();
+    const params = useParams<{ routeID: string,companyID:string }>();
     const routeID = Number.parseInt(params.routeID??"0");
-    const {routeStations, downLines, upLines, routeInfo} = useDiagramHook(routeID);
+    const companyID = Number.parseInt(params.companyID??"0");
+
+    const {routeStations, downLines, upLines, routeInfo} = useDiagramHook(companyID,routeID);
 
     const SCALE:number=window.devicePixelRatio;
 
@@ -130,8 +132,8 @@ function DiagramPage() {
                     if(zoomX.isDrag){
                         if (Math.abs(nowPos2.x - nowPos1.x) >= 100) {
                             const prevTransform = zoomX.transform;
-                            let scaleX = Math.abs(prevTransform.xScale * (nowPos1.x - nowPos2.x) / (zoomX.sPos[0] - zoomX.sPos[1]));
-                            let x = (prevTransform.xScale / scaleX) * (prevTransform.x + (zoomX.sPos[0] + zoomX.sPos[1]) / 2);
+                            const scaleX = Math.abs(prevTransform.xScale * (nowPos1.x - nowPos2.x) / (zoomX.sPos[0] - zoomX.sPos[1]));
+                            const x = (prevTransform.xScale / scaleX) * (prevTransform.x + (zoomX.sPos[0] + zoomX.sPos[1]) / 2);
                             transform.xScale = scaleX;
                             transform.x = x;
                         }
@@ -146,8 +148,8 @@ function DiagramPage() {
                     if(zoomY.isDrag){
                         if (Math.abs(nowPos2.y - nowPos1.y) >= 100) {
                             const prevTransform = zoomY.transform;
-                            let scaleY = Math.abs(prevTransform.yScale * (nowPos1.y - nowPos2.y) / (zoomY.sPos[0] - zoomY.sPos[1]));
-                            let y = (prevTransform.yScale / scaleY) * (prevTransform.y + (zoomY.sPos[0] + zoomY.sPos[1]) / 2);
+                            const scaleY = Math.abs(prevTransform.yScale * (nowPos1.y - nowPos2.y) / (zoomY.sPos[0] - zoomY.sPos[1]));
+                            const y = (prevTransform.yScale / scaleY) * (prevTransform.y + (zoomY.sPos[0] + zoomY.sPos[1]) / 2);
                             transform.yScale = scaleY;
                             transform.y = y;
                         }
@@ -164,8 +166,8 @@ function DiagramPage() {
                     const x2 = -nowPos2.x + transform.xScale / zoomX.transform.xScale * (zoomX.sPos[1] + zoomX.transform.x);
                     const y1 = -nowPos1.y + transform.yScale / zoomY.transform.yScale * (zoomY.sPos[0] + zoomY.transform.y);
                     const y2 = -nowPos2.y + transform.yScale / zoomY.transform.yScale * (zoomY.sPos[1] + zoomY.transform.y);
-                    let x = (x1 + x2) / 2;
-                    let y = (y1 + y2) / 2;
+                    const x = (x1 + x2) / 2;
+                    const y = (y1 + y2) / 2;
                     transform.x = x;
                     transform.y = y;
 
@@ -237,7 +239,7 @@ console.log(transform.xScale);
             }}>
 
             </div>
-            <BottomMenu routeID={routeID} routeInfo={routeInfo}/>
+            <BottomMenu companyID={companyID} routeID={routeID} routeInfo={routeInfo}/>
 
         </div>
 

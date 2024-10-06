@@ -6,6 +6,7 @@ import {RouteInfo} from "../DiaData/DiaData";
 import css from './menu.module.scss';
 
 interface BottomMenuProps {
+    companyID:number|undefined;
     routeID:number|undefined;
     routeInfo:{[key:number]:RouteInfo}|undefined;
 }
@@ -21,7 +22,7 @@ const cardStyle = {
     p: 4,
 };
 
-export function BottomMenu({routeID,routeInfo}:BottomMenuProps){
+export function BottomMenu({companyID,routeID,routeInfo}:BottomMenuProps){
     const [openRouteSelect,setOpenRouteSelect]=useState<boolean>(false);
     const [openMainMenu,setOpenMainMenu]=useState<boolean>(false);
     const navigate=useNavigate();
@@ -39,7 +40,7 @@ export function BottomMenu({routeID,routeInfo}:BottomMenuProps){
             <Button sx={{m: 1}} variant={"contained"} style={{width: 0, flexGrow: 1, textAlign: 'center'}}
                     disabled={routeID===undefined}
                     onClick={() => {
-                        navigate(`/TimeTable/${routeID}/0`);
+                        navigate(`/TimeTable/${companyID}/${routeID}/0`);
                     }}>
                 下り
             </Button>
@@ -55,7 +56,7 @@ export function BottomMenu({routeID,routeInfo}:BottomMenuProps){
             <Button sx={{m: 1}} variant={"contained"} style={{width: 0, flexGrow: 1, textAlign: 'center'}}
                     disabled={routeID===undefined}
                     onClick={() => {
-                        navigate(`/TimeTable/${routeID}/1`);
+                        navigate(`/TimeTable/${companyID}/${routeID}/1`);
                     }}>
                 上り
             </Button>
@@ -71,7 +72,7 @@ export function BottomMenu({routeID,routeInfo}:BottomMenuProps){
             <Button sx={{m: 1}} variant={"contained"} style={{width: 0, flexGrow: 1, textAlign: 'center'}}
                     disabled={routeID===undefined}
                     onClick={() => {
-                        navigate(`/Diagram/${routeID}`);
+                        navigate(`/Diagram/${companyID}/${routeID}`);
                     }}>
                 ダイヤ
             </Button>
@@ -105,8 +106,7 @@ export function BottomMenu({routeID,routeInfo}:BottomMenuProps){
                         }
                         <ListItem
                             onClick={()=>{
-                                // setOpenRouteSelect(true);
-                                setOpenMainMenu(false);
+                                navigate(`/oudia`);
                             }}
                             className={css.menuItem}>
                             OuDiaファイルを開く(未実装)
@@ -114,7 +114,7 @@ export function BottomMenu({routeID,routeInfo}:BottomMenuProps){
                         {routeID!==undefined?
                             <ListItem
                                 onClick={()=>{
-                                    navigate(`/TimeTablePDF/${routeID}`);
+                                    navigate(`/TimeTablePDF/${companyID}/${routeID}`);
 
                                 }}
                                 className={css.menuItem}>
@@ -124,7 +124,7 @@ export function BottomMenu({routeID,routeInfo}:BottomMenuProps){
                         {routeID!==undefined?
                             <ListItem
                                 onClick={()=>{
-                                    navigate(`/DiagramPDF/${routeID}`);
+                                    navigate(`/DiagramPDF/${companyID}/${routeID}`);
 
                                 }}
                                 className={css.menuItem}>

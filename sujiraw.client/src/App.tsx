@@ -15,16 +15,16 @@ function App() {
         <Route path="/" element={
             <TimeTablePage/>
         }/>
-          <Route path="/TimeTable/:routeID/:direct" element={
+          <Route path="/TimeTable/:companyID/:routeID/:direct" element={
               <TimeTablePage/>
           }></Route>
-          <Route path="/TimeTablePDF/:routeID" element={
+          <Route path="/TimeTablePDF/:companyID/:routeID" element={
               <TimeTablePDF/>
           }></Route>
-          <Route path="/Diagram/:routeID" element={
+          <Route path="/Diagram/:companyID/:routeID" element={
               <DiagramPage/>
           }></Route>
-          <Route path="/DiagramPDF/:routeID" element={
+          <Route path="/DiagramPDF/:companyID/:routeID" element={
               <DiagramPDFPage/>
           }></Route>
           <Route path="/License" element={

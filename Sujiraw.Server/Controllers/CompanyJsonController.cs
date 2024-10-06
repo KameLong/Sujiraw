@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Sujiraw.Server.SignalR;
@@ -18,7 +19,7 @@ namespace Sujiraw.Server.Controllers
         }
 
         [HttpPost("OuDia/{companyID}")]
-        public ActionResult PostOuDia(long companyID,OuDiaCompanyJson oudia)
+        public ActionResult PostOuDia(long companyID, OuDiaCompanyJson oudia)
         {
             //とりあえず直接DBに突っ込む
             companyID = MyRandom.NextSafeLong();
@@ -48,7 +49,7 @@ namespace Sujiraw.Server.Controllers
                         return station;
                     });
                     service.InsertStation(stations.ToList());
-                    Debug.WriteLine("Station Inserted "+sw.ElapsedMilliseconds);
+                    Debug.WriteLine("Station Inserted " + sw.ElapsedMilliseconds);
                     var trainTypes = oudia.trainTypes.Values.Select(item =>
                     {
                         TrainType trainType = new TrainType(companyID);
@@ -87,29 +88,39 @@ namespace Sujiraw.Server.Controllers
                     //routeStationsの処理
                     var routeStations = Jroute.routeStations.Select(item =>
                     {
-                        RouteStation rs = new RouteStation(routeID,item.stationID);
+                        RouteStation rs = new RouteStation(routeID, item.stationID);
                         rs.RouteStationID = item.rsID;
+                        rs.RouteID = routeID;
                         rs.Sequence = item.stationIndex;
                         rs.ShowStyle = item.showStyle;
                         return rs;
                     });
                     service.InsertRouteStation(routeStations.ToList());
                     Debug.WriteLine("RouteStation Inserted " + sw.ElapsedMilliseconds);
-                    var stopTimes=new List<StopTime>();
+                    var stopTimes = new List<StopTime>();
 
                     //tripの処理
-                    var upTrips = Jroute.downTrips.Concat(Jroute.upTrips).Select(item =>
+                    var trips = Jroute.downTrips.Concat(Jroute.upTrips).Select(item =>
                     {
-                        Trip trip = new Trip(routeID,item.trainTypeID);
+                        Trip trip = new Trip(routeID, item.trainID, item.trainTypeID);
                         trip.TripID = item.tripID;
                         trip.Direction = item.direction;
+                        trip.TrainID = item.trainID;
 
-                        var times = item.times.Select(time =>
+
+                        var times = item.times.Select((time, i) =>
                         {
                             StopTime stopTime = new StopTime(time.tripID);
+                            stopTime.Sequence = i;
                             stopTime.StopType = time.stopType;
-                            stopTime.AriTime = time.ariTime;
-                            stopTime.DepTime = time.depTime;
+                            if (time.ariTime >= 0)
+                            {
+                                stopTime.AriTime = (time.ariTime + 86400 - 3 * 3600) % 86400 + 3 * 3600;
+                            }
+                            if (time.depTime >= 0)
+                            {
+                                stopTime.DepTime = (time.depTime + 86400 - 3 * 3600) % 86400 + 3 * 3600;
+                            }
                             return stopTime;
                         });
                         stopTimes.AddRange(times);
@@ -117,52 +128,104 @@ namespace Sujiraw.Server.Controllers
                         //trip.TrainID = item.trainID;
                         return trip;
                     });
-                    service.InsertTrip(upTrips.ToList());
+                    service.InsertTrip(trips.ToList());
                     Debug.WriteLine("Trip Inserted " + sw.ElapsedMilliseconds);
-                    var downTrips = Jroute.downTrips.Concat(Jroute.upTrips).Select(item =>
-                    {
-                        Trip trip = new Trip(routeID, item.trainTypeID);
-                        trip.TripID = item.tripID;
-                        trip.Direction = item.direction;
-                        //trip.TrainID = item.trainID;
 
-                        var times = item.times.Select(time =>
-                        {
-                            StopTime stopTime = new StopTime(time.tripID);
-                            stopTime.StopType = time.stopType;
-                            stopTime.AriTime = time.ariTime;
-                            stopTime.DepTime = time.depTime;
-                            return stopTime;
-                        });
-                        stopTimes.AddRange(times);
-
-                        return trip;
-                    });
-                    service.InsertTrip(downTrips.ToList());
-                    Debug.WriteLine("Trip Inserted " + sw.ElapsedMilliseconds);
                     service.InsertStopTime(stopTimes);
                     Debug.WriteLine("StopTime Inserted " + sw.ElapsedMilliseconds);
                     service.Commit();
                     Debug.WriteLine("Commit " + sw.ElapsedMilliseconds);
+                    var res = new OudRes();
+                    res.companyID = companyID;
+                    res.routeID = routeID;
+
+                    return Ok(res);
                 }
                 catch (Exception ex)
                 {
                     service.Rollback();
                     return BadRequest(ex.Message);
                 }
-
-
-
-
-
-
-
             }
-
-
-            return Created();
         }
 
+        [HttpGet("Company/{companyID}/{routeID}")]
+        public ActionResult GetCompany(long companyID, long routeID)
+        {
+            using (var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!))
+            {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                service.BeginTransaction();
+                try
+                {
+                    var company = service.GetCompany(companyID);
+                    var jsonCompany = new JsonCompany();
+                    jsonCompany.routes = service.GetRouteByCompany(companyID).ToDictionary(item => item.RouteID.ToString(), item =>
+                    {
+                        var route = new JsonRouteInfo();
+                        route.routeID = item.RouteID;
+                        route.name = item.Name;
+                        route.stations = service.GetRouteStationByRoute(item.RouteID).Select(rs => rs.StationID).ToList();
+                        return route;
+                    });
+                    jsonCompany.stations = service.GetStationByCompany(companyID).ToDictionary(item => item.StationID.ToString(), item =>
+                    {
+                        var station = new JsonStation();
+                        station.stationID = item.StationID;
+                        station.name = item.Name;
+                        station.lat = item.Lat;
+                        station.lon = item.Lon;
+                        return station;
+                    });
+                    jsonCompany.trainTypes = service.GetTrainTypeByCompany(companyID).ToDictionary(item => item.TrainTypeID.ToString(), item =>
+                    {
+                        var trainType = new JsonTrainType();
+                        trainType.trainTypeID = item.TrainTypeID;
+                        trainType.name = item.Name;
+                        trainType.shortName = item.ShortName;
+                        trainType.color = item.Color;
+                        trainType.bold = item.LineBold;
+                        trainType.dot = item.LineDashed;
+                        return trainType;
+                    });
+                    jsonCompany.trains = service.GetTrainByRoute(companyID, routeID).ToDictionary(item => item.TrainID.ToString(), item =>
+                    {
+                        var train = new JsonTrain();
+                        train.trainID = item.TrainID;
+                        train.name = "";
+                        train.remark = "";
+                        train.depStationID = item.DepStationID;
+                        train.ariStationID = item.AriStationID;
+                        train.depTime = item.DepTime;
+                        train.ariTime = item.AriTime;
+                        return train;
+
+                    });
+                    return Ok(jsonCompany);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            }
+
+        }
+    }
+
+    public class JsonCompany
+    {
+        public Dictionary<string, JsonRouteInfo> routes { get; set; } = new Dictionary<string, JsonRouteInfo>();
+        public Dictionary<string, JsonStation> stations { get; set; } = new Dictionary<string, JsonStation>();
+        public Dictionary<string, JsonTrainType> trainTypes { get; set; } = new Dictionary<string, JsonTrainType>();
+        public Dictionary<string, JsonTrain> trains { get; set; } = new Dictionary<string, JsonTrain>();
+
+    }
+    public class JsonRouteInfo
+    {
+        public long routeID { get; set; } = 0;
+        public string name { get; set; } = "";
+        public List<long> stations { get; set; } = new List<long>();
     }
 
     public class OuDiaCompanyJson
@@ -247,4 +310,10 @@ namespace Sujiraw.Server.Controllers
         public List<JsonTrip> upTrips { get; set; } = new List<JsonTrip>();
     }
 
+    public class OudRes
+    {
+        public long companyID { get; set; } = 0;
+        public long routeID { get; set; } = 0;
+
+    }
 }

@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
-using Npgsql;
+﻿using Npgsql;
 using Sujiro.Data.Common;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
@@ -47,7 +46,7 @@ namespace Sujiro.Data
             using (var command = conn.CreateCommand())
             {
                 command.CommandText = $"SELECT * FROM {TABLE_NAME} where {nameof(CompanyID)}=@{nameof(CompanyID)}";
-                command.Parameters.Add(new SqliteParameter(nameof(CompanyID), id));
+                command.Parameters.Add(new NpgsqlParameter(nameof(CompanyID), id));
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())

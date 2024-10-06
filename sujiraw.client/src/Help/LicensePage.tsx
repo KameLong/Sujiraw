@@ -59,7 +59,7 @@ export function LicensePage(){
             </ul>
         </div>
 
-            <BottomMenu routeID={undefined} routeInfo={undefined}/>
+            <BottomMenu companyID={undefined} routeID={undefined} routeInfo={undefined}/>
 
         </div>
 

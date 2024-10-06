@@ -10,7 +10,7 @@ if(import.meta.env.MODE==='production'){
 // デフォルト config の設定
 export const axiosClient = axios.create({
     baseURL: BaseUrl,
-    timeout: 5000,
+    timeout: 100000,
     headers: {
         'Content-Type': 'application/json'
     }

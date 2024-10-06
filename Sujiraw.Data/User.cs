@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,14 +18,14 @@ namespace Sujiro.Data
         {
             return $"create table {TABLE_NAME} (userID text primary key not null,userType text not null)";
         }
-        public void Replace(SqliteConnection conn)
-        {
-            var command = conn.CreateCommand();
-            command.CommandText = $@"REPLACE INTO {TABLE_NAME} (userID,userType)values(:userID,:userType)";
-            command.Parameters.Add(new SqliteParameter(":userID", UserID));
-            command.Parameters.Add(new SqliteParameter(":userType", UserType));
-            command.ExecuteNonQuery();
-        }
+        //public void Replace(SqliteConnection conn)
+        //{
+        //    var command = conn.CreateCommand();
+        //    command.CommandText = $@"REPLACE INTO {TABLE_NAME} (userID,userType)values(:userID,:userType)";
+        //    command.Parameters.Add(new SqliteParameter(":userID", UserID));
+        //    command.Parameters.Add(new SqliteParameter(":userType", UserType));
+        //    command.ExecuteNonQuery();
+        //}
 
 
     }

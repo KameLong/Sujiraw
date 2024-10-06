@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
+﻿
 using Sujiro.Data.Common;
 using System;
 using System.Collections.Generic;
@@ -13,6 +13,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Npgsql;
 
 namespace Sujiro.Data
 {
@@ -93,7 +94,7 @@ namespace Sujiro.Data
             using (var command = conn.CreateCommand())
             {
                 command.CommandText = $"SELECT * FROM {TABLE_NAME} where {nameof(RouteStationID)}=@{nameof(RouteStationID)}";
-                command.Parameters.Add(new SqliteParameter(nameof(RouteStationID), id));
+                command.Parameters.Add(new NpgsqlParameter(nameof(RouteStationID), id));
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -118,6 +119,22 @@ namespace Sujiro.Data
                 }
             }
         }
+        static public IEnumerable<RouteStation> GetByRouteID(DbConnection conn,long routeID)
+        {
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = $"SELECT * FROM {TABLE_NAME} where {nameof(RouteID)}=@{nameof(RouteID)} order by {nameof(Sequence)}";
+                command.Parameters.Add(new NpgsqlParameter(nameof(RouteID), routeID));
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        yield return new RouteStation(reader);
+                    }
+                }
+            }
+        }
+
     }
     partial class PostgresDbService
     {
@@ -132,6 +149,10 @@ namespace Sujiro.Data
         public void InsertRouteStation(List<RouteStation> stations)
         {
             RouteStation.Insert(this.conn, stations);
+        }
+        public List<RouteStation> GetRouteStationByRoute(long routeID)
+        {
+            return RouteStation.GetByRouteID(this.conn, routeID).ToList();
         }
     }
 }

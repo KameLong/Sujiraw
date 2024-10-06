@@ -78,3 +78,14 @@ CREATE TABLE IF NOT EXISTS StopTime (
 );
 
 
+
+delete from Company;
+delete from Station;
+delete from TrainType;
+delete from Route;
+delete from RouteStation;
+delete from Train;
+delete from Trip;
+delete from StopTime;
+
+

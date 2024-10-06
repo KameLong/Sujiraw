@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Data.Sqlite;
 using Sujiro.Data;
 using System.Diagnostics;
 using Sujiraw.Server.SignalR;
@@ -17,7 +16,7 @@ namespace Sujiraw.Server.Controllers
         public async Task<int> Get()
         {
             Debug.WriteLine("Reset");
-            SqliteConnection.ClearAllPools();
+//            SqliteConnection.ClearAllPools();
             
 
 //            var DBdir = Configuration["ConnectionStrings:DBdir"];

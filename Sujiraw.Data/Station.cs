@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
-using Npgsql;
+﻿using Npgsql;
 using NpgsqlTypes;
 using Sujiro.Data.Common;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -52,7 +51,7 @@ namespace Sujiro.Data
             using (var command = conn.CreateCommand())
             {
                 command.CommandText = $"SELECT * FROM {TABLE_NAME} where {nameof(StationID)}=@{nameof(StationID)}";
-                command.Parameters.Add(new SqliteParameter(nameof(StationID), id));
+                command.Parameters.Add(new NpgsqlParameter(nameof(StationID), id));
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -124,6 +123,21 @@ namespace Sujiro.Data
                 }
             }
         }
+        static public IEnumerable<Station> GetByCompany(DbConnection conn, long companyID)
+        {
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = $"SELECT * FROM {TABLE_NAME} where {nameof(CompanyID)}= @{nameof(CompanyID)}";
+                command.Parameters.Add(new NpgsqlParameter(nameof(CompanyID), companyID));
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        yield return new Station(reader);
+                    }
+                }
+            }
+        }
     }
     partial class PostgresDbService
     {
@@ -142,6 +156,10 @@ namespace Sujiro.Data
         public void InsertStation(List<Station>stations)
         {
             Station.Insert(this.conn, stations);
+        }
+        public List<Station> GetStationByCompany(long companyID)
+        {
+            return Station.GetByCompany(this.conn, companyID).ToList();
         }
     }
 

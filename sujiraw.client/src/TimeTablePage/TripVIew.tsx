@@ -21,8 +21,6 @@ export function TripView({trip, type, setting, stations, direction,train,allStat
     const ref = useRef<HTMLDivElement | null>(null);
     const navigate=useNavigate();
 
-
-
     useEffect(() => {
         const element = ref.current?.querySelector(`#endStationName`) as HTMLDivElement | null;
 
