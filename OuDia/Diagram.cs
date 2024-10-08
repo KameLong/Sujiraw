@@ -16,6 +16,8 @@ namespace OuDia
         public Diagram(Route route = null)
         {
             this.route = route;
+            down=new Dia(this);
+            up = new Dia(this);
         }
 
         public void Read(StreamReader sr)

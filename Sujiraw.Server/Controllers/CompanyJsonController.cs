@@ -34,7 +34,7 @@ namespace Sujiraw.Server.Controllers
                     //
                     Company company = new Company();
                     company.CompanyID = companyID;
-                    company.Name = oudia.routes.Values.First().name;
+                    company.Name = oudia.name;
                     service.InsertCompany(new List<Company> { company });
                     //
 
@@ -230,12 +230,11 @@ namespace Sujiraw.Server.Controllers
 
     public class OuDiaCompanyJson
     {
+        public string name { get; set; } = "";
         public Dictionary<string, JsonRoute> routes { get; set; } = new Dictionary<string, JsonRoute>();
         public Dictionary<string, JsonStation> stations { get; set; } = new Dictionary<string, JsonStation>();
         public Dictionary<string, JsonTrainType> trainTypes { get; set; } = new Dictionary<string, JsonTrainType>();
         public Dictionary<string, JsonTrain> trains { get; set; } = new Dictionary<string, JsonTrain>();
-
-
     }
 
     public class JsonStation

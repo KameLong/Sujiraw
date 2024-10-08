@@ -2,9 +2,8 @@ import {axiosClient} from "../CMN/axiosHook.ts";
 
 export async function fetchGzipJson(url: string): Promise<any> {
     const response = await fetch(url);
-    //@ts-ignore
+    //@ts-expect-error import meta 
     if(import.meta.env.MODE==='production'){
-        //@ts-ignore
         const rstream = response.body.pipeThrough(new DecompressionStream('gzip'));
         // ReadableStream を Response に変換
         const response2 = new Response(rstream);
@@ -30,7 +29,7 @@ export async function loadCompany(companyID:number,routeID:number|undefined):Pro
     }catch(ex){
         console.error(ex);
         return new Promise((resolve, reject) => {
-            resolve({routes: {}, stations: {}, trains: {}, trainTypes: {}});
+            resolve({name:"error",routes: {}, stations: {}, trains: {}, trainTypes: {}});
         });
     }
 }
@@ -62,7 +61,7 @@ export interface Route {
 export class EditRoute {
     static sortTrips(route: Route, sortIndex: number, direction: number) {
         switch (direction) {
-            case 0:
+            case 0:{
                 const newTrips = route.downTrips.filter(trip => {
                     return GetTrip.GetStopType(trip, sortIndex) === StopType.STOP && GetTrip.TimeExist(trip, sortIndex);
                 }).sort((a, b) => {
@@ -93,6 +92,10 @@ export class EditRoute {
 
                 }
                 route.downTrips = newTrips.concat(oldTrains);
+                break;
+            }
+
+            default:
                 break;
 
 
@@ -249,8 +252,13 @@ export interface RouteInfo {
 }
 
 export interface Company {
+    name:string;
     routes: { [key: number]: RouteInfo };
     stations: { [key: number]: Station };
     trains: { [key: number]: Train };
     trainTypes: { [key: number]: TrainType };
+}
+export interface Company2{
+    name:string,
+    companyID:number
 }

@@ -15,7 +15,7 @@ namespace Sujiraw.Server.Controllers.SujirawData
         public RouteController(IHubContext<SujirawHub> hubContext, IConfiguration configuration) : base(hubContext, configuration)
         {
         }
-        [HttpGet("{companyID}")]
+        [HttpGet("ByCompany/{companyID}")]
         public async Task<ActionResult> Get(long companyID)
         {
             try
@@ -24,7 +24,18 @@ namespace Sujiraw.Server.Controllers.SujirawData
                 using (var service = new PostgresDbService(connectionString))
                 {
                     var routes= service.GetRouteByCompany(companyID);
-                    return Ok(routes);
+                    var res = routes.Select(item =>
+                    {
+                        return new JsonRoute()
+                        {
+                            downTrips = [],
+                            name = item.Name,
+                            routeID = item.RouteID,
+                            routeStations = [],
+                            upTrips = []
+                        };
+                    });
+                    return Ok(res);
                 }
             }
             catch (Exception e)

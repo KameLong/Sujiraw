@@ -7,14 +7,19 @@ import { TimeTablePDF } from './TimeTablePage/TimeTablePDF/TimeTablePDF';
 import {LicensePage} from "./Help/LicensePage";
 import {DiagramPDFPage} from "./Diagram/DiagramPDF/DiagramPDFPage";
 import {OuDiaOpenDialog} from "./Menu/OuDiaOpenDialog";
+import {CompanyListPage} from "./CompanyPage/CompanyListPage.tsx";
+import {CompanyPage} from "./CompanyPage/CompanyPage.tsx";
 
 function App() {
   return (
       <BrowserRouter>
       <Routes>
         <Route path="/" element={
-            <TimeTablePage/>
+            <CompanyListPage/>
         }/>
+          <Route path="/Company/:companyID" element={
+              <CompanyPage/>
+          }/>
           <Route path="/TimeTable/:companyID/:routeID/:direct" element={
               <TimeTablePage/>
           }></Route>

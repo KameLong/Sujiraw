@@ -175,11 +175,12 @@ function oudParser(oud:O_O):string {
         routes: {},
         stations: {},
         trains: {},
-        trainTypes: {}
+        trainTypes: {},
+        name:oud.name
     }
     company.routes[routeID]={
         routeID:routeID,
-        name:oud.diagrams[0].name,
+        name:oud.stations[0].name+"~"+oud.stations[oud.stations.length-1].name,
         stations:routeStations.map((rs)=> {
             return rs.stationID;
         })
@@ -200,7 +201,7 @@ function oudParser(oud:O_O):string {
     const route:Route= {
         routeStations:routeStations,
         routeID:routeID,
-        name:oud.diagrams[0].name,
+        name:oud.stations[0].name+"~"+oud.stations[oud.stations.length-1].name,
         downTrips:downTrips,
         upTrips:upTrips
     }
@@ -261,9 +262,13 @@ export function OuDiaOpenDialog() {
                        setOpen(false);
                     });
                     setOpen(true);
-                }}>
+                }}
+                        disabled={json.length===0}
+                >
+
                     サーバーに送信
                 </Button>
+                <div>推定所要時間 {Math.round(json.length/500000)}秒</div>
                 <Backdrop
                     sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
                     open={open}
