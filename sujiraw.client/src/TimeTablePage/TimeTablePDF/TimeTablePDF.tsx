@@ -16,7 +16,7 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import { styled } from '@mui/system';
+import { styled } from '@mui/styles';
 import {Settings} from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import {EditRoute, loadCompany, loadRoute, Route, RouteInfo, Station, Train, TrainType} from "../../DiaData/DiaData";

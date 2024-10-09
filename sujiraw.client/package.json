@@ -10,11 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mui/icons-material": "^5.15.5",
-    "@mui/material": "^6.1.2",
-    "@mui/styles": "^6.1.0",
-    "@mui/x-date-pickers": "^7.18.0",
-    "@mui/x-tree-view": "^6.17.0",
+    "@mui/icons-material": "6.1.3",
+    "@mui/material": "6.1.3",
+    "@mui/styles": "6.1.3",
     "@react-pdf/renderer": "^3.4.4",
     "@route-builders/oud-operator": "^3.0.13",
     "@route-builders/oud-to-json": "^2.0.13",

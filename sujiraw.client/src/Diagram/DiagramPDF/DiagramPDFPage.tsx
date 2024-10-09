@@ -4,7 +4,7 @@ import {Dialog, Fab} from "@mui/material";
 import {Settings} from "@mui/icons-material";
 import React, {memo, useEffect, useState} from "react";
 import {useDiagramHook} from "../DiagramHook";
-import {styled} from "@mui/system";
+import {styled} from "@mui/styles";
 import {DiagramPDFSetting, DiagramPDFSettingView} from "./DiagramPDFSetting";
 import {DiagramPDFDocument} from "./DiagramPDFDocument";
 import {PDFDownloadLink, PDFViewer} from "@react-pdf/renderer";
