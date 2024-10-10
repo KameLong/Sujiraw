@@ -63,10 +63,12 @@ const Item = styled(Paper)(({ theme }) => ({
     margin: '10px',
     padding: '30px 10px',
     textAlign: 'center',
+    cursor: 'pointer',
     color: theme.palette.text.secondary,
     ...theme.applyStyles('dark', {
         backgroundColor: '#1A2027',
     }),
+
 }));
 
 
@@ -115,8 +117,10 @@ export function CompanyListPage() {
             <Grid container spacing={2}>
                 {company.map((c)=>{
                     return <Grid size={{ xs: 12, sm: 6 , lg: 4 }}
-                    onClick={()=>navigate(`/Company/${c.companyID}`)}>
-                        <Item>{c.name}</Item>
+                    >
+                        <Item elevation={3}
+                              onClick={()=>navigate(`/Company/${c.companyID}`)}
+                        >{c.name}</Item>
                     </Grid>
                 })}
             </Grid>        </div>

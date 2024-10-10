@@ -13,7 +13,7 @@ import {Paper} from "@mui/material";
 import {axiosClient} from "../CMN/axiosHook.ts";
 import {useEffect, useState} from "react";
 import {Company, Company2, Route, RouteInfo} from "../DiaData/DiaData.ts";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -83,6 +83,8 @@ export function CompanyPage() {
     const param = useParams<{ companyID:string }>();
     const companyID=parseInt(param.companyID??"0");
 
+    const navigate=useNavigate();
+
     useEffect(()=>{
         axiosClient.get(`/api/Company/get/${companyID}`).then(res=>{
             setCompany(prev=>{
@@ -101,7 +103,6 @@ export function CompanyPage() {
                 }
             });
         })
-
     },[]);
 
     console.log(company.routes);
@@ -141,7 +142,13 @@ export function CompanyPage() {
             <Grid container spacing={2}>
                 {Object.values(company.routes).map((c)=>{
                     return <Grid size={{ xs: 12, sm: 6 , lg: 4 }}>
-                        <Item>{c.name}</Item>
+                        <Item elevation={3}
+                              onClick={()=>{
+                                    navigate(`/TimeTable/${companyID}/${c.routeID}/0`)
+
+                              }}
+                        >
+                            {c.name}</Item>
                     </Grid>
                 })}
             </Grid>        </div>
