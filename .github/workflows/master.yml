@@ -38,9 +38,19 @@ jobs:
       uses: wlixcc/SFTP-Deploy-Action@v1.2.4
       with:
         username: ${{ secrets.FTP_USERNAME }}
-        server: '157.120.44.63'
+        server: 'sujiraw.kamelong.com'
         port: '22'
         local_path: './Release/*'
         remote_path: '/ftp_kamelong/Sujiraw/'
         sftp_only: true
         password: ${{ secrets.FTP_PASSWORD }}
+    - name: Restart App Server development
+      uses: appleboy/ssh-action@master
+      with:
+        host: 'sujiraw.kamelong.com'
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        passphrase: ${{secrets.SSH_PASSPHRASE}}
+        port: '22'
+        script: |
+          sudo systemctl restart sujiraw
