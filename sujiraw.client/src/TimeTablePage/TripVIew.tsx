@@ -223,6 +223,8 @@ export function TripView({trip, type, setting, stations, direction,train,allStat
             <div style={{borderTop: '2px solid black'}}>
             </div>
 
+
+
         </div>
     )
 }

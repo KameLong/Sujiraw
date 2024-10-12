@@ -1,5 +1,41 @@
 {
   "common": {
-    "fontSize": "font size"
-  }
+    "appName": "Sujiraw",
+    "fontSize": "font size",
+    "lineWidth": "line weight"
+  },
+  "diagram": {
+    "axisType": {
+      "10min": "10min",
+      "15min": "15min",
+      "1min": "1min",
+      "20min": "20min",
+      "2min": "2min",
+      "30min": "30min",
+      "5min": "5min",
+      "60min": "60min",
+      "name": " axis scale"
+    },
+    "borderColor": "Border color",
+    "spanTime": "time scale(h:mm)",
+    "startTime": "start time of diagram"
+  },
+  "license": {
+    "license": "LICENSE",
+    "otherLicenses(npm)": "other licenses (npm)",
+    "thisLicense": "is licensed under the AGPL license"
+  },
+  "timetablePDF": {
+    "alternately": "outbound/inbound",
+    "arrangement": "arrangement",
+    "lineHeight": "height of line (ratio)",
+    "order": "ordered",
+    "paragraphPerPage": "paragraphs per page",
+    "tripInParagraph": "trains per paragraph"
+  },
+  "ダイヤの設定": "Setting",
+  "一度削除されたデータは復元できません。 削除してもよろしいですか？": "Are you sure you want to delete it?",
+  "削除する": "DELETE",
+  "戻る": "BACK",
+  "路線一覧": "Route List"
 }

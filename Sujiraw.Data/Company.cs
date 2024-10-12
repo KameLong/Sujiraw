@@ -43,24 +43,19 @@ namespace Sujiro.Data
 
         static public Company? GetByID(DbConnection conn, long id)
         {
-            using (var command = conn.CreateCommand())
+            using var command = conn.CreateCommand();
+            command.CommandText = $"SELECT * FROM {TABLE_NAME} where {nameof(CompanyID)}=@{nameof(CompanyID)}";
+            command.Parameters.Add(new NpgsqlParameter(nameof(CompanyID), id));
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
             {
-                command.CommandText = $"SELECT * FROM {TABLE_NAME} where {nameof(CompanyID)}=@{nameof(CompanyID)}";
-                command.Parameters.Add(new NpgsqlParameter(nameof(CompanyID), id));
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        return new Company(reader);
-                    }
-                }
-                return null;
+                return new Company(reader);
             }
+            return null;
         }
         static public void Insert(DbConnection conn, List<Company> insertItems)
         {
-            using (var command = conn.CreateCommand())
-            {
+            using var command = conn.CreateCommand();
 
                 command.CommandText = $"INSERT INTO {TABLE_NAME} ({nameof(CompanyID)},{nameof(Name)},{nameof(UserID)}) " +
                     $"values (@{nameof(CompanyID)},@{nameof(Name)},@{nameof(UserID)}) " +
@@ -79,21 +74,16 @@ namespace Sujiro.Data
                     command.Parameters[nameof(UserID)].Value = item.UserID;
                     command.ExecuteNonQuery();
                 }
-            }
         }
         static public IEnumerable<Company> GetAll(DbConnection conn)
         {
-            using (var command = conn.CreateCommand())
-            {
+            using var command = conn.CreateCommand();
                 command.CommandText = $"SELECT * FROM {TABLE_NAME}";
-                using (var reader = command.ExecuteReader())
-                {
+            using var reader = command.ExecuteReader();
                     while (reader.Read())
                     {
                         yield return new Company(reader);
                     }
-                }
-            }
         }
     }
 

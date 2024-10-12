@@ -11,25 +11,19 @@ namespace Sujiraw.Server.Controllers.SujirawData
     [ApiController]
     //    [Authorize]
 
-    public class CompanyController : SujiroAPIController
+    public class CompanyController(IHubContext<SujirawHub> hubContext, IConfiguration configuration) : SujiroAPIController(hubContext,configuration)
     {
-        public CompanyController(IHubContext<SujirawHub> hubContext, IConfiguration configuration) : base(hubContext, configuration)
-        {
-
-        }
         [HttpGet("get/{companyID}")]
         public ActionResult GetCompany(long companyID)
         {
             string connectionString = Configuration["ConnectionStrings:postgres"]!;
-            using (var service = new PostgresDbService(connectionString))
-            {
+            using var service = new PostgresDbService(connectionString);
                 var company = service.GetCompany(companyID);
                 if (company == null)
                 {
                     return NotFound();
                 }
                 return Ok(company);
-            }
         }
         [HttpGet("getAll")]
         public ActionResult GetAllCompany()
@@ -37,15 +31,12 @@ namespace Sujiraw.Server.Controllers.SujirawData
             try
             {
                 string connectionString = Configuration["ConnectionStrings:postgres"]!;
-                using (var service = new PostgresDbService(connectionString))
-                {
+                using var service = new PostgresDbService(connectionString);
                     var companies = service.GetAllCompany();
                     return Ok(companies);
-                }
             }
             catch (Exception ex)
             {
-                var a = 0;
                 return BadRequest(ex.Message);
             }
 
@@ -57,8 +48,7 @@ namespace Sujiraw.Server.Controllers.SujirawData
         public ActionResult DeleteCompany(long companyID)
         {
             string connectionString = Configuration["ConnectionStrings:postgres"]!;
-            using (var service = new PostgresDbService(connectionString))
-            {
+            using var service = new PostgresDbService(connectionString);
                 var result = service.DeleteCompany(companyID);
                 switch(result)
                 {
@@ -71,7 +61,7 @@ namespace Sujiraw.Server.Controllers.SujirawData
                     default:
                         return BadRequest();
                 }
-            }
+            
         }
 
 

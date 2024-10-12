@@ -6,16 +6,12 @@ using System.Threading.Tasks;
 
 namespace OuDia
 {
-    public class Dia
+    public class Dia(Diagram diagram)
     {
-        public List<Train> trains { get; set; } = new List<Train>();
-        public Diagram diagram;
+        public List<Train> Trains { get; set; } = new List<Train>();
+        public Diagram diagram=diagram;
 
-        public Dia(Diagram diagram = null)
-        {
-            this.diagram = diagram;
-        }
-
+  
         public void Read(StreamReader sr)
         {
             while (true)
@@ -28,10 +24,12 @@ namespace OuDia
                     case "Ressya.":
                         var train = new Train(this);
                         train.Read(sr);
-                        trains.Add(train);
+                        Trains.Add(train);
+                        break;
+                    case null:
                         break;
                     default:
-                        if (!str.Contains("="))
+                        if (! str.Contains('='))
                         {
                             throw new Exception(str);
                         }
@@ -42,7 +40,6 @@ namespace OuDia
                             default:
                                 throw new Exception("Invalid key " + str);
                         }
-                        break;
                 }
 
             }

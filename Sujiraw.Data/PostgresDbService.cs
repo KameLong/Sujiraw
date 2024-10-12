@@ -10,7 +10,7 @@ namespace Sujiro.Data
     public partial class PostgresDbService : IDisposable
     {
 
-        private NpgsqlConnection conn;
+        private readonly NpgsqlConnection conn;
 
         private NpgsqlTransaction? tran=null;
         public PostgresDbService(string connectionString)
@@ -21,21 +21,13 @@ namespace Sujiro.Data
 
         public void Dispose()
         {
-            if (this.conn != null)
-            {
-                this.conn.Dispose();
-            }
-            if (tran != null)
-            {
-                this.tran.Dispose();
-            }
+                this.conn?.Dispose();
+                this.tran?.Dispose();
+            GC.SuppressFinalize(this);
         }
         public void BeginTransaction()
         {
-            if(tran!=null)
-            {
-                tran.Dispose();
-            }
+            tran?.Dispose();
             tran =this.conn.BeginTransaction();
         }
         public void Commit()
