@@ -47,4 +47,10 @@ namespace Sujiro.Data
             tran?.Rollback();
         }
     }
+    public enum DeleteResult
+    {
+        SUCCESS,
+        NOT_FOUND,
+        DELETE_ERROR
+    }
 }

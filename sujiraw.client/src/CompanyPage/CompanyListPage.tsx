@@ -24,7 +24,7 @@ const Search = styled('div')(({ theme }) => ({
     },
     marginLeft: 0,
     width: '100%',
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up('xs')]: {
         marginLeft: theme.spacing(1),
         width: 'auto',
     },
@@ -48,10 +48,16 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         // vertical padding + font size from searchIcon
         paddingLeft: `calc(1em + ${theme.spacing(4)})`,
         transition: theme.transitions.create('width'),
-        [theme.breakpoints.up('sm')]: {
-            width: '12ch',
+        [theme.breakpoints.up('xs')]: {
+            width: '0',
             '&:focus': {
-                width: '20ch',
+                width: '25ch',
+            },
+        },
+        [theme.breakpoints.up('sm')]: {
+            width: '8ch',
+            '&:focus': {
+                width: '25ch',
             },
         },
     },
@@ -74,12 +80,18 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export function CompanyListPage() {
     const [company,setCompany]=useState<Company2[]>([]);
+    const [searchText,setSearchText]=useState("");
+
     useEffect(()=>{
         axiosClient.get("/api/Company/getAll").then(res=>{
             console.log(res.data);
             setCompany(res.data);
         })
     },[]);
+    const companies=company.filter((c)=>{
+        return c.name.includes(searchText);
+    });
+
     const navigate=useNavigate();
     return (
         <div>
@@ -99,7 +111,7 @@ export function CompanyListPage() {
                     variant="h6"
                     noWrap
                     component="div"
-                    sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+                    sx={{ flexGrow: 1, display: { xs: 'block', sm: 'block' } }}
                 >
                     ダイヤ一覧
                 </Typography>
@@ -109,13 +121,15 @@ export function CompanyListPage() {
                     </SearchIconWrapper>
                     <StyledInputBase
                         placeholder="Search…"
+                        value={searchText}
+                        onChange={(e)=>setSearchText(e.target.value)}
                         inputProps={{ 'aria-label': 'search' }}
                     />
                 </Search>
             </Toolbar>
         </AppBar>
             <Grid container spacing={2}>
-                {company.map((c)=>{
+                {companies.map((c)=>{
                     return <Grid size={{ xs: 12, sm: 6 , lg: 4 }}
                     >
                         <Item elevation={3}

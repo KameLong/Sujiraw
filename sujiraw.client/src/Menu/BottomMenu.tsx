@@ -87,22 +87,28 @@ export function BottomMenu({companyID,routeID,routeInfo}:BottomMenuProps){
                 aria-describedby="modal-modal-description"
             >
                 <Card
-                     // style={{margin: '10px 10px 50px 10px', height: 'calc(100% - 60px)'}}
                     style={cardStyle}
                 >
                     <CardContent>
 
                     <List>
-                        {
-                            routeInfo!==undefined?
+                        {routeID!==undefined?
                                 <ListItem
                                     onClick={()=>{
-                                        setOpenRouteSelect(true);
-                                        setOpenMainMenu(false);
+                                        navigate(`/Company/${companyID}`);
                                     }}
                                     className={css.menuItem}>
                                     路線選択
-                                </ListItem> :null
+                                </ListItem> :
+                            <ListItem
+                                onClick={()=>{
+                                    navigate(`/`);
+                                }}
+                                className={css.menuItem}>
+                                路線選択
+                            </ListItem>
+
+
                         }
                         <ListItem
                             onClick={()=>{
@@ -115,7 +121,6 @@ export function BottomMenu({companyID,routeID,routeInfo}:BottomMenuProps){
                             <ListItem
                                 onClick={()=>{
                                     navigate(`/TimeTablePDF/${companyID}/${routeID}`);
-
                                 }}
                                 className={css.menuItem}>
                                 時刻表をPDFにする

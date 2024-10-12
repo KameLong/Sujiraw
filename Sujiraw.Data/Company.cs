@@ -111,6 +111,67 @@ namespace Sujiro.Data
         {
             Company.Insert(this.conn, companies);
         }
-    }
 
+        public DeleteResult DeleteCompany(long companyID)
+        {
+            //StopTimeの削除
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = $"DELETE FROM {StopTime.TABLE_NAME} using {Trip.TABLE_NAME}, {Route.TABLE_NAME} " +
+                    $"where {StopTime.TABLE_NAME}.{nameof(StopTime.TripID)} = {Trip.TABLE_NAME}.{nameof(Trip.TripID)} " +
+                    $"and {Trip.TABLE_NAME}.{nameof(Trip.RouteID)} =  {Route.TABLE_NAME}.{nameof(Route.RouteID)} and  {Route.TABLE_NAME}.{nameof(Route.CompanyID)} = @{nameof(Company.CompanyID)}";
+                command.Parameters.Add(new NpgsqlParameter(nameof(Company.CompanyID), companyID));
+                command.ExecuteNonQuery();
+            }
+            //tripの削除
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = $"DELETE FROM {Trip.TABLE_NAME} using {Route.TABLE_NAME} " +
+                    $"where {Trip.TABLE_NAME}.{nameof(Trip.RouteID)} = {Route.TABLE_NAME}.{nameof(Route.RouteID)} and {Route.TABLE_NAME}.{nameof(Route.CompanyID)} = @{nameof(Company.CompanyID)}";
+                command.Parameters.Add(new NpgsqlParameter(nameof(Company.CompanyID), companyID));
+                command.ExecuteNonQuery();
+            }
+            //routeStationの削除
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = $"DELETE FROM {RouteStation.TABLE_NAME} using {Route.TABLE_NAME} " +
+                    $"where {RouteStation.TABLE_NAME}.{nameof(RouteStation.RouteID)} = {Route.TABLE_NAME}.{nameof(Route.RouteID)} and {Route.TABLE_NAME}.{nameof(Route.CompanyID)} = @{nameof(Company.CompanyID)}";
+                command.Parameters.Add(new NpgsqlParameter(nameof(Company.CompanyID), companyID));
+                command.ExecuteNonQuery();
+            }
+            //routeの削除
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = $"DELETE FROM {Route.TABLE_NAME} where {nameof(Route.CompanyID)} = @{nameof(Company.CompanyID)}";
+                command.Parameters.Add(new NpgsqlParameter(nameof(Company.CompanyID), companyID));
+                command.ExecuteNonQuery();
+            }
+            //stationの削除
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = $"DELETE FROM {Station.TABLE_NAME} where {nameof(Station.CompanyID)} = @{nameof(Company.CompanyID)}";
+                command.Parameters.Add(new NpgsqlParameter(nameof(Company.CompanyID), companyID));
+                command.ExecuteNonQuery();
+            }
+            //trainTypeの削除
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = $"DELETE FROM {TrainType.TABLE_NAME} where {nameof(TrainType.CompanyID)} = @{nameof(Company.CompanyID)}";
+                command.Parameters.Add(new NpgsqlParameter(nameof(Company.CompanyID), companyID));
+                command.ExecuteNonQuery();
+            }
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = $"DELETE FROM {Company.TABLE_NAME} where {nameof(Company.CompanyID)}=@{nameof(Company.CompanyID)}";
+                command.Parameters.Add(new NpgsqlParameter(nameof(Company.CompanyID), companyID));
+                if (command.ExecuteNonQuery() == 0)
+                {
+                    return DeleteResult.NOT_FOUND;
+                }
+            }
+
+            return DeleteResult.SUCCESS;
+        }
+
+    }
 }

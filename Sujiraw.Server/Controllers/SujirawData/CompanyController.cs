@@ -52,6 +52,29 @@ namespace Sujiraw.Server.Controllers.SujirawData
 
         }
 
+        [HttpDelete("{companyID}")]
+
+        public ActionResult DeleteCompany(long companyID)
+        {
+            string connectionString = Configuration["ConnectionStrings:postgres"]!;
+            using (var service = new PostgresDbService(connectionString))
+            {
+                var result = service.DeleteCompany(companyID);
+                switch(result)
+                {
+                    case DeleteResult.SUCCESS:
+                        return Ok();
+                    case DeleteResult.NOT_FOUND:
+                        return NotFound();
+                    case DeleteResult.DELETE_ERROR:
+                        return BadRequest();
+                    default:
+                        return BadRequest();
+                }
+            }
+        }
+
+
         //[HttpPut]
         //public async Task<ActionResult> PutCompany(Company company)
         //{
@@ -106,6 +129,5 @@ namespace Sujiraw.Server.Controllers.SujirawData
 
 
         //}
-
     }
 }
