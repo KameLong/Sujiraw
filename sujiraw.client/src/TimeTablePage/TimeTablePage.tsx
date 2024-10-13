@@ -149,7 +149,7 @@ export default function TimeTablePage() {
         );
     }
     return (
-        <div style={{width: '100%',height:'100%',fontSize: `${setting.fontSize}px`, lineHeight: `${setting.fontSize * setting.lineHeight}px`}}>
+        <div style={{background:'white',width: '100%',height:'100%',fontSize: `${setting.fontSize}px`, lineHeight: `${setting.fontSize * setting.lineHeight}px`}}>
             <div style={{display: "flex", width: '100%', height: '100%', paddingBottom: "70px",zIndex:5}}>
                 <div style={{
                     width: `${getStationViewWidth(setting)}px`,

@@ -35,6 +35,8 @@
   },
   "ダイヤの設定": "Setting",
   "一度削除されたデータは復元できません。 削除してもよろしいですか？": "Are you sure you want to delete it?",
+  "会社を探す": "Search Company",
+  "会社検索検索結果": "Result : {{length}}",
   "削除する": "DELETE",
   "戻る": "BACK",
   "路線一覧": "Route List"

@@ -227,7 +227,7 @@ function DiagramPage() {
 console.log(transform.xScale);
     return (
         <div ref={ref}
-             style={{position: 'relative', height: '100%', overflowX: "auto", overflowY: "auto"}}
+             style={{background:'white',position: 'relative', height: '100%', overflowX: "auto", overflowY: "auto"}}
         >
             <canvas
                 id="canvas" style={{position: 'fixed',pointerEvents: 'none', width: '100%', height: '100%', overflowY: 'hidden'}}

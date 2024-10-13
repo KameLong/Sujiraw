@@ -10,7 +10,7 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    Divider,
+    Divider, Stack,
     TextField
 } from "@mui/material";
 import {axiosClient} from "../CMN/axiosHook.ts";
@@ -20,6 +20,8 @@ import {useNavigate, useParams} from "react-router-dom";
 import {Snackbar, useSnackbar} from "../CMN/UseSnackbar.tsx";
 import {Item, Search, SearchIconWrapper, StyledInputBase} from "../CMN/Styles.ts";
 import {useTranslation} from "react-i18next";
+import Box from "@mui/material/Box";
+import {Settings} from "@mui/icons-material";
 
 export function CompanyPage() {
     const [company, setCompany] = useState<Company>(
@@ -81,73 +83,95 @@ export function CompanyPage() {
 
     return (
         <div>
+            <Grid style={{backgroundColor: "#242"}}>
+                <span style={{
+                    padding: '10px',
+                    fontSize: "28pt",
+                    fontFamily: 'serif',
+                    color: '#EEE',
+                    fontWeight: 900
+                }}>すじらう</span>
+                <span style={{
+                    padding: '10px',
+                    fontSize: "16pt",
+                    color: '#DDF',
+                }}>by Kamelong</span>
+            </Grid>
 
-            <AppBar position="static">
-                <Toolbar>
-                    {/*<IconButton*/}
-                    {/*    size="large"*/}
-                    {/*    edge="start"*/}
-                    {/*    color="inherit"*/}
-                    {/*    aria-label="open drawer"*/}
-                    {/*    sx={{ mr: 2 }}*/}
-                    {/*>*/}
-                    {/*    <MenuIcon />*/}
-                    {/*</IconButton>*/}
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="div"
-                        sx={{flexGrow: 1, display: {xs: 'block', sm: 'block'}}}
-                    >
-                        {company.name}
-                    </Typography>
-                    <Search>
-                        <SearchIconWrapper>
-                            <SearchIcon/>
-                        </SearchIconWrapper>
-                        <StyledInputBase
-                            value={searchText}
-                            onChange={(e) => setSearchText(e.target.value)}
-                            placeholder="Search…"
-                            inputProps={{'aria-label': 'search'}}
-                        />
-                    </Search>
-                </Toolbar>
-            </AppBar>
-            <Container>
-                <Typography variant="h5" noWrap component="div" sx={{m: 1}}
-                >
+                <Grid size={{ xs: 12, sm: 6  }} style={{
+                    padding: '10px 20px 10px 20px',
+                    fontSize: "20pt",
+                    color: '#DDD',
+                    backgroundColor: "#000"
+                }}>
                     {t("ダイヤの設定")}
-                </Typography>
-                <TextField sx={{m: 1}} fullWidth={true} value={company.name} disabled={true}>
+                </Grid>
+            <Stack sx={{ml:3,mr:3,mt:1,mb:1}}>
+                <TextField  fullWidth={true} value={company.name} disabled={true}>
                 </TextField>
+            </Stack>
+            <Stack mx={3} my={1} direction="row" justifyContent="end" spacing={1}>
                 <Button sx={{m: 1}} color={"warning"} variant={"outlined"}
                         onClick={() => {
                             setOpenDeleteAlert(true);
                         }}>{t("削除する")}</Button>
-                <Divider sx={{m: 2}}/>
-                <Typography variant="h5" noWrap component="div" sx={{m: 1}} >
-                    {t("路線一覧")}
-                </Typography>
+            </Stack>
+            <Grid size={{ xs: 12, sm: 6  }} style={{
+                padding: '10px 20px 10px 20px',
+                fontSize: "20pt",
+                color: '#DDD',
+                backgroundColor: "#000"
+            }}>
+                {t("路線一覧")}
+            </Grid>
                 <Grid container spacing={2}>
                     {routes().map((c) => {
                         return <Grid size={{xs: 12, sm: 6, lg: 4}}>
                             <Item elevation={3}
+                                  style={{
+                                      color: 'black',
+                                      fontWeight: 700,
+                                      fontSize: '12pt',
+                                  }}
                                   onClick={() => {
                                       navigate(`/TimeTable/${companyID}/${c.routeID}/0`)
                                   }}
                             >
-                                {c.name}</Item>
+                                {c.name}
+                            {/*   <Settings >*/}
+                            {/*</Settings>*/}
+                                </Item>
                         </Grid>
                     })}
                 </Grid>
-                <Divider sx={{m: 2}}/>
-                <Typography variant="h5" noWrap component="div" sx={{m: 1}} >
+            {/*<Grid size={{ xs: 12, sm: 6  }} style={{*/}
+            {/*    padding: '10px 20px 10px 20px',*/}
+            {/*    fontSize: "20pt",*/}
+            {/*    color: '#DDD',*/}
+            {/*    backgroundColor: "#000"*/}
+            {/*}}>*/}
+            {/*    {t("駅一覧")}*/}
+            {/*</Grid>*/}
+            {/*<div>*/}
+            {/*    {Object.values(company.stations).map((station) =>*/}
+            {/*       <div>{station.name}</div>*/}
+            {/*    )}*/}
+            {/*</div>*/}
+
+            {/*<Grid size={{ xs: 12, sm: 6  }} style={{*/}
+            {/*    padding: '10px 20px 10px 20px',*/}
+            {/*    fontSize: "20pt",*/}
+            {/*    color: '#DDD',*/}
+            {/*    backgroundColor: "#000"*/}
+            {/*}}>*/}
+            {/*    {t("種別一覧")}*/}
+            {/*</Grid>*/}
+
+            <Typography variant="h5" noWrap component="div" sx={{m: 1}} >
                 </Typography>
                 <Button sx={{m: 1}} color={"primary"} variant={"contained"} onClick={() => {
                     navigate(`/`)
                 }}>{t("戻る")}</Button>
-            </Container>
             <Dialog
                 open={openDeleteAlert}
                 keepMounted
@@ -173,7 +197,7 @@ export function CompanyPage() {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Snackbar props={snackbarProps}/>
+
         </div>
     );
 }
