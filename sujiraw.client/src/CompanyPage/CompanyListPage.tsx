@@ -125,7 +125,7 @@ export function CompanyListPage() {
                                     paddingRight: '10px',
 
                                 }}>
-                                駅:10&emsp;路線:4
+                                {/*駅:10&emsp;路線:4*/}
                             </Typography>
 
                         </Item>
