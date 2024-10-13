@@ -6,6 +6,7 @@ import {isMobile} from 'react-device-detect';
 
 import {Page, PDFViewer, Document, Font, StyleSheet, View, PDFDownloadLink} from "@react-pdf/renderer";
 import {
+    Alert,
     Backdrop,
     Button,
     CircularProgress,
@@ -156,22 +157,24 @@ export function TimeTablePDF() {
                 })}></SettingView>
             </CustomDialog>
             {isMobile?
-                        <PDFDownloadLink
-                            style={{fontSize:20}}
-                            document={layout.orderType===OrderType.ALTERNATELY?
-                                    <TimeTablePDF22 route={route} layout={layout} stations={stations} trainTypes={trainTypes} onRender={finishRender}/>
-                                    :
-                                    <TimeTablePdfOrder2 route={route} layout={layout} stations={stations} trainTypes={trainTypes} onRender={finishRender}/>
+                <PDFDownloadLink
+                    style={{fontSize: 20}}
+                    document={layout.orderType === OrderType.ALTERNATELY ?
+                        <TimeTablePDF22 route={route} layout={layout} stations={stations} trainTypes={trainTypes}
+                                        onRender={finishRender}/>
+                        :
+                        <TimeTablePdfOrder2 route={route} layout={layout} stations={stations} trainTypes={trainTypes}
+                                            onRender={finishRender}/>
 
-                            }
-                            fileName={`${route.name}.pdf`}
+                    }
+                    fileName={`${route.name}.pdf`}
 
-                        >
-                            {/*{(params: { loading: boolean }) => (*/}
-                            {/*    <div>{params.loading ? "Loading..." : "PDF ready for download"}</div>*/}
-                            {/*)}*/}
-                        </PDFDownloadLink>
-:                    <PDFViewer style={{height:'calc(100% - 10px)',width:'100%'}} >
+                >
+                    <Alert severity="success" sx={{mt:40}}>
+                        Mobile device: Click here to download PDF
+                    </Alert>
+                </PDFDownloadLink>
+                : <PDFViewer style={{height: 'calc(100% - 10px)',width:'100%'}} >
                         {layout.orderType===OrderType.ALTERNATELY?
                             <TimeTablePDF22 route={route} layout={layout} stations={stations} trainTypes={trainTypes} onRender={finishRender}/>
                             :

@@ -1,6 +1,6 @@
 import {useParams} from "react-router-dom";
 import Box from "@mui/material/Box";
-import {Dialog, Fab} from "@mui/material";
+import {Alert, Dialog, Fab} from "@mui/material";
 import {Settings} from "@mui/icons-material";
 import React, {memo, useEffect, useState} from "react";
 import {useDiagramHook} from "../DiagramHook";
@@ -20,6 +20,10 @@ const CustomDialog = styled(Dialog)({
     },
 });
 const MemoDiagramPDFDocument=memo(DiagramPDFDocument);
+
+function CheckIcon(props: { fontSize: string }) {
+    return null;
+}
 
 export function DiagramPDFPage(){
     const params = useParams<{ routeID: string,companyID:string }>();
@@ -77,9 +81,12 @@ export function DiagramPDFPage(){
                     }
                     fileName={`Diagram_${routeInfo[routeID].name}.pdf`}
                 >
-                    {/*{({ loading }) =>*/}
-                    {/*    loading ? "Loading...": "PDF ready for download"*/}
-                    {/*}*/}
+                     {/*<span>PDF ready for download</span>*/}
+                    <Alert severity="success" sx={{mt:40}}>
+                        Mobile device: Click here to download PDF
+                    </Alert>
+
+
                 </PDFDownloadLink>
                 :
                 <PDFViewer style={{width: '100%', height: '100%'}}>
