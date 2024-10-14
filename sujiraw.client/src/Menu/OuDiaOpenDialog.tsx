@@ -17,6 +17,11 @@ import {
 import * as axios from "axios";
 import {StHandling} from "@route-builders/oud-operator/src/models/StHandling";
 import {axiosClient} from "../CMN/axiosHook.ts";
+import { Color } from "@route-builders/oud-operator/types/models/Color";
+
+function Color2Hex(color:Color){
+    return color.RGB();
+}
 
 function oudParser(oud:O_O):string {
     const stations:Station[]=[];
@@ -62,7 +67,7 @@ function oudParser(oud:O_O):string {
             shortName:trainType.shortname,
             trainTypeID:Math.floor(Number.MAX_SAFE_INTEGER*Math.random()),
             bold:trainType.lineWeight>1,
-            color:trainType.lineColor.HEX(),
+            color:Color2Hex(trainType.lineColor),
             dot:trainType.lineType===20
         });
     });

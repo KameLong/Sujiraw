@@ -6,7 +6,7 @@ import InputBase from '@mui/material/InputBase';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import Grid from '@mui/material/Grid2';
-import {Backdrop, CircularProgress, Paper} from "@mui/material";
+import {Backdrop, CircularProgress, Paper, Stack} from "@mui/material";
 import {axiosClient} from "../CMN/axiosHook.ts";
 import {useEffect, useState} from "react";
 import {Company, Company2} from "../DiaData/DiaData.ts";
@@ -16,6 +16,7 @@ import {Snackbar, useSnackbar} from "../CMN/UseSnackbar.tsx";
 import DiamondIcon from '@mui/icons-material/Diamond';
 import {styled} from "@mui/material/styles";
 import {useTranslation} from "react-i18next";
+import {Add} from "@mui/icons-material";
 
 export const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#fff',
@@ -104,6 +105,34 @@ export function CompanyListPage() {
             </Grid>
 
             <Grid container spacing={2}>
+                <Grid size={{ xs: 12, sm: 6 , lg: 4 }}
+            >
+                <Item elevation={3} sx={{mt:5}}
+                      onClick={()=>navigate(`/Oudia`)}>
+                    <Stack direction="row">
+                        <Add></Add>
+                    <Typography
+                        style={{
+                            color: 'black',
+                            fontWeight: 700,
+                            fontSize: '12pt',
+                        }}>
+                        {t("新規作成")}
+                    </Typography>
+                    </Stack>
+                    <Typography
+                        style={{
+                            color: '#222',
+                            fontSize: '10pt',
+                            textAlign: 'right',
+                            paddingRight: '10px',
+
+                        }}>
+                        {/*駅:10&emsp;路線:4*/}
+                    </Typography>
+
+                </Item>
+            </Grid>
                 {companies.map((c)=>{
                     return <Grid size={{ xs: 12, sm: 6 , lg: 4 }}
                     >
