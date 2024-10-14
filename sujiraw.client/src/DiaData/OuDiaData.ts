@@ -121,7 +121,7 @@ export function oudParser(oud:O_O):string {
             trainTypeID:trainTypes[oudTrain.typeIdx].trainTypeID,
             times:[]
         }));
-        for(let i=0;i<st.length;i++){
+        for(let i=0;i<stations.length;i++){
             const time:StopTime= {
                 ariTime:st[i].arrival.getTime(),
                 depTime:st[i].departure.getTime(),
@@ -186,7 +186,7 @@ export function oudParser(oud:O_O):string {
             trainTypeID:trainTypes[oudTrain.typeIdx].trainTypeID,
             times:[]
         }));
-        for(let i=0;i<st.length;i++){
+        for(let i=0;i<stations.length;i++){
             const time:StopTime= {
                 ariTime:st[i].arrival.getTime(),
                 depTime:st[i].departure.getTime(),
