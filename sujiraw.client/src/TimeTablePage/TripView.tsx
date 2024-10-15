@@ -200,7 +200,7 @@ export function TripView({trip, type, setting, stations, direction,train,allStat
                     if(index===-1||index===tripInfos.length-1){
                         return;
                     }
-                    navigate(`/timetable/${tripInfos[index+1].routeID}/0?tripID=${tripInfos[index+1].tripID}`)
+                    navigate(`/timetable/${train.companyID}/${tripInfos[index+1].routeID}/0?tripID=${tripInfos[index+1].tripID}`)
                 }
             }}>
                 {hasOuterStation() ? (

@@ -159,6 +159,7 @@ export class GetStopTime {
 }
 
 export interface Train {
+    companyID:number;
     trainID: number;
     name: string;
     remark: string;
@@ -181,7 +182,10 @@ export interface TripInfo {
 export class GetTrip {
     private static getFirstStopIndex(trip: Trip): number {
         for (let i = 0; i < trip.times.length; i++) {
-            if (trip.times[i].stopType === StopType.STOP || trip.times[i].stopType === StopType.PASS) {
+            // if (trip.times[i].stopType === StopType.STOP || trip.times[i].stopType === StopType.PASS) {
+            //     return i;
+            // }
+            if (GetStopTime.TimeExist(trip.times[i])) {
                 return i;
             }
         }
@@ -190,9 +194,13 @@ export class GetTrip {
 
     private static getLastStopIndex(trip: Trip): number {
         for (let i = trip.times.length - 1; i >= 0; i--) {
-            if (trip.times[i].stopType === StopType.STOP || trip.times[i].stopType === StopType.PASS) {
+            // if (trip.times[i].stopType === StopType.STOP || trip.times[i].stopType === StopType.PASS) {
+            //     return i;
+            // }
+            if (GetStopTime.TimeExist(trip.times[i])) {
                 return i;
             }
+
         }
         return -1;
     }

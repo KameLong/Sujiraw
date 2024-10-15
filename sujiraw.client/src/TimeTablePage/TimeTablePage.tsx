@@ -9,7 +9,7 @@ import {
 } from "../DiaData/DiaData";
 import {getStationViewWidth, StationView} from './StationView';
 import {getTripNameViewHeight, TripNameView} from './TripNameView';
-import {TripView} from "./TripVIew";
+import {TripView} from "./TripView.tsx";
 import {useNavigate, useParams} from "react-router-dom";
 import { StationHeaderView } from "./StationHeaderView";
 import {BottomMenu} from "../Menu/BottomMenu";

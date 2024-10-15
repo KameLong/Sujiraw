@@ -1,4 +1,4 @@
-import {GetTrip, Route, RouteStation, Station, StopTime, Train, TrainType, Trip} from "./DiaData.ts";
+import {GetStopTime, GetTrip, Route, RouteStation, Station, StopTime, Train, TrainType, Trip} from "./DiaData.ts";
 import {Station as OudStation} from "../oud/models/Station.ts";
 import {O_O} from "../oud";
 import {StHandling} from "../oud/models/StHandling.ts";
@@ -12,7 +12,12 @@ function stationParser(station:OudStation):Station{
     }
 }
 
-
+function timeParse(time:number){
+    if(time<0){
+        return time;
+    }
+    return(time+24*3600-3*3600)%(24*3600)+3*3600
+}
 
 export function oudParser(oud:O_O):string {
     const stations:Station[]=[];
@@ -43,7 +48,7 @@ export function oudParser(oud:O_O):string {
     //初期routeを作成
     let route:Route= {
         routeID:Math.floor(Number.MAX_SAFE_INTEGER*Math.random()),
-        name:oud.stations[0].name+"~"+oud.stations[oud.stations.length-1].name,
+        name:oud.stations[0].name+"~",
         routeStations:[],
         downTrips:[],
         upTrips:[]
@@ -90,8 +95,6 @@ export function oudParser(oud:O_O):string {
     route.name+=oud.stations[oud.stations.length-1].name;
 
     const trains:Train[]=[];
-    const downTrips:Trip[]=[];
-    const upTrips:Trip[]=[];
     oud.diagrams[0].downStreaks.forEach((oudTrain)=>{
         const trainID=Math.floor(Number.MAX_SAFE_INTEGER*Math.random());
         while(oudTrain.stHandlings.length<stations.length){
@@ -102,6 +105,7 @@ export function oudParser(oud:O_O):string {
 
 
         const train:Train={
+            companyID:companyID,
             trainID:trainID,
             name:oudTrain.name,
             remark:oudTrain.comment,
@@ -123,8 +127,9 @@ export function oudParser(oud:O_O):string {
         }));
         for(let i=0;i<stations.length;i++){
             const time:StopTime= {
-                ariTime:st[i].arrival.getTime(),
-                depTime:st[i].departure.getTime(),
+                ariTime:timeParse(st[i].arrival.getTime()),
+                depTime:timeParse(st[i].departure.getTime()),
+
                 tripID:trips[stationOrder[i].routeIndex].tripID,
                 stopType:st[i].type/10,
                 rsID:routes[stationOrder[i].routeIndex].routeStations[stationOrder[i].stationIndex].rsID
@@ -141,19 +146,19 @@ export function oudParser(oud:O_O):string {
             train.tripInfos.push({
                 routeID:trip.routeID,
                 tripID:trip.tripID,
-                ariStationID:stations[endStation].stationID,
-                depStationID:stations[beginStation].stationID,
-                depTime:trip.times[beginStation].depTime,
-                ariTime:trip.times[endStation].ariTime
+                ariStationID:routes[_i].routeStations[endStation].stationID,
+                depStationID:routes[_i].routeStations[beginStation].stationID,
+                depTime:GetStopTime.GetDepAriTime(trip.times[beginStation]),
+                ariTime:GetStopTime.GetAriDepTime(trip.times[endStation])
             });
         });
         if(train.tripInfos.length===0){
             return;
         }
-        const trainBeginIndex=train.tripInfos.indexOf(train.tripInfos.sort((a,b)=>{
+        const trainBeginIndex=train.tripInfos.indexOf([...train.tripInfos].sort((a,b)=>{
             return a.depTime-b.depTime;
         })[0]);
-        const trainEndIndex=train.tripInfos.indexOf(train.tripInfos.sort((a,b)=>{
+        const trainEndIndex=train.tripInfos.indexOf([...train.tripInfos].sort((a,b)=>{
             return -(a.ariTime-b.ariTime);
         })[0]);
         train.ariTime=train.tripInfos[trainEndIndex].ariTime;
@@ -170,6 +175,7 @@ export function oudParser(oud:O_O):string {
         }
         const st = oudTrain.stHandlings.toReversed();
         const train:Train={
+            companyID:companyID,
             trainID:trainID,
             name:oudTrain.name,
             remark:oudTrain.comment,
@@ -191,8 +197,9 @@ export function oudParser(oud:O_O):string {
         }));
         for(let i=0;i<stations.length;i++){
             const time:StopTime= {
-                ariTime:st[i].arrival.getTime(),
-                depTime:st[i].departure.getTime(),
+                ariTime:timeParse(st[i].arrival.getTime()),
+                depTime:timeParse(st[i].departure.getTime()),
+
                 tripID:trips[stationOrder[i].routeIndex].tripID,
                 stopType:st[i].type/10,
                 rsID:routes[stationOrder[i].routeIndex].routeStations[stationOrder[i].stationIndex].rsID
@@ -209,26 +216,35 @@ export function oudParser(oud:O_O):string {
             train.tripInfos.push({
                 routeID:trip.routeID,
                 tripID:trip.tripID,
-                ariStationID:stations[endStation].stationID,
-                depStationID:stations[beginStation].stationID,
-                depTime:trip.times[beginStation].depTime,
-                ariTime:trip.times[endStation].ariTime
+                ariStationID:routes[_i].routeStations[endStation].stationID,
+                depStationID:routes[_i].routeStations[beginStation].stationID,
+                depTime:GetStopTime.GetDepAriTime(trip.times[beginStation]),
+                ariTime:GetStopTime.GetAriDepTime(trip.times[endStation]),
             });
         });
         if(train.tripInfos.length===0){
             return;
         }
 
-        const trainBeginIndex=train.tripInfos.indexOf(train.tripInfos.sort((a,b)=>{
+        const trainBeginIndex=train.tripInfos.indexOf([...train.tripInfos].sort((a,b)=>{
+            if(a.depTime===-1){
+                return 10000;
+            }
             return a.depTime-b.depTime;
         })[0]);
-        const trainEndIndex=train.tripInfos.indexOf(train.tripInfos.sort((a,b)=>{
+        const trainEndIndex=train.tripInfos.indexOf([...train.tripInfos].sort((a,b)=>{
+            if(b.ariTime===-1){
+                return 10000;
+            }
             return -(a.ariTime-b.ariTime);
         })[0]);
+
+        console.log(trainBeginIndex,trainEndIndex);
+
         train.ariTime=train.tripInfos[trainEndIndex].ariTime;
         train.depTime=train.tripInfos[trainBeginIndex].depTime;
-        train.ariStationID=train.tripInfos[trainEndIndex].ariStationID;
         train.depStationID=train.tripInfos[trainBeginIndex].depStationID;
+        train.ariStationID=train.tripInfos[trainEndIndex].ariStationID;
         trains.push(train);
 
 

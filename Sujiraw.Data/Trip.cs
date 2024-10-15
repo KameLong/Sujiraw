@@ -172,6 +172,21 @@ namespace Sujiro.Data
         {
             return Trip.GetByRoute(this.conn, routeID, direction).ToList();
         }
+        public IEnumerable<Trip> GetTripByTrain(long trainID)
+        {
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = $"SELECT * FROM {Trip.TABLE_NAME} where  {nameof(Trip.TrainID)}=@trainID order by {nameof(Trip.DepTime)}";
+                command.Parameters.Add(new NpgsqlParameter("@trainID", trainID));
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        yield return new Trip(reader);
+                    }
+                }
+            }
+        }
     }
     
 

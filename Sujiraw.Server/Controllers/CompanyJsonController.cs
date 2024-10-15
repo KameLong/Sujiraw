@@ -79,65 +79,69 @@ namespace Sujiraw.Server.Controllers
                     service.InsertTrain(trains.ToList());
                     Debug.WriteLine("Train Inserted " + sw.ElapsedMilliseconds);
                     //routeの処理
-                    JsonRoute Jroute = oudia.routes.Values.First();
-                    Route route = new Route(companyID);
-                    route.RouteID = Jroute.routeID;
-                    route.Name = Jroute.name;
-                    service.InsertRoute(new List<Route> { route });
-                    long routeID = route.RouteID;
-                    //routeStationsの処理
-                    var routeStations = Jroute.routeStations.Select(item =>
+                    foreach (var Jroute in oudia.routes.Values)
                     {
-                        RouteStation rs = new RouteStation(routeID, item.stationID);
-                        rs.RouteStationID = item.rsID;
-                        rs.RouteID = routeID;
-                        rs.Sequence = item.stationIndex;
-                        rs.ShowStyle = item.showStyle;
-                        return rs;
-                    });
-                    service.InsertRouteStation(routeStations.ToList());
-                    Debug.WriteLine("RouteStation Inserted " + sw.ElapsedMilliseconds);
-                    var stopTimes = new List<StopTime>();
 
-                    //tripの処理
-                    var trips = Jroute.downTrips.Concat(Jroute.upTrips).Select(item =>
-                    {
-                        Trip trip = new Trip(routeID, item.trainID, item.trainTypeID);
-                        trip.TripID = item.tripID;
-                        trip.Direction = item.direction;
-                        trip.TrainID = item.trainID;
-
-
-                        var times = item.times.Select((time, i) =>
+                        Route route = new Route(companyID);
+                        route.RouteID = Jroute.routeID;
+                        route.Name = Jroute.name;
+                        service.InsertRoute(new List<Route> { route });
+                        long routeID = route.RouteID;
+                        //routeStationsの処理
+                        var routeStations = Jroute.routeStations.Select(item =>
                         {
-                            StopTime stopTime = new StopTime(time.tripID);
-                            stopTime.Sequence = i;
-                            stopTime.StopType = time.stopType;
-                            if (time.ariTime >= 0)
-                            {
-                                stopTime.AriTime = (time.ariTime + 86400 - 3 * 3600) % 86400 + 3 * 3600;
-                            }
-                            if (time.depTime >= 0)
-                            {
-                                stopTime.DepTime = (time.depTime + 86400 - 3 * 3600) % 86400 + 3 * 3600;
-                            }
-                            return stopTime;
+                            RouteStation rs = new RouteStation(routeID, item.stationID);
+                            rs.RouteStationID = item.rsID;
+                            rs.RouteID = routeID;
+                            rs.Sequence = item.stationIndex;
+                            rs.ShowStyle = item.showStyle;
+                            return rs;
                         });
-                        stopTimes.AddRange(times);
+                        service.InsertRouteStation(routeStations.ToList());
+                        Debug.WriteLine("RouteStation Inserted " + sw.ElapsedMilliseconds);
+                        var stopTimes = new List<StopTime>();
 
-                        //trip.TrainID = item.trainID;
-                        return trip;
-                    });
-                    service.InsertTrip(trips.ToList());
-                    Debug.WriteLine("Trip Inserted " + sw.ElapsedMilliseconds);
+                        //tripの処理
+                        var trips = Jroute.downTrips.Concat(Jroute.upTrips).Select(item =>
+                        {
+                            Trip trip = new Trip(routeID, item.trainID, item.trainTypeID);
+                            trip.TripID = item.tripID;
+                            trip.Direction = item.direction;
+                            trip.TrainID = item.trainID;
 
-                    service.InsertStopTime(stopTimes);
-                    Debug.WriteLine("StopTime Inserted " + sw.ElapsedMilliseconds);
+
+                            var times = item.times.Select((time, i) =>
+                            {
+                                StopTime stopTime = new StopTime(time.tripID);
+                                stopTime.Sequence = i;
+                                stopTime.StopType = time.stopType;
+                                if (time.ariTime >= 0)
+                                {
+                                    stopTime.AriTime = (time.ariTime + 86400 - 3 * 3600) % 86400 + 3 * 3600;
+                                }
+                                if (time.depTime >= 0)
+                                {
+                                    stopTime.DepTime = (time.depTime + 86400 - 3 * 3600) % 86400 + 3 * 3600;
+                                }
+                                return stopTime;
+                            });
+                            stopTimes.AddRange(times);
+
+                            //trip.TrainID = item.trainID;
+                            return trip;
+                        });
+                        service.InsertTrip(trips.ToList());
+                        Debug.WriteLine("Trip Inserted " + sw.ElapsedMilliseconds);
+
+                        service.InsertStopTime(stopTimes);
+                        Debug.WriteLine("StopTime Inserted " + sw.ElapsedMilliseconds);
+                    }
                     service.Commit();
                     Debug.WriteLine("Commit " + sw.ElapsedMilliseconds);
+
                     var res = new OudRes();
                     res.companyID = companyID;
-                    res.routeID = routeID;
+                    res.routeID = oudia.routes.Values.First().routeID;
 
                     return Ok(res);
                 }
@@ -189,9 +193,10 @@ namespace Sujiraw.Server.Controllers
                         trainType.dot = item.LineDashed;
                         return trainType;
                     });
-                    jsonCompany.trains = service.GetTrainByRoute(companyID, routeID).ToDictionary(item => item.TrainID.ToString(), item =>
+                    jsonCompany.trains = service.GetTrainByRoute(companyID, routeID).ToList().ToDictionary(item => item.TrainID.ToString(), item =>
                     {
                         var train = new JsonTrain();
+                        train.companyID = companyID;
                         train.trainID = item.TrainID;
                         train.name = "";
                         train.remark = "";
@@ -199,6 +204,17 @@ namespace Sujiraw.Server.Controllers
                         train.ariStationID = item.AriStationID;
                         train.depTime = item.DepTime;
                         train.ariTime = item.AriTime;
+                        train.tripInfos = service.GetTripByTrain(item.TrainID).ToList().Select(trip =>
+                        {
+                            var tripInfo = new JsonTripInfo();
+                            tripInfo.routeID = trip.RouteID;
+                            tripInfo.tripID = trip.TripID;
+                            tripInfo.depStationID = trip.DepStationID;
+                            tripInfo.ariStationID = trip.AriStationID;
+                            tripInfo.depTime = trip.DepTime;
+                            tripInfo.ariTime = trip.AriTime;
+                            return tripInfo;
+                        }).ToList();
                         return train;
 
                     });
@@ -255,6 +271,7 @@ namespace Sujiraw.Server.Controllers
     }
     public class JsonTrain
     {
+        public long companyID { get; set; } = 0;
         public long trainID { get; set; } = 0;
         public string name { get; set; } = "";
         public string remark { get; set; } = "";

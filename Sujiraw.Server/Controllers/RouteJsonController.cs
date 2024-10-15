@@ -21,49 +21,28 @@ namespace Sujiraw.Server.Controllers
             try
             {
 
-            JsonRoute jsonRoute = new JsonRoute();
-            using(var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!))
-            {
-                var route = service.GetRoute(routeID);
-                if (route == null)
+                JsonRoute jsonRoute = new JsonRoute();
+                using (var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!))
                 {
-                    return NotFound();
-                }
-                jsonRoute.name = route.Name;
-                jsonRoute.routeID = route.RouteID;
-                jsonRoute.routeStations = service.GetRouteStationByRoute(routeID).Select(item=>
-                {
-                    var jsonRoueStation = new JsonRouteStation();
-                    jsonRoueStation.routeID = item.RouteID;
-                    jsonRoueStation.rsID = item.RouteStationID;
-                    jsonRoueStation.stationID = item.StationID;
-                    jsonRoueStation.stationIndex = item.Sequence;
-                    jsonRoueStation.showStyle = item.ShowStyle;
-                    return jsonRoueStation;
-                }).ToList();
-                var st = service.GetStopTimeFromRoute(routeID);
-                jsonRoute.downTrips = service.GetTripByRoute(routeID, 0).Select(item =>
-                {
-                    var jsonTrip = new JsonTrip();
-                    jsonTrip.tripID = item.TripID;
-                    jsonTrip.direction = item.Direction;
-                    jsonTrip.routeID = item.RouteID;
-                    jsonTrip.trainID = item.TrainID;
-                    jsonTrip.trainTypeID = item.TrainTypeID;
-
-                    jsonTrip.times = st[item.TripID].Select(st =>
+                    var route = service.GetRoute(routeID);
+                    if (route == null)
                     {
-                        var jsonTime = new JsonStopTime();
-                        jsonTime.rsID = jsonRoute.routeStations[st.Sequence].rsID;
-                        jsonTime.tripID = st.TripID;
-                        jsonTime.ariTime = st.AriTime;
-                        jsonTime.depTime = st.DepTime;
-                        jsonTime.stopType = st.StopType;
-                        return jsonTime;
+                        return NotFound();
+                    }
+                    jsonRoute.name = route.Name;
+                    jsonRoute.routeID = route.RouteID;
+                    jsonRoute.routeStations = service.GetRouteStationByRoute(routeID).Select(item =>
+                    {
+                        var jsonRoueStation = new JsonRouteStation();
+                        jsonRoueStation.routeID = item.RouteID;
+                        jsonRoueStation.rsID = item.RouteStationID;
+                        jsonRoueStation.stationID = item.StationID;
+                        jsonRoueStation.stationIndex = item.Sequence;
+                        jsonRoueStation.showStyle = item.ShowStyle;
+                        return jsonRoueStation;
                     }).ToList();
-                    return jsonTrip;
-                }).ToList();
-                    jsonRoute.upTrips = service.GetTripByRoute(routeID, 1).Select(item =>
+                    var st = service.GetStopTimeFromRoute(routeID);
+                    jsonRoute.downTrips = service.GetTripByRoute(routeID, 0).Select(item =>
                     {
                         var jsonTrip = new JsonTrip();
                         jsonTrip.tripID = item.TripID;
@@ -84,8 +63,29 @@ namespace Sujiraw.Server.Controllers
                         }).ToList();
                         return jsonTrip;
                     }).ToList();
+                    jsonRoute.upTrips = service.GetTripByRoute(routeID, 1).Select(item =>
+                        {
+                            var jsonTrip = new JsonTrip();
+                            jsonTrip.tripID = item.TripID;
+                            jsonTrip.direction = item.Direction;
+                            jsonTrip.routeID = item.RouteID;
+                            jsonTrip.trainID = item.TrainID;
+                            jsonTrip.trainTypeID = item.TrainTypeID;
+
+                            jsonTrip.times = st[item.TripID].Select(st =>
+                            {
+                                var jsonTime = new JsonStopTime();
+                                jsonTime.rsID = jsonRoute.routeStations[st.Sequence].rsID;
+                                jsonTime.tripID = st.TripID;
+                                jsonTime.ariTime = st.AriTime;
+                                jsonTime.depTime = st.DepTime;
+                                jsonTime.stopType = st.StopType;
+                                return jsonTime;
+                            }).ToList();
+                            return jsonTrip;
+                        }).ToList();
                     return Ok(jsonRoute);
-            }
+                }
             }
             catch (Exception e)
             {
