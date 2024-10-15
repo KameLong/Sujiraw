@@ -147,6 +147,9 @@ export function oudParser(oud:O_O):string {
                 ariTime:trip.times[endStation].ariTime
             });
         });
+        if(train.tripInfos.length===0){
+            return;
+        }
         const trainBeginIndex=train.tripInfos.indexOf(train.tripInfos.sort((a,b)=>{
             return a.depTime-b.depTime;
         })[0]);
@@ -212,6 +215,10 @@ export function oudParser(oud:O_O):string {
                 ariTime:trip.times[endStation].ariTime
             });
         });
+        if(train.tripInfos.length===0){
+            return;
+        }
+
         const trainBeginIndex=train.tripInfos.indexOf(train.tripInfos.sort((a,b)=>{
             return a.depTime-b.depTime;
         })[0]);
