@@ -43,6 +43,7 @@ export default function TimeTablePage() {
     const companyID=parseInt(param.companyID??"0");
     const routeID=parseInt(param.routeID??"0");
     const direct=parseInt(param.direct??"0");
+    const [loadingCompany,setLoadingCompany]=useState(true);
 
     let setScrollX:undefined|((scrollX:number)=>void)=undefined;
     let setScrollX2:undefined|((scrollX:number)=>void)=undefined;
@@ -59,6 +60,7 @@ export default function TimeTablePage() {
         setSelectedTrip(tripID);
     }, [tripID,routes]);
    useEffect(() => {
+       setLoadingCompany(true);
        loadCompany(companyID,routeID).then((company)=>{
            console.log(company);
            setStations(company.stations);
@@ -66,8 +68,9 @@ export default function TimeTablePage() {
            setTrainTypes(company.trainTypes);
            setTrains(company.trains);
            setRouteInfo(company.routes);
+           setLoadingCompany(false);
        });
-    }, []);
+    }, [companyID,routeID]);
     useEffect(() => {
         const res=Object.values(routeInfo).find((routeInfo)=>{
             return routeInfo.name==="阪急宝塚本線";
@@ -147,6 +150,9 @@ export default function TimeTablePage() {
 
             </div>
         );
+    }
+    if(loadingCompany||routes[routeID]==undefined) {
+        return <div>loading</div>
     }
     return (
         <div style={{background:'white',width: '100%',height:'100%',fontSize: `${setting.fontSize}px`, lineHeight: `${setting.fontSize * setting.lineHeight}px`}}>

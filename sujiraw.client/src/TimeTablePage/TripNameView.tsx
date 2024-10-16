@@ -49,7 +49,7 @@ export function TripNameView({trip,train, type, setting,stations}: TripNameViewP
             element.style.transform = `scaleX(${scale})`;
         }
     }, [stations, train,ref]);
-    if(type===undefined){
+    if(type===undefined||train===undefined){
         return <div>error</div>
     }
 
@@ -84,7 +84,7 @@ export function TripNameView({trip,train, type, setting,stations}: TripNameViewP
                     if(index===-1||index===0){
                         return;
                     }
-                    navigate(`/timetable/${tripInfos[index-1].routeID}/0?tripID=${tripInfos[index-1].tripID}`)
+                    navigate(`/timetable/${train.companyID}/${tripInfos[index-1].routeID}/0?tripID=${tripInfos[index-1].tripID}`)
                 }
             }}>
 

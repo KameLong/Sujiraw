@@ -137,7 +137,7 @@ export function TripView({trip, type, setting, stations, direction,train,allStat
         }
         return timeIntStr(train.ariTime);
     }
-    if(type===undefined){
+    if(type===undefined||train===undefined){
         return <div>error</div>
     }
 
