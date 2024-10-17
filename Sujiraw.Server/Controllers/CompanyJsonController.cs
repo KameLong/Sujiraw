@@ -193,6 +193,9 @@ namespace Sujiraw.Server.Controllers
                         trainType.dot = item.LineDashed;
                         return trainType;
                     });
+
+                    var trainTrip = service.GetTrainTripByRoute( routeID);
+
                     jsonCompany.trains = service.GetTrainByRoute(companyID, routeID).ToList().ToDictionary(item => item.TrainID.ToString(), item =>
                     {
                         var train = new JsonTrain();
@@ -204,7 +207,7 @@ namespace Sujiraw.Server.Controllers
                         train.ariStationID = item.AriStationID;
                         train.depTime = item.DepTime;
                         train.ariTime = item.AriTime;
-                        train.tripInfos = service.GetTripByTrain(item.TrainID).ToList().Select(trip =>
+                        train.tripInfos = (trainTrip[train.trainID]??(new List<Trip>())).Select(trip =>
                         {
                             var tripInfo = new JsonTripInfo();
                             tripInfo.routeID = trip.RouteID;

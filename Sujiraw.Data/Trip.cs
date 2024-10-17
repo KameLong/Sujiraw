@@ -187,6 +187,34 @@ namespace Sujiro.Data
                 }
             }
         }
+        public Dictionary<long, List<Trip>> GetTrainTripByRoute(long routeID)
+        {
+            var result=new Dictionary<long,List<Trip>>();
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = $"select {Trip.TABLE_NAME}.* from {Trip.TABLE_NAME} " +
+                    $"left join {Trip.TABLE_NAME} as B " +
+                    $"on {Trip.TABLE_NAME}.{nameof(Trip.TrainID)}=B.{nameof(Trip.TrainID)} and " +
+                    $"B.{nameof(Trip.RouteID)}=@routeID " +
+                    $"where B.{nameof(Trip.RouteID)}=@routeID " +
+                    $"order by {Trip.TABLE_NAME}.{nameof(Trip.DepTime)}";
+                command.Parameters.Add(new NpgsqlParameter("@routeID", routeID));
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var trip = new Trip(reader);
+                        if (!result.ContainsKey(trip.TrainID))
+                        {
+                            result[trip.TrainID] = new List<Trip>();
+                        }
+                        result[trip.TrainID].Add(trip);
+                    }
+                }
+            }
+            return result;
+
+        }
     }
     
 
