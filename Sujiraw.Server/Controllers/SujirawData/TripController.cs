@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Sujiraw.Server.Service.AuthService;
 using Sujiraw.Server.SignalR;
-using Sujiro.Data;
+using Sujiraw.Data;
 
 namespace Sujiraw.Server.Controllers.SujirawData
 {

@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Sujiraw.Server.SignalR;
-using Sujiro.Data;
-using Sujiro.Data.Common;
+using Sujiraw.Data;
+using Sujiraw.Data.Common;
 using System.Diagnostics;
-using Route = Sujiro.Data.Route;
+using Route = Sujiraw.Data.Route;
 
 namespace Sujiraw.Server.Controllers
 {
@@ -221,6 +221,56 @@ namespace Sujiraw.Server.Controllers
                         return train;
 
                     });
+                    return Ok(jsonCompany);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            }
+
+        }
+        [HttpGet("{companyID}")]
+        public ActionResult GetCompany(long companyID)
+        {
+            using (var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!))
+            {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                service.BeginTransaction();
+                try
+                {
+                    var company = service.GetCompany(companyID);
+                    var jsonCompany = new JsonCompany();
+                    jsonCompany.routes = service.GetRouteByCompany(companyID).ToDictionary(item => item.RouteID.ToString(), item =>
+                    {
+                        var route = new JsonRouteInfo();
+                        route.routeID = item.RouteID;
+                        route.name = item.Name;
+                        route.stations = service.GetRouteStationByRoute(item.RouteID).Select(rs => rs.StationID).ToList();
+                        return route;
+                    });
+                    jsonCompany.stations = service.GetStationByCompany(companyID).ToDictionary(item => item.StationID.ToString(), item =>
+                    {
+                        var station = new JsonStation();
+                        station.stationID = item.StationID;
+                        station.name = item.Name;
+                        station.lat = item.Lat;
+                        station.lon = item.Lon;
+                        return station;
+                    });
+                    jsonCompany.trainTypes = service.GetTrainTypeByCompany(companyID).ToDictionary(item => item.TrainTypeID.ToString(), item =>
+                    {
+                        var trainType = new JsonTrainType();
+                        trainType.trainTypeID = item.TrainTypeID;
+                        trainType.name = item.Name;
+                        trainType.shortName = item.ShortName;
+                        trainType.color = item.Color;
+                        trainType.bold = item.LineBold;
+                        trainType.dot = item.LineDashed;
+                        return trainType;
+                    });
+
                     return Ok(jsonCompany);
                 }
                 catch (Exception ex)

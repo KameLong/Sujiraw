@@ -1,6 +1,6 @@
 ﻿using Npgsql;
 using NpgsqlTypes;
-using Sujiro.Data.Common;
+using Sujiraw.Data.Common;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Data.Common;
@@ -11,7 +11,7 @@ namespace System.Data.Common
 
 
 }
-namespace Sujiro.Data
+namespace Sujiraw.Data
 {
     [Table(TABLE_NAME)]
     public class Station : BaseTable

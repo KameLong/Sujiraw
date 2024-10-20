@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Sujiraw.Server.SignalR;
-using Sujiro.Data;
-using Route = Sujiro.Data.Route;
+using Sujiraw.Data;
+using Route = Sujiraw.Data.Route;
 
 namespace Sujiraw.Server.Controllers.SujirawData
 {

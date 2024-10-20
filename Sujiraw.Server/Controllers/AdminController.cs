@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Sujiro.Data;
+using Sujiraw.Data;
 using System.Diagnostics;
 using Sujiraw.Server.SignalR;
 namespace Sujiraw.Server.Controllers

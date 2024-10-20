@@ -1,12 +1,12 @@
 ﻿using Npgsql;
-using Sujiro.Data.Common;
+using Sujiraw.Data.Common;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Data.Common;
 using static System.Net.Mime.MediaTypeNames;
 
 
-namespace Sujiro.Data
+namespace Sujiraw.Data
 {
 
     abstract public class BaseTable

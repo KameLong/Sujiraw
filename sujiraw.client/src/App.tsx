@@ -9,6 +9,7 @@ import {DiagramPDFPage} from "./Diagram/DiagramPDF/DiagramPDFPage";
 import {OuDiaOpenDialog} from "./Menu/OuDiaOpenDialog";
 import {CompanyListPage} from "./CompanyPage/CompanyListPage.tsx";
 import {CompanyPage} from "./CompanyPage/CompanyPage.tsx";
+import {TimeTableEditPage} from "./CompanyPage/TimeTableEditPage.tsx";
 
 function App() {
   return (
@@ -20,12 +21,15 @@ function App() {
           <Route path="/Company/:companyID" element={
               <CompanyPage/>
           }/>
-          <Route path="/TimeTable/:companyID/:routeID/:direct" element={
+          <Route path="/TimeTableData/:companyID/:routeID/:direct" element={
               <TimeTablePage/>
           }></Route>
           <Route path="/TimeTablePDF/:companyID/:routeID" element={
               <TimeTablePDF/>
           }></Route>
+          <Route path={"/TimeTableEdit/:companyID/:timetableID"} element={
+              <TimeTableEditPage/>
+            }></Route>
           <Route path="/Diagram/:companyID/:routeID" element={
               <DiagramPage/>
           }></Route>
@@ -38,6 +42,9 @@ function App() {
           <Route path="/Oudia" element={
               <OuDiaOpenDialog/>
           }></Route>
+          <Route path="*" element={
+              <div>Page not found</div>
+          }> </Route>
 
       </Routes>
       </BrowserRouter>

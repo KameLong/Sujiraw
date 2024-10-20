@@ -1,5 +1,5 @@
 ﻿
-using Sujiro.Data.Common;
+using Sujiraw.Data.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Npgsql;
 
-namespace Sujiro.Data
+namespace Sujiraw.Data
 {
 
     public class RouteStation:BaseTable
@@ -46,7 +46,7 @@ namespace Sujiro.Data
         public RouteStation(long routeID,long stationID)
         {
             RouteStationID = MyRandom.NextSafeLong();
-            this.RouteID = RouteID;
+            this.RouteID = routeID;
             this.StationID = stationID;
 
         }
@@ -153,6 +153,26 @@ namespace Sujiro.Data
         public List<RouteStation> GetRouteStationByRoute(long routeID)
         {
             return RouteStation.GetByRouteID(this.conn, routeID).ToList();
+        }
+        public Dictionary<long, List<RouteStation>> GetRouteStationByCompany(long companyID)
+        {
+            using var command=conn.CreateCommand();
+            command.CommandText = $"SELECT {RouteStation.TABLE_NAME}.* FROM {RouteStation.TABLE_NAME} left join " +
+                $"{Route.TABLE_NAME} on {Route.TABLE_NAME}.{nameof(Route.RouteID)}={RouteStation.TABLE_NAME}.{nameof(RouteStation.RouteID)} " +
+                $"where {Route.TABLE_NAME}.{nameof(Route.CompanyID)}=@companyID order by {nameof(RouteStation.Sequence)}";
+            command.Parameters.Add(new NpgsqlParameter("companyID", companyID));
+            using var reader = command.ExecuteReader();
+            var result = new Dictionary<long, List<RouteStation>>();
+            while (reader.Read())
+            {
+                var item = new RouteStation(reader);
+                if (!result.ContainsKey(item.RouteID))
+                {
+                    result[item.RouteID] = new List<RouteStation>();
+                }
+                result[item.RouteID].Add(item);
+            }
+            return result;
         }
     }
 }

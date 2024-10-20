@@ -1,3 +1,16 @@
+drop table Company;
+drop table Station;
+drop table TrainType;
+drop table Route;
+drop table RouteStation;
+drop table Train;
+drop table Trip;
+drop table StopTime;
+
+drop table TimeTable;
+drop table TimeTableStation;
+
+
 
 CREATE TABLE IF NOT EXISTS Company (
     companyID bigint PRIMARY KEY not null,
@@ -53,6 +66,7 @@ CREATE TABLE IF NOT EXISTS Train (
 CREATE TABLE IF NOT EXISTS Trip (
     TripID bigint PRIMARY KEY not null,
     RouteID bigint not null,
+    TrainID bigint not null,
     TrainTypeID bigint not null,
     Direction int not null default 0,
     TripSeq int not null default 0,
@@ -78,6 +92,22 @@ CREATE TABLE IF NOT EXISTS StopTime (
 );
 
 
+CREATE TABLE IF NOT EXISTS TimeTable (
+    TimeTableID bigint PRIMARY KEY not null,
+    CompanyID bigint not null,
+    Name text not null default '',
+    Color text not null default '#000000'
+);
+CREATE TABLE IF NOT EXISTS TimeTableStation (
+    TimeTableStationID bigint PRIMARY KEY not null,
+    TimeTableID bigint not null,
+    AriRouteStationID bigint not null,
+    DepRouteStationID bigint not null,
+    Sequence int not null default 0,
+    ShowStyle  int not null default 'x0000000101'::bit(16)::int
+);
+
+
 
 delete from Company;
 delete from Station;
@@ -87,5 +117,11 @@ delete from RouteStation;
 delete from Train;
 delete from Trip;
 delete from StopTime;
+
+delete from TimeTable;
+delete from TimeTableStation;
+
+
+
 
 

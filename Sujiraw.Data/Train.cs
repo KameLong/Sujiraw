@@ -1,5 +1,5 @@
 ﻿
-using Sujiro.Data.Common;
+using Sujiraw.Data.Common;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Npgsql;
 
-namespace Sujiro.Data
+namespace Sujiraw.Data
 {
     public class Train : BaseTable
     {
@@ -134,6 +134,21 @@ namespace Sujiro.Data
                     }
                 }
 
+            }
+        }
+        public IEnumerable<Train> GetTrainByCompany(long companyID)
+        {
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = $"SELECT * FROM {Train.TABLE_NAME} where {nameof(Train.CompanyID)} = @{nameof(Train.CompanyID)}";
+                command.Parameters.Add(new NpgsqlParameter(nameof(Train.CompanyID), companyID));
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        yield return new Train(reader);
+                    }
+                }
             }
         }
     }

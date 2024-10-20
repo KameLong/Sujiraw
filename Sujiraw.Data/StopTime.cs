@@ -1,5 +1,5 @@
 ﻿
-using Sujiro.Data.Common;
+using Sujiraw.Data.Common;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Npgsql;
 
-namespace Sujiro.Data
+namespace Sujiraw.Data
 {
     public class StopTime : BaseTable
     {

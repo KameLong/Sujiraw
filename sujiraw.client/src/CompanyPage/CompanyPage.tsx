@@ -21,7 +21,8 @@ import {Snackbar, useSnackbar} from "../CMN/UseSnackbar.tsx";
 import {Item, Search, SearchIconWrapper, StyledInputBase} from "../CMN/Styles.ts";
 import {useTranslation} from "react-i18next";
 import Box from "@mui/material/Box";
-import {Settings} from "@mui/icons-material";
+import {Add, Settings} from "@mui/icons-material";
+import {createNewTimeTable} from "../DiaData/TimeTableData.ts";
 
 export function CompanyPage() {
     const [company, setCompany] = useState<Company>(
@@ -144,6 +145,71 @@ export function CompanyPage() {
                         </Grid>
                     })}
                 </Grid>
+            <Grid size={{ xs: 12, sm: 6  }} style={{
+                padding: '10px 20px 10px 20px',
+                fontSize: "20pt",
+                color: '#DDD',
+                backgroundColor: "#000"
+            }}>
+                {t("カスタム時刻表")}
+            </Grid>
+            <Grid container spacing={2}>
+                <Grid size={{ xs: 12, sm: 6 , lg: 4 }}
+                >
+                    <Item elevation={3} sx={{mt:5}}
+                          onClick={()=>{
+                              createNewTimeTable(companyID).
+                                then(res=>{
+                                    if(res.status===200){
+                                        navigate(`/TimeTableEdit/${companyID}/${res.data}`)
+                                    }else{
+
+                                    }
+                              })
+                          }}>
+                        <Stack direction="row">
+                            <Add></Add>
+                            <Typography
+                                style={{
+                                    color: 'black',
+                                    fontWeight: 700,
+                                    fontSize: '12pt',
+                                }}>
+                                {t("新規作成(開発中の機能です)")}
+                            </Typography>
+                        </Stack>
+                        <Typography
+                            style={{
+                                color: '#222',
+                                fontSize: '10pt',
+                                textAlign: 'right',
+                                paddingRight: '10px',
+
+                            }}>
+                            {/*駅:10&emsp;路線:4*/}
+                        </Typography>
+
+                    </Item>
+                </Grid>
+                {/*{routes().map((c) => {*/}
+                {/*    return <Grid size={{xs: 12, sm: 6, lg: 4}}>*/}
+                {/*        <Item elevation={3}*/}
+                {/*              style={{*/}
+                {/*                  color: 'black',*/}
+                {/*                  fontWeight: 700,*/}
+                {/*                  fontSize: '12pt',*/}
+                {/*              }}*/}
+                {/*              onClick={() => {*/}
+                {/*                  navigate(`/TimeTableData/${companyID}/${c.routeID}/0`)*/}
+                {/*              }}*/}
+                {/*        >*/}
+                {/*            {c.name}*/}
+                {/*            /!*   <Settings >*!/*/}
+                {/*            /!*</Settings>*!/*/}
+                {/*        </Item>*/}
+                {/*    </Grid>*/}
+                {/*})}*/}
+            </Grid>
             {/*<Grid size={{ xs: 12, sm: 6  }} style={{*/}
             {/*    padding: '10px 20px 10px 20px',*/}
             {/*    fontSize: "20pt",*/}

@@ -13,61 +13,61 @@ using Npgsql;
 
 namespace Sujiraw.Data
 {
-    public class Route:BaseTable
+    public class TimeTable : BaseTable
     {
-        public static readonly string TABLE_NAME = "Route";
+        public static readonly string TABLE_NAME = "TimeTable";
 
-        public long RouteID { get; set; }
+        public long TimeTableID { get; set; }
         public long CompanyID { get; set; }
         public string Name { get; set; } = "";
         public string Color { get; set; } = "#000000";
-        public Route(long companyID)
+        public TimeTable(long companyID)
         {
-            RouteID = MyRandom.NextSafeLong();
+            TimeTableID = MyRandom.NextSafeLong();
             CompanyID = companyID;
         }
-        public Route(DbDataReader reader)
+        public TimeTable(DbDataReader reader)
         {
-            RouteID = reader.GetInt64(nameof(RouteID));
+            TimeTableID = reader.GetInt64(nameof(TimeTableID));
             CompanyID = reader.GetInt64(nameof(CompanyID));
             Name = reader.GetString(nameof(Name));
             Color = reader.GetString(nameof(Color));
         }
 
-        static public Route GetByID(DbConnection conn, long id)
+        static public TimeTable GetByID(DbConnection conn, long id)
         {
             using (var command = conn.CreateCommand())
             {
-                command.CommandText = $"SELECT * FROM {TABLE_NAME} where {nameof(RouteID)}=@{nameof(RouteID)}";
-                command.Parameters.Add(new NpgsqlParameter(nameof(RouteID), id));
+                command.CommandText = $"SELECT * FROM {TABLE_NAME} where {nameof(TimeTableID)}=@{nameof(TimeTableID)}";
+                command.Parameters.Add(new NpgsqlParameter(nameof(TimeTableID), id));
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        return new Route(reader);
+                        return new TimeTable(reader);
                     }
                 }
                 throw new Exception("not found");
             }
         }
-        static public void Insert(DbConnection conn, List<Route> insertItems)
+        static public void Insert(DbConnection conn, List<TimeTable> insertItems)
         {
             using (var command = conn.CreateCommand())
             {
                 command.CommandText =
-                    $"INSERT INTO {TABLE_NAME} ({nameof(RouteID)},{nameof(CompanyID)},{nameof(Name)},{nameof(Color)}) " +
-                    $"values (@{nameof(RouteID)},@{nameof(CompanyID)},@{nameof(Name)},@{nameof(Color)}) " +
+                    $"INSERT INTO {TABLE_NAME} ({nameof(TimeTableID)},{nameof(CompanyID)},{nameof(Name)},{nameof(Color)}) " +
+                    $"values (@{nameof(TimeTableID)},@{nameof(CompanyID)},@{nameof(Name)},@{nameof(Color)}) " +
                     $"ON CONFLICT ON CONSTRAINT {TABLE_NAME}_pkey " +
                     $"DO UPDATE SET {nameof(Name)} = EXCLUDED.{nameof(Name)},{nameof(Color)} = EXCLUDED.{nameof(Color)}";
 
-                command.Parameters.Add(CreateParameter(command, nameof(RouteID), DbType.Int64));
+                command.Parameters.Add(CreateParameter(command, nameof(TimeTableID), DbType.Int64));
                 command.Parameters.Add(CreateParameter(command, nameof(CompanyID), DbType.Int64));
                 command.Parameters.Add(CreateParameter(command, nameof(Name), DbType.String));
                 command.Parameters.Add(CreateParameter(command, nameof(Color), DbType.String));
                 command.Prepare();
                 foreach (var item in insertItems)
                 {
-                    command.Parameters[nameof(RouteID)].Value = item.RouteID;
+                    command.Parameters[nameof(TimeTableID)].Value = item.TimeTableID;
                     command.Parameters[nameof(CompanyID)].Value = item.CompanyID;
                     command.Parameters[nameof(Name)].Value = item.Name;
                     command.Parameters[nameof(Color)].Value = item.Color;
@@ -75,7 +75,16 @@ namespace Sujiraw.Data
                 }
             }
         }
-        static public IEnumerable<Route> GetAll(DbConnection conn)
+        static public void Delete(DbConnection conn,long timetableID)
+        {
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = $"DELETE FROM {TABLE_NAME} where {nameof(TimeTableID)}=@{nameof(TimeTableID)}";
+                command.Parameters.Add(new NpgsqlParameter(nameof(TimeTableID), timetableID));
+                command.ExecuteNonQuery();
+            }
+        }
+        static public IEnumerable<TimeTable> GetAll(DbConnection conn)
         {
             using (var command = conn.CreateCommand())
             {
@@ -84,12 +93,12 @@ namespace Sujiraw.Data
                 {
                     while (reader.Read())
                     {
-                        yield return new Route(reader);
+                        yield return new TimeTable(reader);
                     }
                 }
             }
         }
-        static public IEnumerable<Route> GetFromCompany(DbConnection conn,long companyID)
+        static public IEnumerable<TimeTable> GetFromCompany(DbConnection conn, long companyID)
         {
             using (var command = conn.CreateCommand())
             {
@@ -99,7 +108,7 @@ namespace Sujiraw.Data
                 {
                     while (reader.Read())
                     {
-                        yield return new Route(reader);
+                        yield return new TimeTable(reader);
                     }
                 }
             }
@@ -107,21 +116,28 @@ namespace Sujiraw.Data
     }
     partial class PostgresDbService
     {
-        public List<Route> GetAllRoute()
+        public List<TimeTable> GetAllTimeTable()
         {
-            return Route.GetAll(this.conn).ToList();
+            return TimeTable.GetAll(this.conn).ToList();
         }
-        public List<Route> GetRouteByCompany(long companyID)
+        public List<TimeTable> GetTimeTableByCompany(long companyID)
         {
-            return Route.GetFromCompany(this.conn,companyID).ToList();
+            return TimeTable.GetFromCompany(this.conn, companyID).ToList();
         }
-        public Route GetRoute(long stationID)
+        public TimeTable GetTimeTable(long timetableID)
         {
-            return Route.GetByID(this.conn, stationID);
+            return TimeTable.GetByID(this.conn, timetableID);
         }
-        public void InsertRoute(List<Route> stations)
+        public void DeleteTimeTable(long timetableID)
         {
-            Route.Insert(this.conn, stations);
+            TimeTable.Delete(this.conn, timetableID);
+            TimeTableStation.DeleteFromTimeTable(this.conn, timetableID);
+
+        }
+
+        public void InsertTimeTable(List<TimeTable> timetables)
+        {
+            TimeTable.Insert(this.conn, timetables);
         }
     }
 

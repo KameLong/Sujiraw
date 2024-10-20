@@ -1,4 +1,4 @@
-﻿using Sujiro.Data.Common;
+﻿using Sujiraw.Data.Common;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Npgsql;
 
-namespace Sujiro.Data
+namespace Sujiraw.Data
 {
     public class Trip : BaseTable
     {
@@ -34,7 +34,7 @@ namespace Sujiro.Data
         public int DepTime { get; set; } = -1;
         public int AriTime { get; set; } = -1;
 
-
+        public List<StopTime> StopTimes = new List<StopTime>();
 
         public Trip(long routeID,long trainID,long trainTypeID)
         {
@@ -154,6 +154,8 @@ namespace Sujiro.Data
         }
 
     }
+
+
     partial class PostgresDbService
     {
         public List<Trip> GetAllTrip()

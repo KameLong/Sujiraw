@@ -5,14 +5,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sujiro.Data
+namespace Sujiraw.Data
 {
     public partial class PostgresDbService : IDisposable
     {
 
         private readonly NpgsqlConnection conn;
 
+        public NpgsqlCommand Command => conn.CreateCommand();
+
         private NpgsqlTransaction? tran=null;
+        public NpgsqlCommand CreateCommand()
+        {
+            return conn.CreateCommand();
+        }
         public PostgresDbService(string connectionString)
         {
             this.conn = new NpgsqlConnection(connectionString);

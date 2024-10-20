@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Sujiraw.Server.SignalR;
-using Sujiro.Data;
-using Route = Sujiro.Data.Route;
+using Sujiraw.Data;
+using Route = Sujiraw.Data.Route;
 namespace Sujiraw.Server.Controllers.SujirawData
 {
     [Route("api/[controller]")]
@@ -24,15 +24,26 @@ namespace Sujiraw.Server.Controllers.SujirawData
                 using (var service = new PostgresDbService(connectionString))
                 {
                     var routes= service.GetRouteByCompany(companyID);
+                    var stations = service.GetRouteStationByCompany(companyID);
                     var res = routes.Select(item =>
                     {
                         return new JsonRoute()
                         {
-                            downTrips = [],
                             name = item.Name,
                             routeID = item.RouteID,
-                            routeStations = [],
-                            upTrips = []
+                            routeStations = stations[item.RouteID].Select(rs =>
+                            {
+                                return new JsonRouteStation()
+                                {
+                                    rsID=rs.RouteStationID,
+                                    routeID=rs.RouteID,
+                                    stationIndex = rs.Sequence,
+                                    stationID = rs.StationID,
+                                    showStyle=rs.ShowStyle,
+                                };
+                            }).ToList(),
+                            upTrips = [],
+                            downTrips = []
                         };
                     });
                     return Ok(res);

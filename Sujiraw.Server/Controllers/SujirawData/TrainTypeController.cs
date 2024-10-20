@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Sujiro.Data;
+using Sujiraw.Data;
 
 namespace Sujiraw.Server.Controllers.SujirawData
 {
