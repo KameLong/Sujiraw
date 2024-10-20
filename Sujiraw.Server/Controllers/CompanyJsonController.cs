@@ -270,6 +270,10 @@ namespace Sujiraw.Server.Controllers
                         trainType.dot = item.LineDashed;
                         return trainType;
                     });
+                    jsonCompany.timetables = service.GetTimeTableByCompany(companyID).ToDictionary(item => item.TimeTableID, item =>
+                    {
+                        return new JsonTimeTable(item);
+                    });
 
                     return Ok(jsonCompany);
                 }
@@ -288,6 +292,7 @@ namespace Sujiraw.Server.Controllers
         public Dictionary<string, JsonStation> stations { get; set; } = new Dictionary<string, JsonStation>();
         public Dictionary<string, JsonTrainType> trainTypes { get; set; } = new Dictionary<string, JsonTrainType>();
         public Dictionary<string, JsonTrain> trains { get; set; } = new Dictionary<string, JsonTrain>();
+        public Dictionary<long, JsonTimeTable> timetables { get; set; } = new Dictionary<long, JsonTimeTable>();
 
     }
     public class JsonRouteInfo

@@ -158,7 +158,7 @@ export function TripView({trip, type, setting, stations, direction,train,allStat
             {
                 getTimes().map((time, _i) => {
                     return (
-                        <div key={time.rsID}>
+                        <div key={_i}>
                             {
                                 (showAri(_i) && showDep(_i)) ?
                                     <div style={{

@@ -10,6 +10,7 @@ import {OuDiaOpenDialog} from "./Menu/OuDiaOpenDialog";
 import {CompanyListPage} from "./CompanyPage/CompanyListPage.tsx";
 import {CompanyPage} from "./CompanyPage/CompanyPage.tsx";
 import {TimeTableEditPage} from "./CompanyPage/TimeTableEditPage.tsx";
+import {MainTimeTablePage} from "./TimeTablePage/MainTimeTable/MainTimeTablePage.tsx";
 
 function App() {
   return (
@@ -21,8 +22,11 @@ function App() {
           <Route path="/Company/:companyID" element={
               <CompanyPage/>
           }/>
-          <Route path="/TimeTableData/:companyID/:routeID/:direct" element={
+          <Route path="/TimeTable/:companyID/:routeID/:direct" element={
               <TimeTablePage/>
+          }></Route>
+          <Route path="/MainTimeTable/:companyID/:timetableID/:direct" element={
+              <MainTimeTablePage/>
           }></Route>
           <Route path="/TimeTablePDF/:companyID/:routeID" element={
               <TimeTablePDF/>
