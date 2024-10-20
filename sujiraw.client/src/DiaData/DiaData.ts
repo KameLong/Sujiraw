@@ -1,4 +1,5 @@
 import {axiosClient} from "../CMN/axiosHook.ts";
+import {TimeTable} from "./TimeTableData.ts";
 
 export async function fetchGzipJson(url: string): Promise<any> {
     const response = await fetch(url);
@@ -257,6 +258,7 @@ export interface RouteInfo {
     routeID: number;
     name: string;
     stations: number[];
+    routeStations?: RouteStation[];
 }
 
 export interface Company {
@@ -265,6 +267,9 @@ export interface Company {
     stations: { [key: number]: Station };
     trains: { [key: number]: Train };
     trainTypes: { [key: number]: TrainType };
+    timetables?: { [key: number]: TimeTable };
+
+
 }
 export interface Company2{
     name:string,

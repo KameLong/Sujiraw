@@ -20,7 +20,7 @@ import {Snackbar, useSnackbar} from "../CMN/UseSnackbar.tsx";
 import {Item, Search, SearchIconWrapper, StyledInputBase} from "../CMN/Styles.ts";
 import {useTranslation} from "react-i18next";
 import {Add, Settings} from "@mui/icons-material";
-import {getTimeTable, saveTimeTable, TimeTable} from "../DiaData/TimeTableData.ts";
+import {getTimeTable, saveTimeTable, TimeTable, TimeTableStation} from "../DiaData/TimeTableData.ts";
 import {Company, Route, RouteInfo, RouteStation} from "../DiaData/DiaData.ts";
 import {axiosClient} from "../CMN/axiosHook.ts";
 
@@ -43,7 +43,7 @@ export function TimeTableEditPage() {
     const param = useParams<{ companyID: string,timetableID:string }>();
 
     const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
-    const [openInsertStation, setOpenInsertStation] = useState(true);
+    const [openInsertStation, setOpenInsertStation] = useState(false);
     const [startStation,setStartStation]=useState<string>("");
     const [endStation,setEndStation]=useState<string>("");
 
@@ -84,15 +84,15 @@ export function TimeTableEditPage() {
 
     const deleteTimeTable = () => {
         //todo
-        // axiosClient.delete(`/api/Company/${companyID}`).then(
-        //     res => {
-        //         navigate(`/`);
-        //     }
-        // ).catch(error=>{
-        //     console.error(error);
-        //     snackbarProps.show(`Fail to Delete ${companyID}`);
-        //     setOpenDeleteAlert(false);
-        // });
+        axiosClient.delete(`/api/TimeTableJson/${timetableID}`).then(
+            res => {
+                navigate(`/Company/${companyID}`);
+            }
+        ).catch(error=>{
+            console.error(error);
+            snackbarProps.show(`Fail to Delete ${companyID}`);
+            setOpenDeleteAlert(false);
+        });
     }
 
     useEffect(() => {
@@ -128,10 +128,20 @@ export function TimeTableEditPage() {
 
     }, [timetableID]);
 
-    // useEffect(() => {
-    //     setTimetableName(timetable.name);
-    //
-    // }, [timetable]);
+    function getStationName(station:TimeTableStation):string{
+        let rsID=station.depRouteStationID;
+        if(rsID===0){
+            rsID=station.ariRouteStationID;
+        }
+        return company.stations[getRouteStation(rsID)?.stationID]?.name ?? t("駅名不明");
+    }
+    function getRouteName(station:TimeTableStation):string{
+        let rsID=station.depRouteStationID;
+        if(rsID===0){
+            rsID=station.ariRouteStationID;
+        }
+        return company.routes[getRouteStation(rsID)?.routeID]?.name ?? t("駅名不明");
+    }
 
     return (
         <div>
@@ -158,43 +168,60 @@ export function TimeTableEditPage() {
             }}>
                 {t("カスタム時刻表の設定")}
             </Grid>
-            <Stack sx={{ml:3,mr:3,mt:1,mb:1}}>
-                <TextField  fullWidth={true}
-                            style={{backgroundColor: "#FFF"}}
-                            label={t("カスタム時刻表名")}
-                            value={timetable.name}
-                            onChange={(event) => {
-                                setTimetableName(event.target.value);
-                            }}
-                >
-                </TextField>
-            </Stack>
+            <Paper sx={{ml: 3, mr: 3, mt: 1, mb: 1,py:2}}>
+                <h4 style={{padding: '0px 50px'}}>
+                    {t("表示名")}
+                </h4>
 
-            <Paper sx={{ml: 3, mr: 3, mt: 1, mb: 1}}>
-                <h4 style={{padding: '10px 50px'}}>
+                <Stack sx={{ml: 3, mr: 3, mt: 1, mb: 1}}>
+                    <TextField fullWidth={true}
+                               style={{backgroundColor: "#FFF"}}
+                               label={t("カスタム時刻表名")}
+                               value={timetable.name}
+                               onChange={(event) => {
+                                   setTimetableName(event.target.value);
+                               }}
+                    >
+                    </TextField>
+                </Stack>
+
+                <Divider></Divider>
+                <h4 style={{padding: '0px 50px'}}>
                     {t("駅配置")}
                 </h4>
-                <Divider></Divider>
-                <div style={{padding: '20px'}}>
+                <div style={{padding: '0px 20px'}}>
                     {timetable.timetableStations.map((station) => {
                         return (
-                            <div key={station.ariRouteStationID} style={{display:'flex'}}>
-                                <div style={{width:'150px'}}>{company.stations[getRouteStation(station.depRouteStationID)?.stationID]?.name ?? "駅名不明"}
+                            <div key={station.ariRouteStationID} style={{display: 'flex'}}>
+                                <div style={{width: '150px'}}>{getStationName(station)}
                                 </div>
-                                <span style={{width:'150px'}}>{company.routes[getRouteStation(station.depRouteStationID)?.routeID]?.name ?? "駅名不明"}
+                                <span style={{width: '150px'}}>{getRouteName(station)}
                                 </span>
                             </div>
                         )
                     })}
-                    <Button variant={"outlined"} onClick={()=>{setOpenInsertStation(true)}}>+駅追加</Button>
+                    <Button variant={"outlined"} onClick={() => {
+                        setOpenInsertStation(true)
+                    }}>+駅追加</Button>
                 </div>
+
+                <Stack mx={3} my={1} direction="row" justifyContent="end" spacing={1}>
+                    <Button sx={{m: 1}} color={"primary"} variant={"contained"}
+                            onClick={() => {
+                                saveTimeTable(timetable).then(res => {
+                                    snackbarProps.show(`Success to Save`);
+                                }).catch(err => {
+                                    snackbarProps.show(`Fail to Save`);
+                                })
+                            }}>{t("変更する")}</Button>
+                </Stack>
             </Paper>
-
-            <Stack mx={3} my={1} direction="row" justifyContent="end" spacing={1}>
-                <Button sx={{m: 1}} color={"primary"} variant={"outlined"}
+            <Stack mx={3} my={1} direction="row" justifyContent="start" spacing={1}>
+                <Button sx={{m: 1}} color={"warning"} variant={"contained"}
                         onClick={() => {
+                            setOpenDeleteAlert(true);
 
-                        }}>{t("変更する")}</Button>
+                        }}>{t("削除する")}</Button>
             </Stack>
 
 
@@ -203,7 +230,9 @@ export function TimeTableEditPage() {
             <Button sx={{m: 1}} color={"primary"} variant={"contained"} onClick={() => {
                 navigate(`/`)
             }}>{t("戻る")}</Button>
-
+            <Button sx={{m: 1}} color={"primary"} variant={"contained"} onClick={() => {
+                navigate(`/MainTimeTable/${companyID}/${timetableID}/0`)
+            }}>{t("下りカスタム時刻表へ移動する")}</Button>
 
             <Dialog
                 open={openDeleteAlert}
@@ -219,6 +248,8 @@ export function TimeTableEditPage() {
                 </DialogContent>
                 <DialogActions>
                     <Button sx={{mr: 5}} onClick={() => {
+                        deleteTimeTable();
+                        setOpenDeleteAlert(false);
                     }} color="warning">
                         Yes
                     </Button>
@@ -308,6 +339,7 @@ export function TimeTableEditPage() {
                             setTimeTable((prev:TimeTable)=>{
                                 let newStations=selectedRoute.routeStations.slice(parseInt(startStation),parseInt(endStation)+1);
                                 const oldStations=prev.timetableStations;
+                                console.log(oldStations.slice(-1)[0]);
                                 if(oldStations.length!==0&&newStations.length!==0&&getRouteStation(oldStations.slice(-1)[0].ariRouteStationID).stationID===newStations[0].stationID) {
                                     oldStations.slice(-1)[0].depRouteStationID=newStations[0].rsID;
                                     newStations = newStations.slice(1);
@@ -315,8 +347,7 @@ export function TimeTableEditPage() {
                                 const newTimetable:TimeTable= {...prev,timetableStations:[...prev.timetableStations,...newStations.map((station)=>{
                                     return {depRouteStationID:station.rsID,ariRouteStationID:station.rsID,showStyle:0,main:false};
                                     })]};
-                                newTimetable.timetableStations.slice(-1)[0].ariRouteStationID=0;
-                                saveTimeTable(newTimetable);
+                                newTimetable.timetableStations.slice(-1)[0].depRouteStationID=0;
                                 return newTimetable;
 
                             })

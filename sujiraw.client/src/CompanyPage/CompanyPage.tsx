@@ -69,6 +69,14 @@ export function CompanyPage() {
                 }
             });
         })
+        axiosClient.get(`/api/CompanyJson/${companyID}`).then(res => {
+            setCompany(prev => {
+                return {
+                    ...prev,
+                    timetables: res.data.timetables,
+                }
+            });
+        })
         axiosClient.get(`/api/Route/ByCompany/${companyID}`).then(res => {
             setCompany(prev => {
                 const routes: { [key: number]: RouteInfo } = res.data.reduce((prev: any, route: RouteInfo) => {
@@ -175,40 +183,37 @@ export function CompanyPage() {
                                     fontWeight: 700,
                                     fontSize: '12pt',
                                 }}>
-                                {t("新規作成(開発中の機能です)")}
+                                {t("新規作成(現在開発中の機能です)")}
                             </Typography>
                         </Stack>
-                        <Typography
-                            style={{
-                                color: '#222',
-                                fontSize: '10pt',
-                                textAlign: 'right',
-                                paddingRight: '10px',
-
-                            }}>
-                            {/*駅:10&emsp;路線:4*/}
-                        </Typography>
-
                     </Item>
                 </Grid>
-                {/*{routes().map((c) => {*/}
-                {/*    return <Grid size={{xs: 12, sm: 6, lg: 4}}>*/}
-                {/*        <Item elevation={3}*/}
-                {/*              style={{*/}
-                {/*                  color: 'black',*/}
-                {/*                  fontWeight: 700,*/}
-                {/*                  fontSize: '12pt',*/}
-                {/*              }}*/}
-                {/*              onClick={() => {*/}
-                {/*                  navigate(`/TimeTableData/${companyID}/${c.routeID}/0`)*/}
-                {/*              }}*/}
-                {/*        >*/}
-                {/*            {c.name}*/}
-                {/*            /!*   <Settings >*!/*/}
-                {/*            /!*</Settings>*!/*/}
-                {/*        </Item>*/}
-                {/*    </Grid>*/}
-                {/*})}*/}
+
+                {
+                        Object.values(company.timetables ?? {}).map((timetable)=>{
+                            return(
+                            <Grid size={{ xs: 12, sm: 6 , lg: 4 }}
+                            >
+                                <Item elevation={3} sx={{mt:5}}
+                                         onClick={()=>{
+                                             navigate(`/TimeTableEdit/${companyID}/${timetable.timeTableID}`)
+                                         }}>
+                                <Stack direction="row">
+                                    <Typography
+                                        style={{
+                                            color: 'black',
+                                            fontWeight: 700,
+                                            fontSize: '12pt',
+                                        }}>
+                                        {timetable.name.length===0?"(名称未設定)":timetable.name}
+                                    </Typography>
+                                </Stack>
+                            </Item>
+                            </Grid>
+                            )
+                        })
+                    }
+
             </Grid>
             {/*<Grid size={{ xs: 12, sm: 6  }} style={{*/}
             {/*    padding: '10px 20px 10px 20px',*/}

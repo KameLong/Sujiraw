@@ -18,9 +18,22 @@ namespace Sujiraw.Server.Controllers
         public TimeTableJsonController(IHubContext<SujirawHub> hubContext, IConfiguration configuration) : base(hubContext, configuration)
         {
         }
+        [HttpDelete("{timetableID}")]
+        public ActionResult DeleteTimeTable(long timetableID)
+        {
+            using (var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!))
+            {
+                service.BeginTransaction();
+                service.DeleteTimeTable(timetableID);
+                service.Commit();
+                return Ok();
+            }
 
-        [HttpPut("{timetableID}")]
-        public ActionResult PutTimeTable(long timetableID, TimeTableJson timetable)
+        }
+
+
+            [HttpPut("{timetableID}")]
+        public ActionResult PutTimeTable(long timetableID, JsonTimeTable timetable)
         {
             using (var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!))
             {
@@ -72,14 +85,14 @@ namespace Sujiraw.Server.Controllers
                     var timetable=service.GetTimeTable(timetableID);
                     service.Commit();
                     Debug.WriteLine("Commit " + sw.ElapsedMilliseconds);
-                    var timetableJson = new TimeTableJson()
+                    var timetableJson = new JsonTimeTable()
                     {
                         CompanyID = timetable.CompanyID,
                         Name = timetable.Name,
                         TimeTableID = timetable.TimeTableID,
                         TimetableStations = service.GetTimeTableStationByTimeTable(timetableID).Select(item =>
                         {
-                            return new TimeTableStationJson()
+                            return new JsonTimeTableStation()
                             {
                                 AriRouteStationID = item.AriRouteStationID,
                                 DepRouteStationID = item.DepRouteStationID,
@@ -124,6 +137,10 @@ namespace Sujiraw.Server.Controllers
                     var trainType = new JsonTrainType();
                     trainType.trainTypeID = item.TrainTypeID;
                     trainType.name = item.Name;
+                    trainType.color = item.Color;
+                    trainType.shortName = item.ShortName;
+
+
                     return trainType;
                 });
                 result.Routes = service.GetRouteByCompany(timetable.CompanyID).ToDictionary(item => item.RouteID, item =>
@@ -175,28 +192,38 @@ namespace Sujiraw.Server.Controllers
                         trip.direction = t.Direction;
                         trip.times = new List<JsonStopTime>();
 
-                        result.TripTypes[trip.tripID] = trip;
+                        result.Trips[trip.tripID] = trip;
                     }
                 }
                 Debug.WriteLine("180 " + sw.ElapsedMilliseconds);
 
-                using var timeCommand = service.CreateCommand();
-                timeCommand.CommandText = "select stoptime.* from stoptime left join trip on trip.tripID = stoptime.tripID left join route on route.routeID = trip.routeID join (select routeID from timetablestation left join routestation on routestation.routestationid = timetablestation.depRouteStationID and timetablestation.timetableID=@timetableID group by routeid) as A on A.routeID=route.routeID where A.routeID is not null order by sequence";
-                timeCommand.Parameters.Add(new NpgsqlParameter("timetableID", timetableID));
-                using var timeReader = timeCommand.ExecuteReader();
-                while (timeReader.Read())
+                using (var timeCommand = service.CreateCommand())
                 {
-                    var st = new StopTime(timeReader);
-                    var stopTime = new JsonStopTime();
-                    stopTime.tripID = st.TripID;
-                    stopTime.ariTime = st.AriTime;
-                    stopTime.depTime = st.DepTime;
-                    stopTime.stopType = st.StopType;
-                   
-                    result.TripTypes[stopTime.tripID].times.Add(stopTime);
+                    timeCommand.CommandText = "select stoptime.* from stoptime left join trip on trip.tripID = stoptime.tripID left join route on route.routeID = trip.routeID join (select routeID from timetablestation left join routestation on routestation.routestationid = timetablestation.depRouteStationID and timetablestation.timetableID=@timetableID group by routeid) as A on A.routeID=route.routeID where A.routeID is not null order by sequence";
+                    timeCommand.Parameters.Add(new NpgsqlParameter("timetableID", timetableID));
+                    using var timeReader = timeCommand.ExecuteReader();
+                    while (timeReader.Read())
+                    {
+                        var st = new StopTime(timeReader);
+                        var stopTime = new JsonStopTime();
+                        stopTime.tripID = st.TripID;
+                        stopTime.ariTime = st.AriTime;
+                        stopTime.depTime = st.DepTime;
+                        stopTime.stopType = st.StopType;
+                        stopTime.rsID= result.Routes[result.Trips[st.TripID].routeID].routeStations[st.Sequence].rsID;
+
+                        result.Trips[stopTime.tripID].times.Add(stopTime);
+                    }
                 }
                 Debug.WriteLine("196 " + sw.ElapsedMilliseconds);
 
+                result.TimeTable=new JsonTimeTable(
+                    service.GetTimeTable(timetableID)
+                );
+                result.TimeTable.TimetableStations=service.GetTimeTableStationByTimeTable(timetableID).Select(item =>
+                {
+                    return new JsonTimeTableStation(item);
+                }).ToList();
                 return Ok(result);
             }
             catch (Exception ex)
@@ -227,26 +254,48 @@ namespace Sujiraw.Server.Controllers
         public Dictionary<long, JsonRoute> Routes { get; set; } = new Dictionary<long, JsonRoute>();
 
         public Dictionary<long,JsonTrain> Trains { get; set; } = new Dictionary<long, JsonTrain>();
-        public Dictionary<long,JsonTrip>  TripTypes { get; set; } = new Dictionary<long, JsonTrip>();
+        public Dictionary<long,JsonTrip>  Trips { get; set; } = new Dictionary<long, JsonTrip>();
+
+        public JsonTimeTable TimeTable { get; set; } = new JsonTimeTable();
 
     }
 
 
 
-    public class TimeTableJson
+    public class JsonTimeTable
     {
         public long TimeTableID { get; set; }
         public long CompanyID { get; set; }
         public string Name { get; set; } = "";
-        public List<TimeTableStationJson> TimetableStations { get; set; } = new List<TimeTableStationJson>();
+        public List<JsonTimeTableStation> TimetableStations { get; set; } = new List<JsonTimeTableStation>();
 
+        public JsonTimeTable()
+        {
+        }
+        public JsonTimeTable(TimeTable db)
+        {
+            TimeTableID = db.TimeTableID;
+            CompanyID = db.CompanyID;
+            Name = db.Name;
+        }
     }
 
-    public class TimeTableStationJson
+    public class JsonTimeTableStation
     {
         public long AriRouteStationID { get; set; }
         public long DepRouteStationID { get; set; }
         public int ShowStyle { get; set; }
         public bool Main { get; set; }
+
+        public JsonTimeTableStation()
+        {
+
+        }
+        public JsonTimeTableStation(TimeTableStation db)
+        {
+            AriRouteStationID = db.AriRouteStationID;
+            DepRouteStationID = db.DepRouteStationID;
+            ShowStyle = db.ShowStyle;
+        }
     }
 }
