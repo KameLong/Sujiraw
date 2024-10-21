@@ -190,13 +190,33 @@ export function TimeTableEditPage() {
                     {t("駅配置")}
                 </h4>
                 <div style={{padding: '0px 20px'}}>
-                    {timetable.timetableStations.map((station) => {
+                    {timetable.timetableStations.map((station,_i) => {
                         return (
-                            <div key={station.ariRouteStationID} style={{display: 'flex'}}>
+                            <div key={station.ariRouteStationID} style={{display: 'flex',marginBottom:'5px'}}>
                                 <div style={{width: '150px'}}>{getStationName(station)}
                                 </div>
-                                <span style={{width: '150px'}}>{getRouteName(station)}
-                                </span>
+                                <div style={{width: '150px'}}>{getRouteName(station)}
+                                </div>
+                                <Select style={{width: '150px'}}
+                                        value={station.showStyle} variant={'outlined'}
+                                        onChange={(event) => {
+                                            setTimeTable((prev: TimeTable) => {
+                                                const newStations = prev.timetableStations.map((st, i) => {
+                                                    if (i === _i) {
+                                                        return {...st, showStyle: event.target.value as number}
+                                                    } else {
+                                                        return st;
+                                                    }
+                                                });
+                                                return {...prev, timetableStations: newStations};
+                                            });
+                                        }}
+                                >
+                                    <MenuItem value={0b00010001}>発時刻</MenuItem>
+                                    <MenuItem value={0b00110011}>発着</MenuItem>
+                                    <MenuItem value={0b00010010}>下り着時刻</MenuItem>
+                                    <MenuItem value={0b00100001}>上り着時刻</MenuItem>
+                                </Select>
                             </div>
                         )
                     })}
@@ -360,7 +380,7 @@ export function TimeTableEditPage() {
                                 }
                                 console.log(newStations);
                                 const newTimetable:TimeTable= {...prev,timetableStations:[...prev.timetableStations,...newStations.map((station,_i)=>{
-                                    const res= {depRouteStationID:station.rsID,ariRouteStationID:station.rsID,showStyle:0,main:false,direction:reverse?1:0};
+                                    const res= {depRouteStationID:station.rsID,ariRouteStationID:station.rsID,showStyle:17,main:false,direction:reverse?1:0};
                                     if(!flag&&_i===0){
                                         res.ariRouteStationID=0;
                                     }
