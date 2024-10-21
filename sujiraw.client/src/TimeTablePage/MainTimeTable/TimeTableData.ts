@@ -157,6 +157,15 @@ class TimeTableTrain{
         }
     }
 
+    //逆順の列車
+    public insertStopTime2(stopTimes:StopTimeData[],innerBegIndex,innerEndIndex,begStation){
+        console.log(innerBegIndex,innerEndIndex,begStation);
+
+        for(let i=innerEndIndex;i<=innerBegIndex;i++){
+            this.times[begStation+i-innerEndIndex]=stopTimes[i];
+        }
+    }
+
     public combineTrain(train:TimeTableTrain){
         for(let i=0;i<this.times.length;i++){
             if(!train.times[i].isNull){
@@ -237,6 +246,18 @@ export function useTimeTableData(companyID:number,timetableID:number){
         let endStationIndex=0;
 
         const stations=timetableServerData.timeTable.timetableStations;
+        for(let i=0;i<stations.length-1;i++){
+            const stationA=stations[i];
+            const stationB=stations[i+1];
+            if(
+                GetRouteStation(stationA.depRouteStationID).stationIndex+1!==GetRouteStation(stationB.ariRouteStationID).stationIndex){
+                stations[i].direction=1;
+            }else{
+                stations[i].direction=0;
+            }
+        }
+        console.log(stations);
+
 
         const trains=[];
         let AAA=0;
@@ -244,18 +265,23 @@ export function useTimeTableData(companyID:number,timetableID:number){
         while(begStationIndex<stations.length) {
             AAA++;
             if(AAA>10){
+                console.error("AAA>10");
                 break;
             }
             endStationIndex=begStationIndex+1;
             //その区間に対してtripsを生成する
             const routeID=GetRouteStation(stations[begStationIndex].depRouteStationID).routeID;
             const route=timetableServerData.routes[routeID];
+            const direction=stations[begStationIndex].direction;
+            console.log(direction);
             //routeの中でのstartStationIndex
             const innerBegStationIndex=GetRouteStation(stations[begStationIndex].depRouteStationID).stationIndex;
 
 
-            while (endStationIndex < stations.length && route.routeStations.length > innerBegStationIndex + endStationIndex - begStationIndex &&
-            (stations[endStationIndex].ariRouteStationID===route.routeStations[innerBegStationIndex+endStationIndex-begStationIndex].rsID))
+
+            while (endStationIndex < stations.length && route.routeStations.length > innerBegStationIndex + (endStationIndex - begStationIndex)*(1-direction*2) &&
+            0<= innerBegStationIndex + (endStationIndex - begStationIndex)*(1-direction*2) &&
+            (stations[endStationIndex].ariRouteStationID===route.routeStations[innerBegStationIndex+(endStationIndex - begStationIndex)*(1-direction*2)].rsID))
             {
                 endStationIndex++;
             }
@@ -270,14 +296,26 @@ export function useTimeTableData(companyID:number,timetableID:number){
             }).map((trip)=>{
                 return new TripData(trip);
             });
-            const enableTripData=routeTripData.filter((trip)=>{
+            let enableTripData=routeTripData.filter((trip)=>{
                 return (trip.beginStationIndex<=innerEndStationIndex&&trip.endStationIndex>=innerBegStationIndex)&&trip.direction===0;
             });
+            if(direction===1){
+                console.log(innerEndStationIndex,innerBegStationIndex);
+                enableTripData=routeTripData.filter((trip)=>{
+                    return (trip.beginStationIndex>=innerEndStationIndex&&trip.endStationIndex<=innerBegStationIndex)&&trip.direction===0;
+                });
+
+            }
+            console.log(enableTripData);
             const tmp=enableTripData.map(trip=>{
                 const timeTableTrain=new TimeTableTrain(stations.length);
                 timeTableTrain.trainID=trip.trainID;
                 timeTableTrain.trainTypeID=trip.trainTypeID;
-                timeTableTrain.insertStopTime(trip.times,innerBegStationIndex,innerEndStationIndex,begStationIndex);
+                if(direction===0){
+                    timeTableTrain.insertStopTime(trip.times,innerBegStationIndex,innerEndStationIndex,begStationIndex);
+                }else{
+                    timeTableTrain.insertStopTime2(trip.times,innerBegStationIndex,innerEndStationIndex,begStationIndex);
+                }
                 return timeTableTrain;
             }).filter(trip=>{
                 return trip.begStationIndex!==trip.endStationIndex;

@@ -44,8 +44,8 @@ export function TimeTableEditPage() {
 
     const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
     const [openInsertStation, setOpenInsertStation] = useState(false);
-    const [startStation,setStartStation]=useState<string>("");
-    const [endStation,setEndStation]=useState<string>("");
+    const [startStation,setStartStation]=useState<number>(0);
+    const [endStation,setEndStation]=useState<number>(0);
 
     const [selectedRoute,setSelectedRoute]=useState<Route>(
         {
@@ -301,7 +301,7 @@ export function TimeTableEditPage() {
                     <Select label={"開始駅"} fullWidth={true} value={startStation} onChange={
                         (event)=>{
                             console.log(event.target.value);
-                            setStartStation(event.target.value as string);
+                            setStartStation(event.target.value as number);
                         }
                     }
                     onSelect={event => console.log(event)}>
@@ -316,7 +316,7 @@ export function TimeTableEditPage() {
                     <Select label={"終了駅"} fullWidth={true} value={endStation} onChange={
                         (event)=>{
                             console.log(event.target.value);
-                            setEndStation(event.target.value as string);
+                            setEndStation(event.target.value as number);
                         }
                     }>
                         {selectedRoute.routeStations.map((station,_i)=>{
@@ -337,17 +337,35 @@ export function TimeTableEditPage() {
                     <Button
                         onClick={()=>{
                             setTimeTable((prev:TimeTable)=>{
-                                let newStations=selectedRoute.routeStations.slice(parseInt(startStation),parseInt(endStation)+1);
+                                console.log(startStation,endStation);
+                                let reverse=false;
+                                let [startS,endS]=[startStation,endStation+1];
+                                if(startStation>endStation){
+                                    [startS,endS]=[endStation,startStation+1];
+                                    reverse=true;
+                                }
+                                let newStations=selectedRoute.routeStations.slice(startS,endS);
+                                if(reverse){
+                                    newStations=newStations.reverse();
+                                }
+                                console.log(reverse)
                                 const oldStations=prev.timetableStations;
                                 console.log(oldStations.slice(-1)[0]);
+
+                                let flag=false;
                                 if(oldStations.length!==0&&newStations.length!==0&&getRouteStation(oldStations.slice(-1)[0].ariRouteStationID).stationID===newStations[0].stationID) {
                                     oldStations.slice(-1)[0].depRouteStationID=newStations[0].rsID;
                                     newStations = newStations.slice(1);
+                                    flag=true;
                                 }
-                                const newTimetable:TimeTable= {...prev,timetableStations:[...prev.timetableStations,...newStations.map((station)=>{
-                                    return {depRouteStationID:station.rsID,ariRouteStationID:station.rsID,showStyle:0,main:false};
+                                console.log(newStations);
+                                const newTimetable:TimeTable= {...prev,timetableStations:[...prev.timetableStations,...newStations.map((station,_i)=>{
+                                    const res= {depRouteStationID:station.rsID,ariRouteStationID:station.rsID,showStyle:0,main:false,direction:reverse?1:0};
+                                    if(!flag&&_i===0){
+                                        res.ariRouteStationID=0;
+                                    }
+                                    return res;
                                     })]};
-                                newTimetable.timetableStations.slice(-1)[0].depRouteStationID=0;
                                 return newTimetable;
 
                             })
