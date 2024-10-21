@@ -11,6 +11,7 @@ export interface TimeTableStation{
     depRouteStationID: number;
     showStyle: number;
     main: boolean;
+    direction:number;
 }
 
 /**
