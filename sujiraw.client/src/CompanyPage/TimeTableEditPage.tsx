@@ -380,12 +380,16 @@ export function TimeTableEditPage() {
                                 }
                                 console.log(newStations);
                                 const newTimetable:TimeTable= {...prev,timetableStations:[...prev.timetableStations,...newStations.map((station,_i)=>{
-                                    const res= {depRouteStationID:station.rsID,ariRouteStationID:station.rsID,showStyle:17,main:false,direction:reverse?1:0};
+                                    const res= {depRouteStationID:station.rsID,ariRouteStationID:station.rsID,showStyle:17,main:false,direction:reverse?1:0,border:false};
                                     if(!flag&&_i===0){
                                         res.ariRouteStationID=0;
                                     }
+                                    if(_i===newStations.length-1){
+                                        res.depRouteStationID=0;
+                                    }
                                     return res;
                                     })]};
+                                console.log(newTimetable);
                                 return newTimetable;
 
                             })

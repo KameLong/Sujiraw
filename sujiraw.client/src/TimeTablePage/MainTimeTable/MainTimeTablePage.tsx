@@ -36,12 +36,13 @@ export function MainTimeTablePage(){
         function GetRouteStation(routeStationID:number){
             return Object.values(timetableData.timetableServerData.routes).map((route)=>route.routeStations).flat().find((routeStation)=>routeStation.rsID===routeStationID);
         }
-        const res= stations.map((station)=>{
+        const res= stations.map((station,_i)=>{
             const routeStation=GetRouteStation(station.depRouteStationID===0?station.ariRouteStationID:station.depRouteStationID);
             return {
                 rsID:routeStation.rsID,
                 name:timetableData.timetableServerData.stations[routeStation.stationID]?.name??"",
-                style:station.showStyle===0?0b00110011:station.showStyle
+                style:station.showStyle===0?0b00110011:station.showStyle,
+                border:direct===0?station.border:station.border
             }
         });
         console.log(res);

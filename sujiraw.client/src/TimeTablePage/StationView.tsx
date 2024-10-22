@@ -6,6 +6,7 @@ export interface StationProps {
     rsID: number;
     name: string;
     style: number;
+    border: boolean;
 }
 
 interface StationViewProps {
@@ -38,11 +39,9 @@ export function StationView({stations, setting, direction}: StationViewProps) {
     }
 
 
-
     return (
         <div>
             <div style={{
-                padding: '0px 5px',
                 flexShrink: 0,
                 textAlign: "center",
                 fontSize: `${setting.fontSize}px`,
@@ -54,26 +53,45 @@ export function StationView({stations, setting, direction}: StationViewProps) {
                             case 1:
                             case 2:
                                 return (
-                                    <div style={{
-                                        height: `${setting.fontSize * setting.lineHeight}px`,
-                                        lineHeight: `${setting.fontSize * setting.lineHeight}px`
-                                    }}
-                                         className={"nowrap"}
-                                         key={station.rsID}>
+                                    <div key={station.rsID}>
+                                        <div style={{
+                                            height: `${setting.fontSize * setting.lineHeight}px`,
+                                            lineHeight: `${setting.fontSize * setting.lineHeight}px`,
+                                            padding: '0px 5px',
+                                        }}
+                                             className={"nowrap"}
+                                             >
                                         <span id={`text-${station.rsID}`} className="text">
                                        {station.name}
                                         </span>
+                                        </div>
+                                        {
+                                            station.border ? <div
+                                                style={{borderTop: '2px solid black', width: '100%'}}></div> : null
+                                        }
                                     </div>
                                 );
                             case 3:
                                 return (
+                                    <div key={station.rsID}>
                                     <div style={{
                                         whiteSpace: 'nowrap',
                                         overflow: "hidden",
                                         height: `${setting.fontSize * setting.lineHeight * 2}px`,
-                                        lineHeight: `${setting.fontSize * setting.lineHeight * 2}px`
-                                    }} key={station.rsID}>
+                                        lineHeight: `${setting.fontSize * setting.lineHeight * 2}px`,
+                                        padding: '0px 5px',
+
+
+                                    }}>
                                         <span id={`text-${station.rsID}`} className="text">{station.name}</span>
+
+                                    </div>
+                                        {
+                                            station.border ? <div
+                                                style={{borderTop: '2px solid black', width: '100%'}}></div> : null
+                                        }
+
+
                                     </div>
                                 );
                         }

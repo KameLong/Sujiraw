@@ -162,7 +162,7 @@ class TimeTableTrain{
         console.log(innerBegIndex,innerEndIndex,begStation);
 
         for(let i=innerEndIndex;i<=innerBegIndex;i++){
-            this.times[begStation+i-innerEndIndex]=stopTimes[i];
+            this.times[begStation+i-innerEndIndex]=stopTimes[stopTimes.length-i-1];
         }
     }
 
@@ -249,7 +249,11 @@ export function useTimeTableData(companyID:number,timetableID:number){
         for(let i=0;i<stations.length-1;i++){
             const stationA=stations[i];
             const stationB=stations[i+1];
+            if(stationA.depRouteStationID===0||stationB.ariRouteStationID===0){
+                stations[i].border=true;
+            }
             if(
+                stationA.depRouteStationID!==0&&stationB.ariRouteStationID!==0&&
                 GetRouteStation(stationA.depRouteStationID).stationIndex+1!==GetRouteStation(stationB.ariRouteStationID).stationIndex){
                 stations[i].direction=1;
             }else{
@@ -257,6 +261,7 @@ export function useTimeTableData(companyID:number,timetableID:number){
             }
         }
         console.log(stations);
+
 
 
         const trains=[];
@@ -302,7 +307,7 @@ export function useTimeTableData(companyID:number,timetableID:number){
             if(direction===1){
                 console.log(innerEndStationIndex,innerBegStationIndex);
                 enableTripData=routeTripData.filter((trip)=>{
-                    return (trip.beginStationIndex>=innerEndStationIndex&&trip.endStationIndex<=innerBegStationIndex)&&trip.direction===0;
+                    return (trip.beginStationIndex>=innerEndStationIndex&&trip.endStationIndex<=innerBegStationIndex)&&trip.direction===1;
                 });
 
             }
@@ -333,6 +338,7 @@ export function useTimeTableData(companyID:number,timetableID:number){
             })
 
 
+            console.log(stations[endStationIndex]);
             if(stations[endStationIndex].depRouteStationID===0){
                 begStationIndex=endStationIndex+1;
             }else{
@@ -362,9 +368,6 @@ export function useTimeTableData(companyID:number,timetableID:number){
                         if(sortTrains[s].times[i].DepAriTime>=0&&sortTrains[s].times[i].DepAriTime<=noSortTrains[t].times[i].DepAriTime){
                             sortTrains.splice(s+1,0,noSortTrains[t]);
                             noSortTrains.splice(t,1);
-                            if(i==9){
-                                console.log(noSortTrains[t],s,sortTrains[s]);
-                            }
                             f=true;
                             break;
                         }

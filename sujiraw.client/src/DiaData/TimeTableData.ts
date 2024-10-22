@@ -12,6 +12,7 @@ export interface TimeTableStation{
     showStyle: number;
     main: boolean;
     direction:number;
+    border:boolean;
 }
 
 /**
