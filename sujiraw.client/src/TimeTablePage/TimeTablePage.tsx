@@ -112,7 +112,8 @@ export default function TimeTablePage() {
             return {
                 rsID:item.rsID,
                 name:stations[item.stationID]?.name??"",
-                style:item.showStyle
+                style:item.showStyle,
+                border:false
             }
         });
     },[routes,routeID,stations]);
