@@ -31,8 +31,14 @@ export function oudParser(oud:O_O):string {
 
 
     oud.stations.forEach((station)=> {
-        stations.push(stationParser(station));
+        const sameStation=stations.find((s)=>s.name===station.name);
+        const newStation=stationParser(station);
+        if(sameStation!==undefined){
+            newStation.stationID=sameStation.stationID;
+        }
+        stations.push(newStation);
     });
+
     oud.trainTypes.forEach((trainType)=>{
         trainTypes.push({
             name:trainType.name,

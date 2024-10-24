@@ -87,6 +87,13 @@ export function TripView({trip, type, setting, stations, direction,train,allStat
         }
         return ((Math.floor(getStations()[index].style/16) % 16) & 0b0010) !== 0;
     }
+    function isBorder(index:number):boolean{
+        if(direction===0){
+            return getStations()[index].border;
+        }else{
+            return getStations()[index-1]?.border ?? false;
+        }
+    }
 
     function showDep(index: number): boolean {
         if(direction===0){
@@ -186,6 +193,11 @@ export function TripView({trip, type, setting, stations, direction,train,allStat
                                     }}>
                                         {depTimeStr(time, _i)}
                                     </div> : null
+                            }
+                            {
+                                (isBorder(_i)) ? <div
+                                    style={{borderTop: '2px solid black', width: '100%'}}></div> : null
+
                             }
                         </div>
                     )
