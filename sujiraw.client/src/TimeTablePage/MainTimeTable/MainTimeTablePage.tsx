@@ -17,7 +17,7 @@ export function MainTimeTablePage(){
     const timetableID=parseInt(param.timetableID??"0");
     const direct=parseInt(param.direct??"0");
 
-    const timetableData=useTimeTableData(companyID,timetableID);
+    const timetableData=useTimeTableData(companyID,timetableID,direct);
 
     const [setting,setSetting]=useState<TimeTablePageSetting>({
         fontSize:13,
@@ -38,11 +38,21 @@ export function MainTimeTablePage(){
         }
         const res= stations.map((station,_i)=>{
             const routeStation=GetRouteStation(station.depRouteStationID===0?station.ariRouteStationID:station.depRouteStationID);
+            let border=station.border;
+            if(direct===1){
+                if(_i===0){
+                    border=false;
+                }
+                else{
+                    border=stations[_i-1].border;
+                }
+
+            }
             return {
                 rsID:routeStation.rsID,
                 name:timetableData.timetableServerData.stations[routeStation.stationID]?.name??"",
                 style:station.showStyle===0?0b00110011:station.showStyle,
-                border:direct===0?station.border:station.border
+                border:border
             }
         });
         console.log(res);
