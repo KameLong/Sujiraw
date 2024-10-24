@@ -159,10 +159,10 @@ class TimeTableTrain{
 
     //逆順の列車
     public insertStopTime2(stopTimes:StopTimeData[],innerBegIndex,innerEndIndex,begStation){
-        console.log(innerBegIndex,innerEndIndex,begStation);
+        console.log(innerBegIndex,innerEndIndex,begStation,stopTimes);
 
         for(let i=innerEndIndex;i<=innerBegIndex;i++){
-            this.times[begStation+i-innerEndIndex]=stopTimes[stopTimes.length-i-1];
+            this.times[begStation+innerBegIndex-i]=stopTimes[i];
         }
     }
 
