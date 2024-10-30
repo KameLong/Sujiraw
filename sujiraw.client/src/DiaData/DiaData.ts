@@ -24,7 +24,7 @@ export async function  loadRoute(companyID:number,routeID:number):Promise<Route>
         });
     }
 }
-export async function loadCompany(companyID:number,routeID:number|undefined):Promise<Company>{
+export async function loadCompany(companyID:number,routeID:number|undefined):Promise<DiaData>{
     try{
         return (await axiosClient.get(`/api/CompanyJson/Company/${companyID}/${routeID??0}`)).data;
     }catch(ex){
@@ -261,7 +261,7 @@ export interface RouteInfo {
     routeStations?: RouteStation[];
 }
 
-export interface Company {
+export interface DiaData {
     name:string;
     routes: { [key: number]: RouteInfo };
     stations: { [key: number]: Station };
@@ -270,8 +270,4 @@ export interface Company {
     timetables?: { [key: number]: TimeTable };
 
 
-}
-export interface Company2{
-    name:string,
-    companyID:number
 }

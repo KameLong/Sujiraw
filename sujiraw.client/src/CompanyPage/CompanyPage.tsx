@@ -1,8 +1,5 @@
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import SearchIcon from '@mui/icons-material/Search';
 import Grid from '@mui/material/Grid2';
 import {
     Button,
@@ -15,17 +12,17 @@ import {
 } from "@mui/material";
 import {axiosClient} from "../CMN/axiosHook.ts";
 import {useEffect, useState} from "react";
-import {Company, RouteInfo} from "../DiaData/DiaData.ts";
+import {DiaData, RouteInfo} from "../DiaData/DiaData.ts";
 import {useNavigate, useParams} from "react-router-dom";
 import {Snackbar, useSnackbar} from "../CMN/UseSnackbar.tsx";
-import {Item, Search, SearchIconWrapper, StyledInputBase} from "../CMN/Styles.ts";
+import {Item} from "../CMN/Styles.ts";
 import {useTranslation} from "react-i18next";
-import Box from "@mui/material/Box";
 import {Add, Settings} from "@mui/icons-material";
 import {createNewTimeTable} from "../DiaData/TimeTableData.ts";
+import {AppBar} from "../CMN/AppBar.tsx";
 
 export function CompanyPage() {
-    const [company, setCompany] = useState<Company>(
+    const [company, setCompany] = useState<DiaData>(
         {
             name: "",
             routes: {},
@@ -92,29 +89,15 @@ export function CompanyPage() {
 
     return (
         <div>
-            <Grid style={{backgroundColor: "#242"}}>
-                <span style={{
-                    padding: '10px',
-                    fontSize: "28pt",
-                    fontFamily: 'serif',
-                    color: '#EEE',
-                    fontWeight: 900
-                }}>すじらう</span>
-                <span style={{
-                    padding: '10px',
-                    fontSize: "16pt",
-                    color: '#DDF',
-                }}>by Kamelong</span>
+            <AppBar></AppBar>
+            <Grid size={{ xs: 12, sm: 6  }} style={{
+                padding: '10px 20px 10px 20px',
+                fontSize: "20pt",
+                color: '#DDD',
+                backgroundColor: "#000"
+            }}>
+                {t("ダイヤの設定")}
             </Grid>
-
-                <Grid size={{ xs: 12, sm: 6  }} style={{
-                    padding: '10px 20px 10px 20px',
-                    fontSize: "20pt",
-                    color: '#DDD',
-                    backgroundColor: "#000"
-                }}>
-                    {t("ダイヤの設定")}
-                </Grid>
             <Stack sx={{ml:3,mr:3,mt:1,mb:1}}>
                 <TextField  fullWidth={true} value={company.name} disabled={true}>
                 </TextField>
@@ -147,8 +130,6 @@ export function CompanyPage() {
                                   }}
                             >
                                 {c.name}
-                            {/*   <Settings >*/}
-                            {/*</Settings>*/}
                                 </Item>
                         </Grid>
                     })}
@@ -171,7 +152,7 @@ export function CompanyPage() {
                                     if(res.status===200){
                                         navigate(`/TimeTableEdit/${companyID}/${res.data}`)
                                     }else{
-
+                                        snackbarProps.show(`Fail to create TimeTable ${res.status}`)
                                     }
                               })
                           }}>
@@ -215,30 +196,7 @@ export function CompanyPage() {
                     }
 
             </Grid>
-            {/*<Grid size={{ xs: 12, sm: 6  }} style={{*/}
-            {/*    padding: '10px 20px 10px 20px',*/}
-            {/*    fontSize: "20pt",*/}
-            {/*    color: '#DDD',*/}
-            {/*    backgroundColor: "#000"*/}
-            {/*}}>*/}
-            {/*    {t("駅一覧")}*/}
-            {/*</Grid>*/}
-            {/*<div>*/}
-            {/*    {Object.values(company.stations).map((station) =>*/}
-            {/*       <div>{station.name}</div>*/}
-            {/*    )}*/}
-            {/*</div>*/}
-
-            {/*<Grid size={{ xs: 12, sm: 6  }} style={{*/}
-            {/*    padding: '10px 20px 10px 20px',*/}
-            {/*    fontSize: "20pt",*/}
-            {/*    color: '#DDD',*/}
-            {/*    backgroundColor: "#000"*/}
-            {/*}}>*/}
-            {/*    {t("種別一覧")}*/}
-            {/*</Grid>*/}
-
-            <Typography variant="h5" noWrap component="div" sx={{m: 1}} >
+           <Typography variant="h5" noWrap component="div" sx={{m: 1}} >
                 </Typography>
                 <Button sx={{m: 1}} color={"primary"} variant={"contained"} onClick={() => {
                     navigate(`/`)
@@ -268,7 +226,7 @@ export function CompanyPage() {
                     </Button>
                 </DialogActions>
             </Dialog>
-
+            <Snackbar props={snackbarProps}/>
         </div>
     );
 }

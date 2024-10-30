@@ -13,7 +13,7 @@ namespace Sujiraw.Server.Controllers.SujirawData
 
     public class CompanyController(IHubContext<SujirawHub> hubContext, IConfiguration configuration) : SujiroAPIController(hubContext,configuration)
     {
-        [HttpGet("get/{companyID}")]
+        [HttpGet("{companyID}")]
         public ActionResult GetCompany(long companyID)
         {
             string connectionString = Configuration["ConnectionStrings:postgres"]!;

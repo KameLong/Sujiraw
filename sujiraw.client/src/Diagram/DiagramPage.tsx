@@ -3,7 +3,7 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import { DiagramStation, DiagramTrip} from "./DiagramData";
 import {useParams} from "react-router-dom";
-import {Company, fetchGzipJson, Route, RouteInfo, Station, StopTime, Train, TrainType} from "../DiaData/DiaData";
+import {DiaData, fetchGzipJson, Route, RouteInfo, Station, StopTime, Train, TrainType} from "../DiaData/DiaData";
 import {DiagramCanvas, DiagramLine, DiagramTransformC, Point} from "./DiagramCanvas";
 import {BottomMenu} from "../Menu/BottomMenu";
 import {useDiagramHook} from "./DiagramHook";

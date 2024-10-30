@@ -21,7 +21,7 @@ import {Item, Search, SearchIconWrapper, StyledInputBase} from "../CMN/Styles.ts
 import {useTranslation} from "react-i18next";
 import {Add, Settings} from "@mui/icons-material";
 import {getTimeTable, saveTimeTable, TimeTable, TimeTableStation} from "../DiaData/TimeTableData.ts";
-import {Company, Route, RouteInfo, RouteStation} from "../DiaData/DiaData.ts";
+import {DiaData, Route, RouteInfo, RouteStation} from "../DiaData/DiaData.ts";
 import {axiosClient} from "../CMN/axiosHook.ts";
 
 
@@ -29,7 +29,7 @@ import {axiosClient} from "../CMN/axiosHook.ts";
 
 export function TimeTableEditPage() {
 
-    const [company, setCompany] = useState<Company>(
+    const [company, setCompany] = useState<DiaData>(
         {
             name: "",
             routes: {},
