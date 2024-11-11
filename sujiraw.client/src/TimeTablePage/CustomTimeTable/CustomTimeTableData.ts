@@ -1,25 +1,25 @@
 import {useEffect, useState} from "react";
 import {axiosClient} from "../../CMN/axiosHook.ts";
-import {Route, Station, StopTime, Train, TrainType, Trip} from "../../DiaData/DiaData.ts";
+import {RouteDTO, StationDTO, StopTimeDTO, TrainDTO, TrainTypeDTO, TripDTO} from "../../DiaData/DiaData.ts";
 import {TimeTable, TimeTableStation} from "../../DiaData/TimeTableData.ts";
 
 interface TimeTableServerData{
-    stations:{[key:number]:Station},
-    trainTypes:{[key:number]:TrainType},
-    trains:{[key:number]:Train},
-    trips:{[key:number]:Trip},
-    routes:{[key:number]:Route},
+    stations:{[key:number]:StationDTO},
+    trainTypes:{[key:number]:TrainTypeDTO},
+    trains:{[key:number]:TrainDTO},
+    trips:{[key:number]:TripDTO},
+    routes:{[key:number]:RouteDTO},
     timeTable:TimeTable
 }
 
 
-class StopTimeData implements StopTime{
+export class StopTimeData implements StopTimeDTO{
     ariTime: number;
     depTime: number;
     stopType: number;
     rsID: number;
     tripID: number;
-    constructor(stopTime:StopTime|undefined) {
+    constructor(stopTime:StopTimeDTO|undefined) {
         if(stopTime===undefined){
             this.ariTime=-1;
             this.depTime=-1;
@@ -78,14 +78,14 @@ class StopTimeData implements StopTime{
 
 
 }
-class TripData implements Trip{
+export class TripData implements TripDTO{
     direction: number;
     routeID: number;
     times: StopTimeData[];
     trainID: number;
     trainTypeID: number;
     tripID: number;
-    constructor(trip: Trip) {
+    constructor(trip: TripDTO) {
         this.direction = trip.direction;
         this.routeID = trip.routeID;
         this.times = trip.times.map(item=>new StopTimeData(item));

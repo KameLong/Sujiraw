@@ -1,11 +1,11 @@
 import React, {memo, useEffect, useMemo,  useState} from "react";
 import {
-    EditRoute, loadCompany, loadRoute,
-    Route,
+    EditRouteDepreacted, loadCompany, loadRoute,
+    RouteDTO,
     RouteInfo,
-    Station,
-    Train,
-    TrainType,
+    StationDTO,
+    TrainDTO,
+    TrainTypeDTO,
 } from "../DiaData/DiaData";
 import {getStationViewWidth, StationView} from './StationView';
 import {getTripNameViewHeight, TripNameView} from './TripNameView';
@@ -22,11 +22,11 @@ export interface TimeTablePageSetting{
     lineHeight:number,
 }
 export default function TimeTablePage() {
-    const [stations, setStations] = useState<{[key:number]:Station}>({});
-    const [trainTypes, setTrainTypes] = useState<{[key:number]:TrainType}>({});
-    const [trains, setTrains] = useState<{[key:number]:Train}>({});
+    const [stations, setStations] = useState<{[key:number]:StationDTO}>({});
+    const [trainTypes, setTrainTypes] = useState<{[key:number]:TrainTypeDTO}>({});
+    const [trains, setTrains] = useState<{[key:number]:TrainDTO}>({});
     const [routeInfo, setRouteInfo] = useState<{[key:number]:RouteInfo}>({});
-    const [routes, setRoutes] = useState<{[key:number]:Route}>({});
+    const [routes, setRoutes] = useState<{[key:number]:RouteDTO}>({});
     const [selectedTrip,setSelectedTrip]=useState<number>(-1);
     const navigate=useNavigate();
     const [setting,setSetting]=useState<TimeTablePageSetting>({
@@ -83,7 +83,7 @@ export default function TimeTablePage() {
             loadRoute(companyID,routeID).then((route)=>{
                 console.log(route);
 
-                EditRoute.sortTrips(route,0,0);
+                EditRouteDepreacted.sortTrips(route,0,0);
                 setRoutes((prev)=>{
                     const next  = {...prev};
                     if(route!==undefined){

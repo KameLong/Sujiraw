@@ -9,7 +9,7 @@ import {BottomMenu} from "../../Menu/BottomMenu.tsx";
 import React, {memo, useMemo, useState} from "react";
 import {TimeTablePageSetting} from "../TimeTablePage.tsx";
 import {TripView} from "../TripView.tsx";
-import {Trip} from "../../DiaData/DiaData.ts";
+import {TripDTO} from "../../DiaData/DiaData.ts";
 
 export function MainTimeTablePage(){
     const param = useParams<{ companyID:string,timetableID:string,direct: string  }>();
@@ -65,11 +65,11 @@ export function MainTimeTablePage(){
         const selected=false;
         return (
             <div key={trip.trainID} className={selected?"selected":""} style={style}>
-                <MemoTripView  trip={trip as unknown as Trip} type={timetableData.timetableServerData.trainTypes[trip.trainTypeID]}
-                               setting={setting} stations={getStationProps} allStations={timetableData.timetableServerData.stations}
-                               train={timetableData.timetableServerData.trains[trip.trainID]}
+                <MemoTripView trip={trip as unknown as TripDTO} type={timetableData.timetableServerData.trainTypes[trip.trainTypeID]}
+                              setting={setting} stations={getStationProps} allStations={timetableData.timetableServerData.stations}
+                              train={timetableData.timetableServerData.trains[trip.trainID]}
 
-                               direction={direct}/>
+                              direction={direct}/>
             </div>
         );
     }
@@ -79,7 +79,7 @@ export function MainTimeTablePage(){
         const selected=false;
         return (
             <div className={selected?"selected":""} key={trip.trainID} style={{...style,height:`${getTripNameViewHeight(setting)}px`,borderBottom:'2px solid black'}}>
-                <MemoTripNameView trip={trip as unknown as Trip} type={timetableData.timetableServerData.trainTypes[trip.trainTypeID]}
+                <MemoTripNameView trip={trip as unknown as TripDTO} type={timetableData.timetableServerData.trainTypes[trip.trainTypeID]}
                                   setting={setting}
                                   train={timetableData.timetableServerData.trains[trip.trainID]}
                                   stations={timetableData.timetableServerData.stations}
