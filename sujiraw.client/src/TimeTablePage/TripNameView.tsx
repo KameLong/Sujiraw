@@ -1,25 +1,28 @@
-import {Station, Train, TrainType, Trip} from "../DiaData/DiaData";
-import {TimeTablePageSetting} from "./TimeTablePage";
+import {StationDTO, TrainDTO, TrainTypeDTO, TripDTO} from "../DiaData/DiaData";
+import {TimeTablePageSetting} from "./RouteTimeTable/RouteTimeTablePage.tsx";
 import {useEffect, useRef} from "react";
 import {timeIntStr} from "./Util";
 import {useNavigate} from "react-router-dom";
+import {TripData} from "./CustomTimeTable/CustomTimeTableData.ts";
+import {StationProps} from "./StationView.tsx";
 
 interface TripNameViewProps {
-    trip: Trip;
-    type: TrainType;
-    train:Train;
+    trip: TripData;
+    type: TrainTypeDTO;
     setting: TimeTablePageSetting;
-    stations:{[key:number]:Station};
+    direction: number;
+    train:TrainDTO;
+    allStations:{[key:number]:StationDTO};
 }
+
 
 export function getTripNameViewHeight(setting: TimeTablePageSetting) {
     return setting.fontSize * 9;
 }
 
-export function TripNameView({trip,train, type, setting,stations}: TripNameViewProps) {
+export function TripNameView({trip, type, setting, allStations, direction,train}: TripNameViewProps) {
     const ref = useRef<HTMLDivElement | null>(null);
     const navigate=useNavigate();
-
 
     function hasOuterStation(){
         const routeID=trip.routeID;
@@ -33,7 +36,7 @@ export function TripNameView({trip,train, type, setting,stations}: TripNameViewP
         if(!hasOuterStation()) {
             return "‥";
         }
-         return stations[train.depStationID]?.name??"　";
+         return allStations[train.depStationID]?.name??"　";
     }
     function outerStationTime(){
         if(!hasOuterStation()) {
@@ -48,7 +51,7 @@ export function TripNameView({trip,train, type, setting,stations}: TripNameViewP
             const scale = Math.min(1, element.parentElement.offsetWidth / element.offsetWidth);
             element.style.transform = `scaleX(${scale})`;
         }
-    }, [stations, train,ref]);
+    }, [allStations, train,ref]);
     if(type===undefined||train===undefined){
         return <div>error</div>
     }

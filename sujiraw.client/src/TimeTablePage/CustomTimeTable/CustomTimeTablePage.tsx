@@ -1,5 +1,5 @@
 import {useLocation} from "react-use";
-import {useTimeTableData} from "./TimeTableData.ts";
+import {TimeTableTrain, TripData, useTimeTableData} from "./CustomTimeTableData.ts";
 import {useParams} from "react-router-dom";
 import {getStationViewWidth, StationView} from "../StationView.tsx";
 import {getTripNameViewHeight, TripNameView} from "../TripNameView.tsx";
@@ -7,11 +7,11 @@ import {StationHeaderView} from "../StationHeaderView.tsx";
 import {HolizontalBoxList} from "../HolizontalBoxList.tsx";
 import {BottomMenu} from "../../Menu/BottomMenu.tsx";
 import React, {memo, useMemo, useState} from "react";
-import {TimeTablePageSetting} from "../TimeTablePage.tsx";
+import {TimeTablePageSetting} from "../RouteTimeTable/RouteTimeTablePage.tsx";
 import {TripView} from "../TripView.tsx";
 import {TripDTO} from "../../DiaData/DiaData.ts";
 
-export function MainTimeTablePage(){
+export function CustomTimeTablePage(){
     const param = useParams<{ companyID:string,timetableID:string,direct: string  }>();
     const companyID=parseInt(param.companyID??"0");
     const timetableID=parseInt(param.timetableID??"0");
@@ -61,11 +61,12 @@ export function MainTimeTablePage(){
 
 
     const Column = ( index:number, style:any) => {
-        const trip=timetableData.trains[index];
+        const trip:TimeTableTrain=timetableData.trains[index];
+
         const selected=false;
         return (
             <div key={trip.trainID} className={selected?"selected":""} style={style}>
-                <MemoTripView trip={trip as unknown as TripDTO} type={timetableData.timetableServerData.trainTypes[trip.trainTypeID]}
+                <MemoTripView trip={TripData.fromTimeTableTrain(trip)} type={timetableData.timetableServerData.trainTypes[trip.trainTypeID]}
                               setting={setting} stations={getStationProps} allStations={timetableData.timetableServerData.stations}
                               train={timetableData.timetableServerData.trains[trip.trainID]}
 
@@ -79,10 +80,11 @@ export function MainTimeTablePage(){
         const selected=false;
         return (
             <div className={selected?"selected":""} key={trip.trainID} style={{...style,height:`${getTripNameViewHeight(setting)}px`,borderBottom:'2px solid black'}}>
-                <MemoTripNameView trip={trip as unknown as TripDTO} type={timetableData.timetableServerData.trainTypes[trip.trainTypeID]}
+                <MemoTripNameView trip={TripData.fromTimeTableTrain(trip)} type={timetableData.timetableServerData.trainTypes[trip.trainTypeID]}
                                   setting={setting}
                                   train={timetableData.timetableServerData.trains[trip.trainID]}
-                                  stations={timetableData.timetableServerData.stations}
+                                  allStations={timetableData.timetableServerData.stations}
+                                  direction={direct}
                 />
 
             </div>

@@ -1,7 +1,7 @@
 import React from "react";
 
 import {Text, View} from "@react-pdf/renderer";
-import {TimeTablePageSetting} from "../TimeTablePage";
+import {TimeTablePageSetting} from "../RouteTimeTable/RouteTimeTablePage.tsx";
 import {StationProps} from "../StationView";
 import {stationStyle} from "../Util";
 import { TimetablePDFSetting} from "./SettingView";

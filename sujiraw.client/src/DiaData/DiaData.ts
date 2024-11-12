@@ -1,3 +1,6 @@
+
+
+
 import {axiosClient} from "../CMN/axiosHook.ts";
 import {TimeTable} from "./TimeTableData.ts";
 
@@ -14,7 +17,7 @@ export async function fetchGzipJson(url: string): Promise<any> {
        return response.json();
     }
 }
-export async function  loadRoute(companyID:number,routeID:number):Promise<Route>{
+export async function  loadRoute(companyID:number,routeID:number):Promise<RouteDTO>{
     try{
         return (await axiosClient.get(`/api/RouteJson/${companyID}/${routeID}`)).data;
     }catch(ex){
@@ -43,7 +46,7 @@ export enum StopType {
     NO_VIA = 3
 }
 
-export interface StopTime {
+export interface StopTimeDTO {
     tripID: number;
     rsID: number;
     stopType: StopType;
@@ -51,35 +54,35 @@ export interface StopTime {
     depTime: number;
 }
 
-export interface Route {
+export interface RouteDTO {
     routeID: number;
     name: string;
-    routeStations: RouteStation[];
-    downTrips: Trip[];
-    upTrips: Trip[];
+    routeStations: RouteStationDTO[];
+    downTrips: TripDTO[];
+    upTrips: TripDTO[];
 }
 
-export class EditRoute {
-    static sortTrips(route: Route, sortIndex: number, direction: number) {
+export class EditRouteDepreacted {
+    static sortTrips(route: RouteDTO, sortIndex: number, direction: number) {
         switch (direction) {
             case 0:{
                 const newTrips = route.downTrips.filter(trip => {
-                    return GetTrip.GetStopType(trip, sortIndex) === StopType.STOP && GetTrip.TimeExist(trip, sortIndex);
+                    return GetTripDeprecated.GetStopType(trip, sortIndex) === StopType.STOP && GetTripDeprecated.TimeExist(trip, sortIndex);
                 }).sort((a, b) => {
-                    return GetTrip.GetDATime(a, sortIndex) - GetTrip.GetDATime(b, sortIndex);
+                    return GetTripDeprecated.GetDATime(a, sortIndex) - GetTripDeprecated.GetDATime(b, sortIndex);
                 });
                 let oldTrains = route.downTrips.filter(trip => {
-                    return GetTrip.GetStopType(trip, sortIndex) !== StopType.STOP || !GetTrip.TimeExist(trip, sortIndex);
+                    return GetTripDeprecated.GetStopType(trip, sortIndex) !== StopType.STOP || !GetTripDeprecated.TimeExist(trip, sortIndex);
                 });
                 for (let i = sortIndex + 1; i < route.routeStations.length; i++) {
 
-                    const tmp = oldTrains.filter(trip => GetTrip.GetStopType(trip, i) === StopType.STOP && GetTrip.TimeExist(trip, i));
+                    const tmp = oldTrains.filter(trip => GetTripDeprecated.GetStopType(trip, i) === StopType.STOP && GetTripDeprecated.TimeExist(trip, i));
                     for (const appendTrip of tmp) {
                         let isAppend = false;
                         for (let j = newTrips.length - 1; j >= 0; j--) {
-                            if (GetTrip.GetStopType(newTrips[j], i) === StopType.STOP
-                                && GetTrip.TimeExist(newTrips[j], i)
-                                && GetTrip.GetADTime(newTrips[j], i) < GetTrip.GetDATime(appendTrip, i)) {
+                            if (GetTripDeprecated.GetStopType(newTrips[j], i) === StopType.STOP
+                                && GetTripDeprecated.TimeExist(newTrips[j], i)
+                                && GetTripDeprecated.GetADTime(newTrips[j], i) < GetTripDeprecated.GetDATime(appendTrip, i)) {
                                 newTrips.splice(j + 1, 0, appendTrip);
                                 isAppend = true;
                                 break;
@@ -105,14 +108,14 @@ export class EditRoute {
     }
 }
 
-export interface Station {
+export interface StationDTO {
     stationID: number;
     name: string;
     lat: number;
     lon: number;
 }
 
-export interface RouteStation {
+export interface RouteStationDTO {
     rsID: number;
     routeID: number;
     stationIndex: number;
@@ -121,7 +124,7 @@ export interface RouteStation {
     main: boolean;
 }
 
-export interface TrainType {
+export interface TrainTypeDTO {
     trainTypeID: number;
     name: string;
     shortName: string;
@@ -130,28 +133,28 @@ export interface TrainType {
     dot: boolean;
 }
 
-export interface Trip {
+export interface TripDTO {
     tripID: number;
     routeID: number;
     direction: number;
     trainID: number;
     trainTypeID: number;
-    times: StopTime[];
+    times: StopTimeDTO[];
 }
 
-export class GetStopTime {
-    public static TimeExist(time: StopTime) {
+export class GetStopTimeDepreacted {
+    public static TimeExist(time: StopTimeDTO) {
         return time.ariTime >= 0 || time.depTime >= 0;
     }
 
-    public static GetDepAriTime(time: StopTime) {
+    public static GetDepAriTime(time: StopTimeDTO) {
         if (time.depTime >= 0) {
             return time.depTime;
         }
         return time.ariTime;
     }
 
-    public static GetAriDepTime(time: StopTime) {
+    public static GetAriDepTime(time: StopTimeDTO) {
         if (time.ariTime >= 0) {
             return time.ariTime;
         }
@@ -159,7 +162,7 @@ export class GetStopTime {
     }
 }
 
-export interface Train {
+export interface TrainDTO {
     companyID:number;
     trainID: number;
     name: string;
@@ -168,10 +171,10 @@ export interface Train {
     ariStationID: number;
     depTime: number;
     ariTime: number;
-    tripInfos: TripInfo[];
+    tripInfos: TripInTrainDTO[];
 
 }
-export interface TripInfo {
+export interface TripInTrainDTO {
     routeID: number;
     tripID: number;
     depStationID: number;
@@ -180,25 +183,25 @@ export interface TripInfo {
     ariTime: number;
 }
 
-export class GetTrip {
-    private static getFirstStopIndex(trip: Trip): number {
+export class GetTripDeprecated {
+    private static getFirstStopIndex(trip: TripDTO): number {
         for (let i = 0; i < trip.times.length; i++) {
             // if (trip.times[i].stopType === StopType.STOP || trip.times[i].stopType === StopType.PASS) {
             //     return i;
             // }
-            if (GetStopTime.TimeExist(trip.times[i])) {
+            if (GetStopTimeDepreacted.TimeExist(trip.times[i])) {
                 return i;
             }
         }
         return -1;
     }
 
-    private static getLastStopIndex(trip: Trip): number {
+    private static getLastStopIndex(trip: TripDTO): number {
         for (let i = trip.times.length - 1; i >= 0; i--) {
             // if (trip.times[i].stopType === StopType.STOP || trip.times[i].stopType === StopType.PASS) {
             //     return i;
             // }
-            if (GetStopTime.TimeExist(trip.times[i])) {
+            if (GetStopTimeDepreacted.TimeExist(trip.times[i])) {
                 return i;
             }
 
@@ -210,12 +213,12 @@ export class GetTrip {
      * Tripの中の始発駅を返します。
      * return routeStationのindex
      */
-    public static GetBeginStationIndex(trip: Trip) {
+    public static GetBeginStationIndex(trip: TripDTO) {
         switch (trip.direction) {
             case 0:
-                return GetTrip.getFirstStopIndex(trip);
+                return GetTripDeprecated.getFirstStopIndex(trip);
             case 1:
-                return GetTrip.getLastStopIndex(trip);
+                return GetTripDeprecated.getLastStopIndex(trip);
         }
         return -1;
     }
@@ -224,30 +227,30 @@ export class GetTrip {
      * Tripの中の終着駅を返します。
      * return routeStationのindex
      */
-    public static GetEndStationIndex(trip: Trip) {
+    public static GetEndStationIndex(trip: TripDTO) {
         switch (trip.direction) {
             case 0:
-                return GetTrip.getLastStopIndex(trip);
+                return GetTripDeprecated.getLastStopIndex(trip);
             case 1:
-                return GetTrip.getFirstStopIndex(trip);
+                return GetTripDeprecated.getFirstStopIndex(trip);
         }
         return -1;
     }
 
-    public static TimeExist(trip: Trip, stationIndex: number) {
-        return GetStopTime.TimeExist(trip.times[stationIndex]);
+    public static TimeExist(trip: TripDTO, stationIndex: number) {
+        return GetStopTimeDepreacted.TimeExist(trip.times[stationIndex]);
     }
 
-    public static GetStopType(trip: Trip, stationIndex: number) {
+    public static GetStopType(trip: TripDTO, stationIndex: number) {
         return trip.times[stationIndex].stopType;
     }
 
-    public static GetDATime(trip: Trip, stationIndex: number) {
-        return GetStopTime.GetDepAriTime(trip.times[stationIndex]);
+    public static GetDATime(trip: TripDTO, stationIndex: number) {
+        return GetStopTimeDepreacted.GetDepAriTime(trip.times[stationIndex]);
     }
 
-    public static GetADTime(trip: Trip, stationIndex: number) {
-        return GetStopTime.GetAriDepTime(trip.times[stationIndex]);
+    public static GetADTime(trip: TripDTO, stationIndex: number) {
+        return GetStopTimeDepreacted.GetAriDepTime(trip.times[stationIndex]);
     }
 
 
@@ -258,15 +261,15 @@ export interface RouteInfo {
     routeID: number;
     name: string;
     stations: number[];
-    routeStations?: RouteStation[];
+    routeStations?: RouteStationDTO[];
 }
 
 export interface DiaData {
     name:string;
     routes: { [key: number]: RouteInfo };
-    stations: { [key: number]: Station };
-    trains: { [key: number]: Train };
-    trainTypes: { [key: number]: TrainType };
+    stations: { [key: number]: StationDTO };
+    trains: { [key: number]: TrainDTO };
+    trainTypes: { [key: number]: TrainTypeDTO };
     timetables?: { [key: number]: TimeTable };
 
 

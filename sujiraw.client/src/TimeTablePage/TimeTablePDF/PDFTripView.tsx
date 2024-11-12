@@ -1,20 +1,20 @@
 import React from "react";
 import {Text, View} from "@react-pdf/renderer";
-import {GetStopTime, StopTime, TrainType, Trip} from "../../DiaData/DiaData";
+import {GetStopTimeDepreacted, StopTimeDTO, TrainTypeDTO, TripDTO} from "../../DiaData/DiaData";
 import {StationProps} from "../StationView";
-import {TimeTablePageSetting} from "../TimeTablePage";
+import {TimeTablePageSetting} from "../RouteTimeTable/RouteTimeTablePage.tsx";
 import {timeIntStr} from "../Util";
 import { TimetablePDFSetting} from "./SettingView";
 
 interface PDFTripViewProps {
-    trip: Trip;
-    type: TrainType;
+    trip: TripDTO;
+    type: TrainTypeDTO;
     stations: StationProps[];
     setting: TimetablePDFSetting;
     direction: number;
 }
 function PDFTripView({trip,type,stations,setting,direction}:PDFTripViewProps) {
-    function depTimeStr(time: StopTime, _i: number) {
+    function depTimeStr(time: StopTimeDTO, _i: number) {
         switch (time.stopType) {
             case 0:
                 return "‥";
@@ -35,11 +35,11 @@ function PDFTripView({trip,type,stations,setting,direction}:PDFTripViewProps) {
                         return "‥";
                     }
                 }
-                return timeIntStr(GetStopTime.GetDepAriTime(time));
+                return timeIntStr(GetStopTimeDepreacted.GetDepAriTime(time));
         }
     }
 
-    function ariTimeStr(time: StopTime, _i: number) {
+    function ariTimeStr(time: StopTimeDTO, _i: number) {
         switch (time.stopType) {
             case 0:
                 return "‥";
@@ -60,7 +60,7 @@ function PDFTripView({trip,type,stations,setting,direction}:PDFTripViewProps) {
                         return "‥";
                     }
                 }
-                return timeIntStr(GetStopTime.GetAriDepTime(time));
+                return timeIntStr(GetStopTimeDepreacted.GetAriDepTime(time));
         }
     }
 

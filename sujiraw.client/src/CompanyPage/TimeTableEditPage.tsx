@@ -21,14 +21,10 @@ import {Item, Search, SearchIconWrapper, StyledInputBase} from "../CMN/Styles.ts
 import {useTranslation} from "react-i18next";
 import {Add, Settings} from "@mui/icons-material";
 import {getTimeTable, saveTimeTable, TimeTable, TimeTableStation} from "../DiaData/TimeTableData.ts";
-import {DiaData, Route, RouteInfo, RouteStation} from "../DiaData/DiaData.ts";
+import {DiaData, RouteDTO, RouteInfo, RouteStationDTO} from "../DiaData/DiaData.ts";
 import {axiosClient} from "../CMN/axiosHook.ts";
 
-
-
-
 export function TimeTableEditPage() {
-
     const [company, setCompany] = useState<DiaData>(
         {
             name: "",
@@ -38,7 +34,6 @@ export function TimeTableEditPage() {
             trainTypes: {}
         }
     );
-
     const [timetable,setTimeTable]=useState<TimeTable>({timeTableID:0,companyID:0,name:"",timetableStations:[]});
     const param = useParams<{ companyID: string,timetableID:string }>();
 
@@ -47,7 +42,7 @@ export function TimeTableEditPage() {
     const [startStation,setStartStation]=useState<number>(0);
     const [endStation,setEndStation]=useState<number>(0);
 
-    const [selectedRoute,setSelectedRoute]=useState<Route>(
+    const [selectedRoute,setSelectedRoute]=useState<RouteDTO>(
         {
             routeID:0,
             name:"",
@@ -71,7 +66,7 @@ export function TimeTableEditPage() {
         setTimeTable({...timetable,name:name});
     }
 
-    const getRouteStation=(rsID:number):RouteStation=>{
+    const getRouteStation=(rsID:number):RouteStationDTO=>{
         return Object.values(company.routes).map(route=>route.routeStations).flat().find((rs)=>{
             if(rs){
                 return rs.rsID===rsID;
@@ -292,7 +287,7 @@ export function TimeTableEditPage() {
                             <div>
                                 <Button
                                  onClick={()=>{
-                                     setSelectedRoute(route as unknown as Route);
+                                     setSelectedRoute(route as unknown as RouteDTO);
                                      setOpenInsertStation(false);
 
                                      setOpenSelectStation(true);

@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import TimeTablePage from "./TimeTablePage/TimeTablePage";
+import RouteTimeTablePage from "./TimeTablePage/RouteTimeTable/RouteTimeTablePage.tsx";
 import {BrowserRouter, Route, Routes } from 'react-router-dom';
 import DiagramPage from "./Diagram/DiagramPage";
 import { TimeTablePDF } from './TimeTablePage/TimeTablePDF/TimeTablePDF';
@@ -10,7 +10,7 @@ import {OuDiaOpenDialog} from "./Menu/OuDiaOpenDialog";
 import {CompanyListPage} from "./CompanyPage/CompanyListPage.tsx";
 import {CompanyPage} from "./CompanyPage/CompanyPage.tsx";
 import {TimeTableEditPage} from "./CompanyPage/TimeTableEditPage.tsx";
-import {MainTimeTablePage} from "./TimeTablePage/MainTimeTable/MainTimeTablePage.tsx";
+import {CustomTimeTablePage} from "./TimeTablePage/CustomTimeTable/CustomTimeTablePage.tsx";
 
 function App() {
   return (
@@ -23,10 +23,10 @@ function App() {
               <CompanyPage/>
           }/>
           <Route path="/TimeTable/:companyID/:routeID/:direct" element={
-              <TimeTablePage/>
+              <RouteTimeTablePage/>
           }></Route>
           <Route path="/MainTimeTable/:companyID/:timetableID/:direct" element={
-              <MainTimeTablePage/>
+              <CustomTimeTablePage/>
           }></Route>
           <Route path="/TimeTablePDF/:companyID/:routeID" element={
               <TimeTablePDF/>

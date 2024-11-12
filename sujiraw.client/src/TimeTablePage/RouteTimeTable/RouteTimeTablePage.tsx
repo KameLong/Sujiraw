@@ -1,163 +1,107 @@
-import React, {memo, useEffect, useMemo,  useState} from "react";
-import {
-    EditRouteDepreacted, loadCompany, loadRoute,
-    RouteDTO,
-    RouteInfo,
-    StationDTO,
-    TrainDTO,
-    TrainTypeDTO,
-} from "../DiaData/DiaData";
-import {getStationViewWidth, StationView} from './StationView';
-import {getTripNameViewHeight, TripNameView} from './TripNameView';
-import {TripView} from "./TripView.tsx";
-import {useNavigate, useParams} from "react-router-dom";
-import { StationHeaderView } from "./StationHeaderView";
-import {BottomMenu} from "../Menu/BottomMenu";
-import { HolizontalBoxList } from "./HolizontalBoxList";
 import {useLocation} from "react-use";
+import {useParams} from "react-router-dom";
+import {getStationViewWidth, StationView} from "../StationView.tsx";
+import {getTripNameViewHeight, TripNameView} from "../TripNameView.tsx";
+import {StationHeaderView} from "../StationHeaderView.tsx";
+import {HolizontalBoxList} from "../HolizontalBoxList.tsx";
+import {BottomMenu} from "../../Menu/BottomMenu.tsx";
+import React, {memo, useMemo, useState} from "react";
+import {TripView} from "../TripView.tsx";
 
-
+import {TripDTO} from "../../DiaData/DiaData.ts";
+import {useRouteTimeTableData} from "./RouteTimeTableData.ts";
+import {TimeTableTrain, TripData} from "../CustomTimeTable/CustomTimeTableData.ts";
 export interface TimeTablePageSetting{
     fontSize:number,
     lineHeight:number,
 }
-export default function TimeTablePage() {
-    const [stations, setStations] = useState<{[key:number]:StationDTO}>({});
-    const [trainTypes, setTrainTypes] = useState<{[key:number]:TrainTypeDTO}>({});
-    const [trains, setTrains] = useState<{[key:number]:TrainDTO}>({});
-    const [routeInfo, setRouteInfo] = useState<{[key:number]:RouteInfo}>({});
-    const [routes, setRoutes] = useState<{[key:number]:RouteDTO}>({});
-    const [selectedTrip,setSelectedTrip]=useState<number>(-1);
-    const navigate=useNavigate();
-    const [setting,setSetting]=useState<TimeTablePageSetting>({
-        fontSize:13,
-        lineHeight:1.1
-    });
-    const search = useLocation().search;
-    const query = new URLSearchParams(search);
-    const tripID = Number.parseInt(query.get('tripID')??'-1');
-
-    const MemoTripView = memo(TripView);
-    const MemoTripNameView = memo(TripNameView);
+export default function RouteTimeTablePage(){
     const param = useParams<{ companyID:string,routeID:string,direct: string  }>();
     const companyID=parseInt(param.companyID??"0");
     const routeID=parseInt(param.routeID??"0");
     const direct=parseInt(param.direct??"0");
-    const [loadingCompany,setLoadingCompany]=useState(true);
+
+    const timetableData=useRouteTimeTableData(companyID,routeID,direct);
+
+    const [setting,setSetting]=useState<TimeTablePageSetting>({
+        fontSize:13,
+        lineHeight:1.1
+    });
 
     let setScrollX:undefined|((scrollX:number)=>void)=undefined;
     let setScrollX2:undefined|((scrollX:number)=>void)=undefined;
+    const MemoTripView = memo(TripView);
+    const MemoTripNameView = memo(TripNameView);
 
-    useEffect(() => {
-        console.log(tripID,setScrollX,setScrollX2);
-        if(setScrollX!==undefined&&setScrollX2!==undefined&&tripID!==-1){
-            const index=getTrips().findIndex((trip)=>trip.tripID===tripID);
-            if(index!==-1){
-                const index2=Math.max(0,index-5);
-                setScrollX(index2*setting.fontSize*2.2);
-            }
-        }
-        setSelectedTrip(tripID);
-    }, [tripID,routes]);
-   useEffect(() => {
-       setLoadingCompany(true);
-       loadCompany(companyID,routeID).then((company)=>{
-           console.log(company);
-           setStations(company.stations);
-           // console.log(stations);
-           setTrainTypes(company.trainTypes);
-           setTrains(company.trains);
-           setRouteInfo(company.routes);
-           setLoadingCompany(false);
-       });
-    }, [companyID,routeID]);
-    useEffect(() => {
-        const res=Object.values(routeInfo).find((routeInfo)=>{
-            return routeInfo.name==="阪急宝塚本線";
-        });
-        if(routeID===0&&res!==undefined){
-            navigate(`/TimeTable/${companyID}/${res.routeID}/${direct}`);
-            return;
-        }
-        if(routes[routeID]===undefined){
-            loadRoute(companyID,routeID).then((route)=>{
-                console.log(route);
-
-                EditRouteDepreacted.sortTrips(route,0,0);
-                setRoutes((prev)=>{
-                    const next  = {...prev};
-                    if(route!==undefined){
-                        next[route.routeID]=route;
-                    }
-                    return next;
-                })
-            });
-        }
-
-    }, [routeID]);
-
-    function getTrips() {
-        if(direct===0){
-            return routes[routeID].downTrips;
-        }else{
-            return routes[routeID].upTrips;
-        }
-    }
 
     const getStationProps=useMemo(()=>{
-        if(routes[routeID]===undefined){
-            return [];
+        const stations=timetableData.timetableServerData.showStations;
+        function GetRouteStation(routeStationID:number){
+            return Object.values(timetableData.timetableServerData.routes).map((route)=>route.routeStations).flat().find((routeStation)=>routeStation.rsID===routeStationID);
         }
-        return routes[routeID].routeStations.map((item)=>{
+        const res= stations.map((station,_i)=>{
+            const routeStation=GetRouteStation(station.depRouteStationID===0?station.ariRouteStationID:station.depRouteStationID);
+            let border=station.border;
+            if(direct===1){
+                if(_i===0){
+                    border=false;
+                }
+                else{
+                    border=stations[_i-1].border;
+                }
+
+            }
             return {
-                rsID:item.rsID,
-                name:stations[item.stationID]?.name??"",
-                style:item.showStyle,
-                border:false
+                rsID:routeStation.rsID,
+                name:timetableData.timetableServerData.stations[routeStation.stationID]?.name??"",
+                style:station.showStyle===0?0b00110011:station.showStyle,
+                border:border
             }
         });
-    },[routes,routeID,stations]);
+        console.log(res);
+        return res;
+    },[timetableData]);
 
-    if(routes[routeID]===undefined){
-        return (
-            <div style={{fontSize: `${setting.fontSize}px`, lineHeight: `${setting.fontSize * setting.lineHeight}px`}}>
-            <BottomMenu companyID={companyID} routeID={routeID} routeInfo={routeInfo}/>
-            </div>
-        )
-    }
+
     const Column = ( index:number, style:any) => {
-        const trip=getTrips()[index];
-        const selected=trip.tripID===selectedTrip;
-        return (
-            <div key={trip.tripID} className={selected?"selected":""} style={style}>
-            <MemoTripView  trip={trip} type={trainTypes[trip.trainTypeID]}
-                      setting={setting} stations={getStationProps} allStations={stations}
-                      train={trains[trip.trainID]}
+        const trip:TimeTableTrain=timetableData.trains[index];
 
-                      direction={direct}/>
+        const selected=false;
+        return (
+            <div key={trip.trainID} className={selected?"selected":""} style={style}>
+                <MemoTripView trip={TripData.fromTimeTableTrain(trip)} type={timetableData.timetableServerData.trainTypes[trip.trainTypeID]}
+                              setting={setting} stations={getStationProps} allStations={timetableData.timetableServerData.stations}
+                              train={timetableData.timetableServerData.trains[trip.trainID]}
+
+                              direction={direct}/>
             </div>
         );
     }
     const Column2 = (index:number, style:any) => {
-        const trip=getTrips()[index];
-        const selected=trip.tripID===selectedTrip;
+        const trip=timetableData.trains[index];
+
+        const selected=false;
         return (
-            <div className={selected?"selected":""} key={trip.tripID} style={{...style,height:`${getTripNameViewHeight(setting)}px`,borderBottom:'2px solid black'}}>
-                <MemoTripNameView key={trip.tripID} trip={trip} type={trainTypes[trip.trainTypeID]}
-                              setting={setting}
-                              train={trains[trip.trainID]}
-                              stations={stations}
+            <div className={selected?"selected":""} key={trip.trainID} style={{...style,height:`${getTripNameViewHeight(setting)}px`,borderBottom:'2px solid black'}}>
+                <MemoTripNameView trip={TripData.fromTimeTableTrain(trip)} type={timetableData.timetableServerData.trainTypes[trip.trainTypeID]}
+                                  setting={setting}
+                                  train={timetableData.timetableServerData.trains[trip.trainID]}
+                                  allStations={timetableData.timetableServerData.stations}
+                                  direction={direct}
                 />
 
             </div>
         );
     }
-    if(loadingCompany||routes[routeID]==undefined) {
+
+
+
+    if(timetableData.timetableServerData.showStations.length===0) {
         return <div>loading</div>
     }
     return (
         <div style={{background:'white',width: '100%',height:'100%',fontSize: `${setting.fontSize}px`, lineHeight: `${setting.fontSize * setting.lineHeight}px`}}>
-            <div style={{display: "flex", width: '100%', height: '100%', paddingBottom: "70px",zIndex:5}}>
+            <div style={{display: "flex", width: '100%', height: '100%', paddingBottom: "70px",zIndex:5,overflow:'visible'}}>
                 <div style={{
                     width: `${getStationViewWidth(setting)}px`,
                     borderRight: "2px solid black",
@@ -180,7 +124,7 @@ export default function TimeTablePage() {
                     <StationView stations={getStationProps} setting={setting} direction={direct}/>
                 </div>
                 <div style={{width: '0px', flexShrink: 1, flexGrow: 1, paddingRight: '10px',
-                display:'flex',flexDirection:'column'}}>
+                    display:'flex',flexDirection:'column'}}>
                     <div
                         style={{
                             paddingLeft: `${getStationViewWidth(setting)}px`,
@@ -190,7 +134,7 @@ export default function TimeTablePage() {
                         }}
                     >
                         <HolizontalBoxList
-                            itemCount={getTrips().length}
+                            itemCount={timetableData.trains.length}
                             itemSize={(setting.fontSize * 2.2)}
                             getSetScrollX={(_setScrollX)=> {
                                 setScrollX2=_setScrollX;
@@ -212,22 +156,22 @@ export default function TimeTablePage() {
                         }}
                     >
                         <HolizontalBoxList
-                                           itemCount={getTrips().length}
-                                           itemSize={(setting.fontSize * 2.2)}
-                                           onScroll={(_scrollX, scrollY)=>{
-                                               const stationViewLayout=document.getElementById("stationViewLayout")
-                                                  if(stationViewLayout!==null){
-                                                    stationViewLayout.style.top=-scrollY+"px";
-                                                  }
-                                                  if(setScrollX2!==undefined) {
-                                                      setScrollX2(_scrollX);
-                                                  }
-                                                }
-                                            }
-                                           getSetScrollX={(_setScrollX)=> {
-                                               setScrollX=_setScrollX;
-                                           }
-                                           }
+                            itemCount={timetableData.trains.length}
+                            itemSize={(setting.fontSize * 2.2)}
+                            onScroll={(_scrollX, scrollY)=>{
+                                const stationViewLayout=document.getElementById("stationViewLayout")
+                                if(stationViewLayout!==null){
+                                    stationViewLayout.style.top=-scrollY+"px";
+                                }
+                                if(setScrollX2!==undefined) {
+                                    setScrollX2(_scrollX);
+                                }
+                            }
+                            }
+                            getSetScrollX={(_setScrollX)=> {
+                                setScrollX=_setScrollX;
+                            }
+                            }
 
                         >
                             {Column}
@@ -236,7 +180,6 @@ export default function TimeTablePage() {
 
                 </div>
             </div>
-                <BottomMenu companyID={companyID} routeID={routeID} routeInfo={routeInfo}/>
         </div>
     );
 }

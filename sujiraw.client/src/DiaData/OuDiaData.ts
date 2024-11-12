@@ -1,9 +1,9 @@
-import {GetStopTime, GetTrip, Route, RouteStation, Station, StopTime, Train, TrainType, Trip} from "./DiaData.ts";
+import {GetStopTimeDepreacted, GetTripDeprecated, RouteDTO, RouteStationDTO, StationDTO, StopTimeDTO, TrainDTO, TrainTypeDTO, TripDTO} from "./DiaData.ts";
 import {Station as OudStation} from "../oud/models/Station.ts";
 import {O_O} from "../oud";
 import {StHandling} from "../oud/models/StHandling.ts";
 
-function stationParser(station:OudStation):Station{
+function stationParser(station:OudStation):StationDTO{
     return {
         name:station.name,
         lat:35,
@@ -20,12 +20,12 @@ function timeParse(time:number){
 }
 
 export function oudParser(oud:O_O):string {
-    const stations:Station[]=[];
+    const stations:StationDTO[]=[];
     //oudiaの各駅がどのrouteの何番目の駅かを記録する
     const stationOrder:{routeIndex:number,stationIndex:number}[]=[];
 
-    const trainTypes:TrainType[]=[];
-    const routes:Route[]=[];
+    const trainTypes:TrainTypeDTO[]=[];
+    const routes:RouteDTO[]=[];
     const companyID=Math.floor(Number.MAX_SAFE_INTEGER*Math.random());
 
 
@@ -52,7 +52,7 @@ export function oudParser(oud:O_O):string {
 
 
     //初期routeを作成
-    let route:Route= {
+    let route:RouteDTO= {
         routeID:Math.floor(Number.MAX_SAFE_INTEGER*Math.random()),
         name:oud.stations[0].name+"~",
         routeStations:[],
@@ -100,7 +100,7 @@ export function oudParser(oud:O_O):string {
     }
     route.name+=oud.stations[oud.stations.length-1].name;
 
-    const trains:Train[]=[];
+    const trains:TrainDTO[]=[];
     oud.diagrams[0].downStreaks.forEach((oudTrain)=>{
         const trainID=Math.floor(Number.MAX_SAFE_INTEGER*Math.random());
         while(oudTrain.stHandlings.length<stations.length){
@@ -110,7 +110,7 @@ export function oudParser(oud:O_O):string {
         const st=oudTrain.stHandlings;
 
 
-        const train:Train={
+        const train:TrainDTO={
             companyID:companyID,
             trainID:trainID,
             name:oudTrain.name,
@@ -132,7 +132,7 @@ export function oudParser(oud:O_O):string {
             times:[]
         }));
         for(let i=0;i<stations.length;i++){
-            const time:StopTime= {
+            const time:StopTimeDTO= {
                 ariTime:timeParse(st[i].arrival.getTime()),
                 depTime:timeParse(st[i].departure.getTime()),
 
@@ -143,8 +143,8 @@ export function oudParser(oud:O_O):string {
             trips[stationOrder[i].routeIndex].times.push(time);
         }
         trips.forEach((trip,_i)=>{
-            const beginStation=GetTrip.GetBeginStationIndex(trip);
-            const endStation=GetTrip.GetEndStationIndex(trip);
+            const beginStation=GetTripDeprecated.GetBeginStationIndex(trip);
+            const endStation=GetTripDeprecated.GetEndStationIndex(trip);
             if(beginStation===-1||endStation===-1) {
                 return;
             }
@@ -154,8 +154,8 @@ export function oudParser(oud:O_O):string {
                 tripID:trip.tripID,
                 ariStationID:routes[_i].routeStations[endStation].stationID,
                 depStationID:routes[_i].routeStations[beginStation].stationID,
-                depTime:GetStopTime.GetDepAriTime(trip.times[beginStation]),
-                ariTime:GetStopTime.GetAriDepTime(trip.times[endStation])
+                depTime:GetStopTimeDepreacted.GetDepAriTime(trip.times[beginStation]),
+                ariTime:GetStopTimeDepreacted.GetAriDepTime(trip.times[endStation])
             });
         });
         if(train.tripInfos.length===0){
@@ -180,7 +180,7 @@ export function oudParser(oud:O_O):string {
                 new StHandling());
         }
         const st = oudTrain.stHandlings.toReversed();
-        const train:Train={
+        const train:TrainDTO={
             companyID:companyID,
             trainID:trainID,
             name:oudTrain.name,
@@ -202,7 +202,7 @@ export function oudParser(oud:O_O):string {
             times:[]
         }));
         for(let i=0;i<stations.length;i++){
-            const time:StopTime= {
+            const time:StopTimeDTO= {
                 ariTime:timeParse(st[i].arrival.getTime()),
                 depTime:timeParse(st[i].departure.getTime()),
 
@@ -213,8 +213,8 @@ export function oudParser(oud:O_O):string {
             trips[stationOrder[i].routeIndex].times.push(time);
         }
         trips.forEach((trip,_i)=>{
-            const beginStation=GetTrip.GetBeginStationIndex(trip);
-            const endStation=GetTrip.GetEndStationIndex(trip);
+            const beginStation=GetTripDeprecated.GetBeginStationIndex(trip);
+            const endStation=GetTripDeprecated.GetEndStationIndex(trip);
             if(beginStation===-1||endStation===-1) {
                 return;
             }
@@ -224,8 +224,8 @@ export function oudParser(oud:O_O):string {
                 tripID:trip.tripID,
                 ariStationID:routes[_i].routeStations[endStation].stationID,
                 depStationID:routes[_i].routeStations[beginStation].stationID,
-                depTime:GetStopTime.GetDepAriTime(trip.times[beginStation]),
-                ariTime:GetStopTime.GetAriDepTime(trip.times[endStation]),
+                depTime:GetStopTimeDepreacted.GetDepAriTime(trip.times[beginStation]),
+                ariTime:GetStopTimeDepreacted.GetAriDepTime(trip.times[endStation]),
             });
         });
         if(train.tripInfos.length===0){
@@ -263,18 +263,18 @@ export function oudParser(oud:O_O):string {
         trainTypes: {},
         name:oud.name
     }
-    company.stations=stations.reduce((acc:{[key:number]:Station},station)=>{
+    company.stations=stations.reduce((acc:{[key:number]:StationDTO}, station)=>{
         acc[station.stationID]=station;
         return acc;
     },{});
     routes.forEach((route)=>{
         company.routes[route.routeID]=route;
     });
-    company.trains=trains.reduce((acc:{[key:number]:Train},train)=>{
+    company.trains=trains.reduce((acc:{[key:number]:TrainDTO}, train)=>{
         acc[train.trainID]=train;
         return acc;
     },{});
-    company.trainTypes=trainTypes.reduce((acc:{[key:number]:TrainType},trainType)=>{
+    company.trainTypes=trainTypes.reduce((acc:{[key:number]:TrainTypeDTO}, trainType)=>{
         acc[trainType.trainTypeID]=trainType;
         return acc;
     },{});

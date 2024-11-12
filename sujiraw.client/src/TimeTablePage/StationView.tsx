@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {TimeTablePageSetting} from "./TimeTablePage";
+import {TimeTablePageSetting} from "./RouteTimeTable/RouteTimeTablePage.tsx";
 import {stationStyle} from "./Util";
 
 export interface StationProps {

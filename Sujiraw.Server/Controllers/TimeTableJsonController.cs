@@ -13,21 +13,16 @@ namespace Sujiraw.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TimeTableJsonController :  SujiroAPIController
+    public class TimeTableJsonController(IHubContext<SujirawHub> hubContext, IConfiguration configuration) :  SujiroAPIController(hubContext, configuration)
     {
-        public TimeTableJsonController(IHubContext<SujirawHub> hubContext, IConfiguration configuration) : base(hubContext, configuration)
-        {
-        }
         [HttpDelete("{timetableID}")]
         public ActionResult DeleteTimeTable(long timetableID)
         {
-            using (var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!))
-            {
-                service.BeginTransaction();
-                service.DeleteTimeTable(timetableID);
-                service.Commit();
-                return Ok();
-            }
+            using var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!);
+            service.BeginTransaction();
+            service.DeleteTimeTable(timetableID);
+            service.Commit();
+            return Ok();
 
         }
 
@@ -35,80 +30,76 @@ namespace Sujiraw.Server.Controllers
             [HttpPut("{timetableID}")]
         public ActionResult PutTimeTable(long timetableID, JsonTimeTable timetable)
         {
-            using (var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!))
+            using var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            try
             {
-                Stopwatch sw = new Stopwatch();
-                sw.Start();
-                try
-                {
-                    service.BeginTransaction();
-                    service.DeleteTimeTable(timetable.TimeTableID);
+                service.BeginTransaction();
+                service.DeleteTimeTable(timetable.TimeTableID);
 
-                    service.InsertTimeTable(new List<TimeTable>{new TimeTable(timetable.CompanyID) {
+                service.InsertTimeTable(new List<TimeTable>{new TimeTable(timetable.CompanyID) {
                         CompanyID = timetable.CompanyID,
                         TimeTableID=timetable.TimeTableID,
                         Name = timetable.Name
                     } });
-                    service.InsertTimeTableStation(
-                        timetable.TimetableStations.Select((item,i) =>
+                service.InsertTimeTableStation(
+                    timetable.TimetableStations.Select((item, i) =>
+                    {
+                        return new TimeTableStation(timetableID)
                         {
-                            return new TimeTableStation(timetableID)
-                            {
-                                TimeTableID = timetable.TimeTableID,
-                                AriRouteStationID = item.AriRouteStationID,
-                                DepRouteStationID = item.DepRouteStationID,
-                                Sequence=i,
-                                ShowStyle = item.ShowStyle,
-                            };
-                        }).ToList());
-                    service.Commit();
-                    Debug.WriteLine("Commit " + sw.ElapsedMilliseconds);
-                    return Ok(timetable.TimeTableID);
-                }
-                catch (Exception ex)
-                {
-                    service.Rollback();
-                    return BadRequest(ex.Message);
-                }
+                            TimeTableID = timetable.TimeTableID,
+                            AriRouteStationID = item.AriRouteStationID,
+                            DepRouteStationID = item.DepRouteStationID,
+                            Sequence = i,
+                            ShowStyle = item.ShowStyle,
+                        };
+                    }).ToList());
+                service.Commit();
+                Debug.WriteLine("Commit " + sw.ElapsedMilliseconds);
+                return Ok(timetable.TimeTableID);
+            }
+            catch (Exception ex)
+            {
+                service.Rollback();
+                return BadRequest(ex.Message);
             }
         }
         [HttpGet("{timetableID}")]
         public ActionResult GetTimeTable(long timetableID)
         {
-            using (var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!))
+            using var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            try
             {
-                Stopwatch sw = new Stopwatch();
-                sw.Start();
-                try
+                service.BeginTransaction();
+                var timetable = service.GetTimeTable(timetableID);
+                service.Commit();
+                Debug.WriteLine("Commit " + sw.ElapsedMilliseconds);
+                var timetableJson = new JsonTimeTable()
                 {
-                    service.BeginTransaction();
-                    var timetable=service.GetTimeTable(timetableID);
-                    service.Commit();
-                    Debug.WriteLine("Commit " + sw.ElapsedMilliseconds);
-                    var timetableJson = new JsonTimeTable()
+                    CompanyID = timetable.CompanyID,
+                    Name = timetable.Name,
+                    TimeTableID = timetable.TimeTableID,
+                    TimetableStations = service.GetTimeTableStationByTimeTable(timetableID).Select(item =>
                     {
-                        CompanyID = timetable.CompanyID,
-                        Name = timetable.Name,
-                        TimeTableID = timetable.TimeTableID,
-                        TimetableStations = service.GetTimeTableStationByTimeTable(timetableID).Select(item =>
+                        return new JsonTimeTableStation()
                         {
-                            return new JsonTimeTableStation()
-                            {
-                                AriRouteStationID = item.AriRouteStationID,
-                                DepRouteStationID = item.DepRouteStationID,
-                                ShowStyle = item.ShowStyle,
-                                Main = false
-                            };
-                        }).ToList()
-                    };
+                            AriRouteStationID = item.AriRouteStationID,
+                            DepRouteStationID = item.DepRouteStationID,
+                            ShowStyle = item.ShowStyle,
+                            Main = false
+                        };
+                    }).ToList()
+                };
 
-                    return Ok(timetableJson);
-                }
-                catch (Exception ex)
-                {
-                    service.Rollback();
-                    return BadRequest(ex.Message);
-                }
+                return Ok(timetableJson);
+            }
+            catch (Exception ex)
+            {
+                service.Rollback();
+                return BadRequest(ex.Message);
             }
         }
         [HttpGet("data/{timetableID}")]
@@ -172,7 +163,6 @@ namespace Sujiraw.Server.Controllers
                     train.ariTime = item.AriTime;
                     return train;
                 });
-                Debug.WriteLine("157 "+sw.ElapsedMilliseconds);
 
                 using (var command = service.Command)
                 {
@@ -195,7 +185,6 @@ namespace Sujiraw.Server.Controllers
                         result.Trips[trip.tripID] = trip;
                     }
                 }
-                Debug.WriteLine("180 " + sw.ElapsedMilliseconds);
 
                 using (var timeCommand = service.CreateCommand())
                 {
@@ -215,8 +204,7 @@ namespace Sujiraw.Server.Controllers
                         result.Trips[stopTime.tripID].times.Add(stopTime);
                     }
                 }
-                Debug.WriteLine("196 " + sw.ElapsedMilliseconds);
-
+ 
                 result.TimeTable=new JsonTimeTable(
                     service.GetTimeTable(timetableID)
                 );
@@ -237,15 +225,10 @@ namespace Sujiraw.Server.Controllers
 
     }
 
-    //public class  TimeTableTrip
-    //{
-    //    public long TripID { get; set; }
-    //    public long TrainID { get; set; }
-    //    public long TrainTypeID { get; set; }
-    //    public int Direction { get; set; }
-    //    public List<TimeTableStopTime> Times { get; set; }
 
-    //}
+    /**
+     * 時刻表を作成するために必要なデータです。
+     */
 
     public class TimeTableData
     {
@@ -256,7 +239,10 @@ namespace Sujiraw.Server.Controllers
         public Dictionary<long,JsonTrain> Trains { get; set; } = new Dictionary<long, JsonTrain>();
         public Dictionary<long,JsonTrip>  Trips { get; set; } = new Dictionary<long, JsonTrip>();
 
+
         public JsonTimeTable TimeTable { get; set; } = new JsonTimeTable();
+
+        public List<JsonTimeTableStation> TimetableStations { get; set; } = new List<JsonTimeTableStation>();
 
     }
 
@@ -264,15 +250,34 @@ namespace Sujiraw.Server.Controllers
 
     public class JsonTimeTable
     {
-        public long TimeTableID { get; set; }
-        public long CompanyID { get; set; }
+        public long TimeTableID { get; set; } = 0;
+        public long CompanyID { get; set; } = 0;
         public string Name { get; set; } = "";
+
         public List<JsonTimeTableStation> TimetableStations { get; set; } = new List<JsonTimeTableStation>();
 
         public JsonTimeTable()
         {
         }
         public JsonTimeTable(TimeTable db)
+        {
+            TimeTableID = db.TimeTableID;
+            CompanyID = db.CompanyID;
+            Name = db.Name;
+        }
+    }
+
+    public class JsonTimeTableInfo
+    {
+        public long RouteID { get; set; } = 0;
+        public long TimeTableID { get; set; } = 0;
+        public long CompanyID { get; set; } = 0;
+        public string Name { get; set; } = "";
+
+        public JsonTimeTableInfo()
+        {
+        }
+        public JsonTimeTableInfo(TimeTable db)
         {
             TimeTableID = db.TimeTableID;
             CompanyID = db.CompanyID;
@@ -291,11 +296,17 @@ namespace Sujiraw.Server.Controllers
         {
 
         }
-        public JsonTimeTableStation(TimeTableStation db)
+        public JsonTimeTableStation(TimeTableStation timeTableStation)
         {
-            AriRouteStationID = db.AriRouteStationID;
-            DepRouteStationID = db.DepRouteStationID;
-            ShowStyle = db.ShowStyle;
+            AriRouteStationID = timeTableStation.AriRouteStationID;
+            DepRouteStationID = timeTableStation.DepRouteStationID;
+            ShowStyle = timeTableStation.ShowStyle;
+        }
+        public JsonTimeTableStation(RouteStation routeStation)
+        {
+            AriRouteStationID = routeStation.RouteStationID;
+            DepRouteStationID = routeStation.RouteStationID;
+            ShowStyle = routeStation.ShowStyle;
         }
     }
 }

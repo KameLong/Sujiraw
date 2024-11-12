@@ -3,15 +3,25 @@ import {axiosClient} from "../../CMN/axiosHook.ts";
 import {RouteDTO, StationDTO, StopTimeDTO, TrainDTO, TrainTypeDTO, TripDTO} from "../../DiaData/DiaData.ts";
 import {TimeTable, TimeTableStation} from "../../DiaData/TimeTableData.ts";
 
-interface TimeTableServerData{
+export interface TimeTableServerData{
     stations:{[key:number]:StationDTO},
     trainTypes:{[key:number]:TrainTypeDTO},
     trains:{[key:number]:TrainDTO},
     trips:{[key:number]:TripDTO},
     routes:{[key:number]:RouteDTO},
-    timeTable:TimeTable
+    timeTable:TimeTable,
+    showStations:ShowStationDTO[],
 }
 
+export interface ShowStationDTO{
+    ariRouteStationID:number;
+    depRouteStationID:number;
+    showStyle:number;
+    main:boolean;
+    border:boolean;
+    direction:number;
+
+}
 
 export class StopTimeData implements StopTimeDTO{
     ariTime: number;
@@ -93,6 +103,18 @@ export class TripData implements TripDTO{
         this.trainTypeID = trip.trainTypeID;
         this.tripID = trip.tripID;
     }
+    static fromTimeTableTrain(timeTableTrain:TimeTableTrain){
+        const tripData=new TripData({
+            direction:0,
+            routeID:0,
+            times:[],
+            trainID:timeTableTrain.trainID,
+            trainTypeID:timeTableTrain.trainTypeID,
+            tripID:0
+        });
+        tripData.times=timeTableTrain.times;
+        return tripData;
+    }
     private get _beginStationIndex():number{
         for(let i=0;i<this.times.length;i++){
             if(this.times[i].isExist){
@@ -137,7 +159,7 @@ class OuterTime{
     public stationID:number;
 }
 
-class TimeTableTrain{
+export class TimeTableTrain{
     public times:StopTimeData[];
     public trainID:number;
     public trainTypeID:number;
@@ -418,7 +440,8 @@ export function useTimeTableServerData(timetableID:number){
             companyID: 0,
             name: "",
             timetableStations: []
-        }
+        },
+        showStations:[]
     });
     useEffect(() => {
         axiosClient.get(`/api/TimeTableJson/data/${timetableID}`).then((res)=> {

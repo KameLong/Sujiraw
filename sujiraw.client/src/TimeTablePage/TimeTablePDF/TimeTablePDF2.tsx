@@ -3,14 +3,14 @@ import PDFStationView from "./PDFStationView";
 import PDFTripView from "./PDFTripView";
 import React from "react";
 import {TimetablePDFSetting} from "./SettingView";
-import {Route, Station, TrainType} from "../../DiaData/DiaData";
+import {RouteDTO, StationDTO, TrainTypeDTO} from "../../DiaData/DiaData";
 
 
 interface TimeTablePDF2Props {
-    route: Route;
+    route: RouteDTO;
     layout: TimetablePDFSetting;
-    trainTypes: {[key:number]:TrainType};
-    stations:{[key:number]:Station};
+    trainTypes: {[key:number]:TrainTypeDTO};
+    stations:{[key:number]:StationDTO};
     onRender:()=>void;
 }
 export function TimeTablePDF2(

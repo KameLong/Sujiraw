@@ -1,15 +1,15 @@
 import {useEffect, useState} from "react";
-import {GetStopTime, loadCompany, loadRoute, RouteInfo, StopTime, StopType} from "../DiaData/DiaData";
+import {GetStopTimeDepreacted, loadCompany, loadRoute, RouteInfo, StopTimeDTO, StopType} from "../DiaData/DiaData";
 import {DiagramStation, DiagramTrip} from "./DiagramData";
 import {DiagramLine} from "./DiagramCanvas";
 
-const getAD = (stopTime: StopTime) => {
+const getAD = (stopTime: StopTimeDTO) => {
     if (stopTime.ariTime >= 0) {
         return stopTime.ariTime;
     }
     return stopTime.depTime;
 }
-const getDA=(stopTime:StopTime)=>{
+const getDA=(stopTime:StopTimeDTO)=>{
     if(stopTime.depTime>=0){
         return stopTime.depTime;
     }
@@ -73,8 +73,8 @@ export function useDiagramHook(companyID:number,routeID:number){
                 for(let j=0;j<route.downTrips.length;j++){
                     const trip=route.downTrips[j];
                     const stopTimes=trip.times;
-                    if(GetStopTime.TimeExist(stopTimes[i])&&GetStopTime.TimeExist(stopTimes[i-1])){
-                        let t=GetStopTime.GetAriDepTime(trip.times[i])-GetStopTime.GetDepAriTime(trip.times[i-1]);
+                    if(GetStopTimeDepreacted.TimeExist(stopTimes[i])&&GetStopTimeDepreacted.TimeExist(stopTimes[i-1])){
+                        let t=GetStopTimeDepreacted.GetAriDepTime(trip.times[i])-GetStopTimeDepreacted.GetDepAriTime(trip.times[i-1]);
                         if(trip.times[i].stopType!==StopType.STOP){
                             t+=30;
                         }
@@ -88,8 +88,8 @@ export function useDiagramHook(companyID:number,routeID:number){
                 for(let j=0;j<route.upTrips.length;j++){
                     const trip=route.upTrips[j];
                     const stopTimes=trip.times;
-                    if(GetStopTime.TimeExist(stopTimes[i])&&GetStopTime.TimeExist(stopTimes[i-1])){
-                        let t=GetStopTime.GetAriDepTime(trip.times[i-1])-GetStopTime.GetDepAriTime(trip.times[i]);
+                    if(GetStopTimeDepreacted.TimeExist(stopTimes[i])&&GetStopTimeDepreacted.TimeExist(stopTimes[i-1])){
+                        let t=GetStopTimeDepreacted.GetAriDepTime(trip.times[i-1])-GetStopTimeDepreacted.GetDepAriTime(trip.times[i]);
                         if(trip.times[i].stopType!==StopType.STOP){
                             t+=30;
                         }

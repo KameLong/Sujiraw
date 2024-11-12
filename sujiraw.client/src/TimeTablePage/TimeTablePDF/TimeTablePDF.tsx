@@ -20,7 +20,7 @@ import {
 import { styled } from '@mui/styles';
 import {Settings} from "@mui/icons-material";
 import Box from "@mui/material/Box";
-import {EditRoute, loadCompany, loadRoute, Route, RouteInfo, Station, Train, TrainType} from "../../DiaData/DiaData";
+import {EditRouteDepreacted, loadCompany, loadRoute, RouteDTO, RouteInfo, StationDTO, TrainDTO, TrainTypeDTO} from "../../DiaData/DiaData";
 import {OrderType, SettingView, TimetablePDFSetting} from "./SettingView";
 import {ClipLoader} from "react-spinners";
 import { TimeTablePDF2 } from './TimeTablePDF2';
@@ -48,11 +48,11 @@ const style = {
 const TimeTablePDF22=memo(TimeTablePDF2);
 const TimeTablePdfOrder2=memo(TimeTablePdfOrder);
 export function TimeTablePDF() {
-    const [stations, setStations] = useState<{[key:number]:Station}>({});
-    const [trainTypes, setTrainTypes] = useState<{[key:number]:TrainType}>({});
-    const [trains, setTrains] = useState<{[key:number]:Train}>({});
+    const [stations, setStations] = useState<{[key:number]:StationDTO}>({});
+    const [trainTypes, setTrainTypes] = useState<{[key:number]:TrainTypeDTO}>({});
+    const [trains, setTrains] = useState<{[key:number]:TrainDTO}>({});
     const [routeInfo, setRouteInfo] = useState<{[key:number]:RouteInfo}>({});
-    const [routes, setRoutes] = useState<{[key:number]:Route}>({});
+    const [routes, setRoutes] = useState<{[key:number]:RouteDTO}>({});
     const [loading, setLoading] = useState(true);
 
     const navigate=useNavigate();
@@ -85,7 +85,7 @@ export function TimeTablePDF() {
         }
         if(routes[routeID]===undefined){
             loadRoute(companyID,routeID).then((route)=>{
-                EditRoute.sortTrips(route,0,0);
+                EditRouteDepreacted.sortTrips(route,0,0);
                 setRoutes((prev)=>{
                     const next  = {...prev};
                     if(route!==undefined){

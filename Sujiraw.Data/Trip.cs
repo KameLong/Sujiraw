@@ -152,6 +152,21 @@ namespace Sujiraw.Data
                 }
             }
         }
+        static public IEnumerable<Trip> GetByRoute(DbConnection conn, long routeID)
+        {
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = $"SELECT * FROM {TABLE_NAME} where {nameof(RouteID)}=@routeID  order by {nameof(TripSeq)}";
+                command.Parameters.Add(new NpgsqlParameter("@routeID", routeID));
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        yield return new Trip(reader);
+                    }
+                }
+            }
+        }
 
     }
 
@@ -173,6 +188,10 @@ namespace Sujiraw.Data
         public List<Trip> GetTripByRoute(long routeID,int direction)
         {
             return Trip.GetByRoute(this.conn, routeID, direction).ToList();
+        }
+        public List<Trip> GetTripByRoute(long routeID)
+        {
+            return Trip.GetByRoute(this.conn, routeID).ToList();
         }
         public IEnumerable<Trip> GetTripByTrain(long trainID)
         {

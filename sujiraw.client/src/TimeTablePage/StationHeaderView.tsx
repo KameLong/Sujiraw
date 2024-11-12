@@ -1,4 +1,4 @@
-import { TimeTablePageSetting } from "./TimeTablePage";
+import { TimeTablePageSetting } from "./RouteTimeTable/RouteTimeTablePage.tsx";
 
 interface StationHeaderViewProps{
     setting: TimeTablePageSetting;
