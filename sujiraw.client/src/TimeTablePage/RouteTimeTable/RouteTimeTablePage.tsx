@@ -58,7 +58,6 @@ export default function RouteTimeTablePage(){
                 border:border
             }
         });
-        console.log(res);
         return res;
     },[timetableData]);
 

@@ -23,7 +23,6 @@ export function useRouteTimeTableData(companyID:number,routeID:number,direct:num
         return Object.values(timetableServerData.routes).map((route)=>route.routeStations).flat().find((routeStation)=>routeStation.rsID===routeStationID);
     }
     useEffect(() => {
-        console.log(timetableServerData);
 
         if(timetableServerData.showStations.length===0){
             return;
@@ -48,10 +47,6 @@ export function useRouteTimeTableData(companyID:number,routeID:number,direct:num
                 stations[i].direction=0;
             }
         }
-        console.log(stations);
-
-
-
         const trains=[];
         let AAA=0;
 
@@ -66,7 +61,6 @@ export function useRouteTimeTableData(companyID:number,routeID:number,direct:num
             const routeID=GetRouteStation(stations[begStationIndex].depRouteStationID).routeID;
             const route=timetableServerData.routes[routeID];
             const direction=stations[begStationIndex].direction;
-            console.log(direction);
             //routeの中でのstartStationIndex
             const innerBegStationIndex=GetRouteStation(stations[begStationIndex].depRouteStationID).stationIndex;
 
@@ -80,7 +74,6 @@ export function useRouteTimeTableData(companyID:number,routeID:number,direct:num
             }
             endStationIndex--;
 
-            console.log(begStationIndex,endStationIndex);
             //startStationIndexからendStationIndexまでの区間が同じrouteに属している
             const innerEndStationIndex=GetRouteStation(stations[endStationIndex].ariRouteStationID).stationIndex;
 
@@ -89,7 +82,6 @@ export function useRouteTimeTableData(companyID:number,routeID:number,direct:num
             }).map((trip)=>{
                 return new TripData(trip);
             });
-            console.log(innerBegStationIndex, innerEndStationIndex,direction)
             let enableTripData=routeTripData.filter((trip)=>{
                 if(direct===0) {
                     return (trip.beginStationIndex <= innerEndStationIndex && trip.endStationIndex >= innerBegStationIndex) && trip.direction === 0;
@@ -100,7 +92,6 @@ export function useRouteTimeTableData(companyID:number,routeID:number,direct:num
             });
 
             if(direction===1){
-                console.log(innerEndStationIndex,innerBegStationIndex);
                 enableTripData=routeTripData.filter((trip)=>{
                     if(direct===0) {
                         return (trip.beginStationIndex>=innerEndStationIndex&&trip.endStationIndex<=innerBegStationIndex)&&trip.direction===1;
@@ -109,8 +100,6 @@ export function useRouteTimeTableData(companyID:number,routeID:number,direct:num
                     }
                 });
             }
-            console.log(direct);
-            console.log(enableTripData);
             const tmp=enableTripData.map(trip=>{
                 const timeTableTrain=new TimeTableTrain(stations.length);
                 timeTableTrain.trainID=trip.trainID;
@@ -135,9 +124,6 @@ export function useRouteTimeTableData(companyID:number,routeID:number,direct:num
                 };
                 train.combineTrain(item);
             })
-
-
-            console.log(stations[endStationIndex]);
             if(stations[endStationIndex].depRouteStationID===0){
                 begStationIndex=endStationIndex+1;
             }else{
@@ -162,19 +148,16 @@ export function useRouteTimeTableData(companyID:number,routeID:number,direct:num
         for(let i=1;i<stations.length;i++){
             for(let t=0;t<noSortTrains.length;t++){
                 if(noSortTrains[t].times[i].DepAriTime!==-1){
-                    let f=false;
+                    let insertFlag=false;
                     for(let s=sortTrains.length-1;s>=0;s--){
                         if(sortTrains[s].times[i].DepAriTime>=0&&sortTrains[s].times[i].DepAriTime<=noSortTrains[t].times[i].DepAriTime){
                             sortTrains.splice(s+1,0,noSortTrains[t]);
                             noSortTrains.splice(t,1);
-                            f=true;
+                            insertFlag=true;
                             break;
                         }
                     }
-                    if(!f){
-                        if(i==9){
-                            console.log(noSortTrains[t]);
-                        }
+                    if(!insertFlag){
                         sortTrains.splice(0,0,noSortTrains[t]);
                         noSortTrains.splice(t,1);
                     }
@@ -184,9 +167,8 @@ export function useRouteTimeTableData(companyID:number,routeID:number,direct:num
 
             }
         }
-        // sortTrains.push(...noSortTrains);
+        sortTrains.push(...noSortTrains);
 
-        console.log(sortTrains);
 
         setTimeTableData({
             timetableServerData:timetableServerData,
@@ -214,9 +196,7 @@ export function useRouteTimeTableServerData(routeID:number){
 
     });
     useEffect(() => {
-        console.log("test")
         axiosClient.get(`/api/NewTimeTable/Route/${routeID}`).then((res)=> {
-            console.log(res)
             setTimetableServerData(res.data);
         }).catch((ex)=>{
             console.error(ex);

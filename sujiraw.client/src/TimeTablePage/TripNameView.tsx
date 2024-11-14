@@ -27,6 +27,7 @@ export function TripNameView({trip, type, setting, allStations, direction,train}
     function hasOuterStation(){
         const routeID=trip.routeID;
         const tripInfo=train.tripInfos.find((value)=>value.routeID===routeID);
+        console.log(trip,train)
         if(tripInfo===undefined){
             return false;
         }
