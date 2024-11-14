@@ -1,15 +1,12 @@
-import {useLocation} from "react-use";
 import {TimeTableTrain, TripData, useTimeTableData} from "./CustomTimeTableData.ts";
 import {useParams} from "react-router-dom";
 import {getStationViewWidth, StationView} from "../StationView.tsx";
 import {getTripNameViewHeight, TripNameView} from "../TripNameView.tsx";
 import {StationHeaderView} from "../StationHeaderView.tsx";
 import {HolizontalBoxList} from "../HolizontalBoxList.tsx";
-import {BottomMenu} from "../../Menu/BottomMenu.tsx";
 import React, {memo, useMemo, useState} from "react";
 import {TimeTablePageSetting} from "../RouteTimeTable/RouteTimeTablePage.tsx";
 import {TripView} from "../TripView.tsx";
-import {TripDTO} from "../../DiaData/DiaData.ts";
 
 export function CustomTimeTablePage(){
     const param = useParams<{ companyID:string,timetableID:string,direct: string  }>();

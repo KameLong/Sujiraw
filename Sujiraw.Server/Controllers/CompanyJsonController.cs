@@ -210,13 +210,7 @@ namespace Sujiraw.Server.Controllers
                     train.ariTime = item.AriTime;
                     train.tripInfos = (trainTrip[train.trainID] ?? (new List<Trip>())).Select(trip =>
                     {
-                        var tripInfo = new JsonTripInfo();
-                        tripInfo.routeID = trip.RouteID;
-                        tripInfo.tripID = trip.TripID;
-                        tripInfo.depStationID = trip.DepStationID;
-                        tripInfo.ariStationID = trip.AriStationID;
-                        tripInfo.depTime = trip.DepTime;
-                        tripInfo.ariTime = trip.AriTime;
+                        var tripInfo = new JsonTripInfo(trip);
                         return tripInfo;
                     }).ToList();
                     return train;
@@ -376,6 +370,16 @@ namespace Sujiraw.Server.Controllers
         public long ariStationID { get; set; } = 0;
         public int depTime { get; set; } = 0;
         public int ariTime { get; set; } = 0;
+
+        public JsonTripInfo(Trip trip)
+        {
+            this.tripID = trip.TripID;
+            this.routeID = trip.RouteID;
+            this.depStationID = trip.DepStationID;
+            this.ariStationID = trip.AriStationID;
+            this.depTime = trip.DepTime;
+            this.ariTime = trip.AriTime;
+        }
     }
     public class JsonTrip
     {

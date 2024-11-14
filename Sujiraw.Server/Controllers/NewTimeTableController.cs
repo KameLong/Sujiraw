@@ -7,6 +7,8 @@ using Sujiraw.Server.SignalR;
 
 namespace Sujiraw.Server.Controllers
 {
+
+
     /**
      *Routeの時刻表もTimeTableの時刻表も両方同格に扱います。
      */
@@ -132,9 +134,14 @@ namespace Sujiraw.Server.Controllers
                     return route;
                 });
 
-                result.Trains = service.GetTrainByCompany(route.CompanyID)
+                result.Trains = service.GetTrainByRoute(route.CompanyID,route.RouteID)
                     .ToDictionary(item => item.TrainID, item => new JsonTrain(item));
                 var stopTimes = service.GetStopTimeFromRoute(routeID);
+                var trainTrip = service.GetTrainTripByRoute(routeID);
+                result.Trains.Values.ToList().ForEach(train =>
+                {
+                    train.tripInfos = trainTrip[train.trainID].Select(trip => new JsonTripInfo(trip)).ToList();
+                });
 
                 result.Trips=service.GetTripByRoute(routeID).ToDictionary(item => item.TripID, item =>
                 {
@@ -159,20 +166,35 @@ namespace Sujiraw.Server.Controllers
 
         class TimeTableDataDTO
         {
+            /**
+             *<summary>
+             *時刻表に表示されるべき駅のリストです。
+             *下り時刻表で表示されるべき順番にしてください。
+             *途中で分岐を含んでもOKです。
+             *</summary>
+             */
+            public List<ShowStationDTO> ShowStations { get; set; } = new List<ShowStationDTO>();
 
-            public Dictionary<long, JsonStation> Stations { get; set; }=new Dictionary<long, JsonStation>();
-            public Dictionary<long, JsonTrainType> TrainTypes { get; set; }= new Dictionary<long, JsonTrainType>();
+            /**
+             *　駅一覧です。
+             *　Campanyのすべての駅が含まれている必要はありません。
+             *　時刻表表示に十分な駅が連想配列に含まれている必要があります。
+             */
+            public Dictionary<long, JsonStation> Stations { get; set; } = new Dictionary<long, JsonStation>();
+            /**
+             *列車種別はCompanyに含まれているものすべてを返すべきです。
+             */
+            public Dictionary<long, JsonTrainType> TrainTypes { get; set; } = new Dictionary<long, JsonTrainType>();
             public Dictionary<long, JsonRoute> Routes { get; set; } = new Dictionary<long, JsonRoute>();
 
-            public JsonTimeTable TimeTable { get; set; }= new JsonTimeTable();
+            public JsonTimeTable TimeTable { get; set; } = new JsonTimeTable();
 
 
             public Dictionary<long, JsonTrain> Trains { get; set; } = new Dictionary<long, JsonTrain>();
             public Dictionary<long, JsonTrip> Trips { get; set; } = new Dictionary<long, JsonTrip>();
 
-            
 
-            public List<ShowStationDTO> ShowStations { get; set; } = new List<ShowStationDTO>();
+
 
             public TimeTableDataDTO() { }
 
