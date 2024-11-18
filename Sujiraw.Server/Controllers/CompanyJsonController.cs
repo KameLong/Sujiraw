@@ -318,6 +318,15 @@ namespace Sujiraw.Server.Controllers
             this.lat = station.Lat;
             this.lon = station.Lon;
         }
+        public Station GetStation(long companyID)
+        {
+            var station = new Station(companyID);
+            station.StationID = this.stationID;
+            station.Name = this.name;
+            station.Lat = this.lat;
+            station.Lon = this.lon;
+            return station;
+        }
     }
     public class JsonTrainType
     {
@@ -337,6 +346,17 @@ namespace Sujiraw.Server.Controllers
             this.color = trainType.Color;
             this.bold = trainType.LineBold;
             this.dot = trainType.LineDashed;
+        }
+        public TrainType GetTrainType(long companyID)
+        {
+            TrainType trainType = new TrainType(companyID);
+            trainType.TrainTypeID = this.trainTypeID;
+            trainType.Name = this.name;
+            trainType.ShortName = this.shortName;
+            trainType.Color = this.color;
+            trainType.LineBold = this.bold;
+            trainType.LineDashed = this.dot;
+            return trainType;
         }
     }
     public class JsonTrain
@@ -359,8 +379,18 @@ namespace Sujiraw.Server.Controllers
             this.ariStationID = train.AriStationID;
             this.depTime = train.DepTime;
             this.ariTime = train.AriTime;
-
         }
+        public Train GetTrain()
+        {
+            var train = new Train(this.companyID);
+            train.TrainID = this.trainID;
+            train.DepStationID = this.depStationID;
+            train.AriStationID = this.ariStationID;
+            train.DepTime = this.depTime;
+            train.AriTime = this.ariTime;
+            return train;
+        }
+
     }
     public class JsonTripInfo
     {
@@ -399,6 +429,15 @@ namespace Sujiraw.Server.Controllers
             this.trainID = trip.TrainID;
             this.trainTypeID = trip.TrainTypeID;
         }
+        public Trip GetTrip()
+        {
+            var trip = new Trip(this.routeID, this.trainID, this.trainTypeID);
+            trip.TripID = this.tripID;
+            trip.Direction = this.direction;
+            trip.TrainID = this.trainID;
+            trip.TrainTypeID = this.trainTypeID;
+            return trip;
+        }
     }
     public class JsonRouteStation
     {
@@ -416,7 +455,14 @@ namespace Sujiraw.Server.Controllers
             this.stationIndex = rs.Sequence;
             this.stationID = rs.StationID;
             this.showStyle = rs.ShowStyle;
-
+        }
+        public RouteStation GetRouteStation()
+        {
+            var routeStation=new RouteStation(this.routeID, this.stationID);
+            routeStation.RouteStationID = this.rsID;
+            routeStation.Sequence = this.stationIndex;
+            routeStation.ShowStyle = this.showStyle;
+            return routeStation;
         }
     }
     public class JsonStopTime
@@ -433,6 +479,15 @@ namespace Sujiraw.Server.Controllers
             this.stopType = st.StopType;
             this.ariTime = st.AriTime;
             this.depTime = st.DepTime;
+        }
+        public StopTime GetStopTime()
+        {
+            var st=new StopTime(this.tripID);
+            st.StopType = this.stopType;
+            st.AriTime = this.ariTime;
+            st.DepTime = this.depTime;
+            return st;
+
         }
     }
 
