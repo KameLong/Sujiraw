@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Sujiraw.Server.SignalR;
 using Sujiraw.Data;
 using Npgsql;
-using System.Diagnostics;
 
 namespace Sujiraw.Server.Controllers
 {

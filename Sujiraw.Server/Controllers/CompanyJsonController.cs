@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Sujiraw.Server.SignalR;
 using Sujiraw.Data;
@@ -318,6 +316,14 @@ namespace Sujiraw.Server.Controllers
             this.lat = station.Lat;
             this.lon = station.Lon;
         }
+        public JsonStation(Sujiraw.Data.Entity.Station station)
+        {
+            this.stationID = station.StationId;
+            this.name = station.Name;
+            this.lat = station.Lat;
+            this.lon = station.Lon;
+        }
+
     }
     public class JsonTrainType
     {
@@ -332,6 +338,15 @@ namespace Sujiraw.Server.Controllers
         public JsonTrainType(TrainType trainType)
         {
             this.trainTypeID = trainType.TrainTypeID;
+            this.name = trainType.Name;
+            this.shortName = trainType.ShortName;
+            this.color = trainType.Color;
+            this.bold = trainType.LineBold;
+            this.dot = trainType.LineDashed;
+        }
+        public JsonTrainType(Sujiraw.Data.Entity.TrainType trainType)
+        {
+            this.trainTypeID = trainType.TrainTypeId;
             this.name = trainType.Name;
             this.shortName = trainType.ShortName;
             this.color = trainType.Color;
@@ -361,6 +376,17 @@ namespace Sujiraw.Server.Controllers
             this.ariTime = train.AriTime;
 
         }
+        public JsonTrain(Sujiraw.Data.Entity.Train train)
+        {
+            this.companyID = train.CompanyId;
+            this.trainID = train.TrainId;
+            this.depStationID = train.DepStationId;
+            this.ariStationID = train.AriStationId;
+            this.depTime = train.DepTime;
+            this.ariTime = train.AriTime;
+
+        }
+
     }
     public class JsonTripInfo
     {
@@ -380,6 +406,16 @@ namespace Sujiraw.Server.Controllers
             this.depTime = trip.DepTime;
             this.ariTime = trip.AriTime;
         }
+        public JsonTripInfo(Sujiraw.Data.Entity.Trip trip)
+        {
+            this.tripID = trip.TripId;
+            this.routeID = trip.RouteId;
+            this.depStationID = trip.DepStationId;
+            this.ariStationID = trip.AriStationId;
+            this.depTime = trip.DepTime;
+            this.ariTime = trip.AriTime;
+        }
+
     }
     public class JsonTrip
     {
@@ -398,6 +434,15 @@ namespace Sujiraw.Server.Controllers
             this.direction = trip.Direction;
             this.trainID = trip.TrainID;
             this.trainTypeID = trip.TrainTypeID;
+        }
+
+        public JsonTrip(Sujiraw.Data.Entity.Trip trip)
+        {
+            this.tripID = trip.TripId;
+            this.routeID = trip.RouteId;
+            this.direction = trip.Direction;
+            this.trainID = trip.TrainId;
+            this.trainTypeID = trip.TrainTypeId;
         }
     }
     public class JsonRouteStation
@@ -418,6 +463,15 @@ namespace Sujiraw.Server.Controllers
             this.showStyle = rs.ShowStyle;
 
         }
+        public JsonRouteStation(Sujiraw .Data.Entity.RouteStation rs)
+        {
+            this.rsID = rs.RouteStationId;
+            this.routeID = rs.RouteId;
+            this.stationIndex = rs.Sequence;
+            this.stationID = rs.StationId;
+            this.showStyle = rs.ShowStyle;
+
+        }
     }
     public class JsonStopTime
     {
@@ -430,6 +484,13 @@ namespace Sujiraw.Server.Controllers
         public JsonStopTime(StopTime st)
         {
             this.tripID = st.TripID;
+            this.stopType = st.StopType;
+            this.ariTime = st.AriTime;
+            this.depTime = st.DepTime;
+        }
+        public JsonStopTime(Sujiraw.Data.Entity.StopTime st)
+        {
+            this.tripID = st.TripId;
             this.stopType = st.StopType;
             this.ariTime = st.AriTime;
             this.depTime = st.DepTime;
@@ -447,6 +508,11 @@ namespace Sujiraw.Server.Controllers
         public JsonRoute(Route route)
         {
             this.routeID = route.RouteID;
+            this.name = route.Name;
+        }
+        public JsonRoute(Sujiraw.Data.Entity.Route route)
+        {
+            this.routeID = route.RouteId;
             this.name = route.Name;
         }
 
