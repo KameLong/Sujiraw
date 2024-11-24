@@ -189,6 +189,7 @@ namespace Sujiraw.Server.Controllers
                         route})
                     .Where(item => item.route.CompanyId == route.CompanyId)
                     .Select(item=>item.rs)
+                    .OrderBy(item=>item.Sequence)
                     .GroupBy(item=>item.RouteId)
                     .ToDictionary(item=>item.Key,item=>item.ToList());
                     
@@ -211,7 +212,6 @@ namespace Sujiraw.Server.Controllers
                             trip
                         }).Where(item => item.trip.RouteId == route.RouteId)
                     .Select(item => item.st)
-                    .OrderBy(item=>item.Sequence)
                     .GroupBy(item => item.TripId)
                     .ToDictionary(item=>item.Key,item=>item.ToList());
                     
@@ -233,6 +233,7 @@ namespace Sujiraw.Server.Controllers
                 }
                 );
 
+                
                 result.ShowStations = result.Routes[routeID].routeStations.Select(item => new ShowStationDTO(item)).ToList();
                 result.ShowStations.First().AriRouteStationID = 0;
                 result.ShowStations.Last().DepRouteStationID = 0;

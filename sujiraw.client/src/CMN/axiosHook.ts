@@ -2,7 +2,7 @@ import axios from 'axios'
 
 
 // let BaseUrl = "http://100.64.1.16:5000";
-let BaseUrl = "http://localhost:80";
+let BaseUrl = "http://localhost:5001";
 //@ts-ignore
 if(import.meta.env.MODE==='production'){
     BaseUrl = "https://sujiraw.kamelong.com";

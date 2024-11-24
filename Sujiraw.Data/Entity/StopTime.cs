@@ -11,8 +11,8 @@ namespace Sujiraw.Data.Entity
     {
         [Column("tripid")]
         public long TripId { get; set; }=0;
-        [Column("sequence")]
-        public int Sequence { get; set; } = 0;
+        [Column("routestationid")]
+        public long RouteStationId { get; set; } = 0;
         [Column("deptime")]
         public int DepTime { get; set; } = -1;
         [Column("aritime")]

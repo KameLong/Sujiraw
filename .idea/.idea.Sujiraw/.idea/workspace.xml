@@ -117,7 +117,7 @@
       <workItem from="1731940627396" duration="9117000" />
       <workItem from="1732371777019" duration="5000" />
       <workItem from="1732371795176" duration="6318000" />
-      <workItem from="1732413957193" duration="15122000" />
+      <workItem from="1732413957193" duration="22430000" />
     </task>
     <servers />
   </component>
@@ -146,16 +146,16 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Sujiraw.Server/Controllers/NewTimeTableController.cs</url>
-          <line>243</line>
+          <line>244</line>
           <properties documentPath="$PROJECT_DIR$/Sujiraw.Server/Controllers/NewTimeTableController.cs" containingFunctionPresentation="メソッド 'GetRouteTimeTableData2'">
             <startOffsets>
-              <option value="11809" />
+              <option value="11826" />
             </startOffsets>
             <endOffsets>
-              <option value="11899" />
+              <option value="11916" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="4" />
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

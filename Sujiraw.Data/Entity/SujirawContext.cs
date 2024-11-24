@@ -28,9 +28,8 @@ namespace Sujiraw.Data.Entity{
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //StopTimeはTripIdとSequenceで一意になる
             modelBuilder.Entity<StopTime>()
-                .HasKey(st => new { st.TripId, sequence = st.Sequence });
+                .HasKey(st => new { st.TripId, routestationId = st.RouteStationId });
             base.OnModelCreating(modelBuilder);
         }
 

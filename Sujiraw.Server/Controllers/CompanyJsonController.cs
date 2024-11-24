@@ -490,6 +490,7 @@ namespace Sujiraw.Server.Controllers
         }
         public JsonStopTime(Sujiraw.Data.Entity.StopTime st)
         {
+            this.rsID = st.RouteStationId;
             this.tripID = st.TripId;
             this.stopType = st.StopType;
             this.ariTime = st.AriTime;

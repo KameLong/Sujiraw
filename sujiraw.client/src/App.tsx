@@ -11,6 +11,7 @@ import {CompanyListPage} from "./CompanyPage/CompanyListPage.tsx";
 import {CompanyPage} from "./CompanyPage/CompanyPage.tsx";
 import {TimeTableEditPage} from "./CompanyPage/TimeTableEditPage.tsx";
 import {CustomTimeTablePage} from "./TimeTablePage/CustomTimeTable/CustomTimeTablePage.tsx";
+import TestPage from "./TimeTablePage/RouteTimeTable/TestPage.tsx";
 
 function App() {
   return (
@@ -19,6 +20,9 @@ function App() {
         <Route path="/" element={
             <CompanyListPage/>
         }/>
+          <Route path="/test" element={
+              <TestPage/>
+          }/>
           <Route path="/Company/:companyID" element={
               <CompanyPage/>
           }/>
