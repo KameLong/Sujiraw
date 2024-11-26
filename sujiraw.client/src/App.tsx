@@ -11,7 +11,7 @@ import {CompanyListPage} from "./CompanyPage/CompanyListPage.tsx";
 import {CompanyPage} from "./CompanyPage/CompanyPage.tsx";
 import {TimeTableEditPage} from "./CompanyPage/TimeTableEditPage.tsx";
 import {CustomTimeTablePage} from "./TimeTablePage/CustomTimeTable/CustomTimeTablePage.tsx";
-import TestPage from "./TimeTablePage/RouteTimeTable/TestPage.tsx";
+import TestPage from "./TimeTablePage/NewTimeTable/TestPage.tsx";
 
 function App() {
   return (

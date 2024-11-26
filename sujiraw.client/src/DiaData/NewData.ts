@@ -1,10 +1,12 @@
-import {TrainTypeDTO} from "./DiaData.ts";
+import {StationDTO, TrainTypeDTO} from "./DiaData.ts";
 
 export class 時刻表データ{
 
     public 駅リスト:Array<時刻表駅>=[]
 
     public 種別:{[key:number]:TrainTypeDTO}={};
+
+    public stations:{[key:number]:StationDTO}={};
 
     public 下り列車:Array<時刻表列車>=[];
     public 上り列車:Array<時刻表列車>=[];

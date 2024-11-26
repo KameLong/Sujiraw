@@ -1,4 +1,4 @@
-import {useRouteTimeTableServerData} from "./RouteTimeTableData.ts";
+import {useRouteTimeTableServerData} from "../RouteTimeTable/RouteTimeTableData.ts";
 import {useEffect, useState} from "react";
 import {時刻表データ, 時刻表列車, 時刻表列車要素, 時刻表駅, 発着時刻, 駅時刻} from "../../DiaData/NewData.ts";
 
@@ -73,6 +73,9 @@ export function use路線時刻表データ作成(companyID:number,routeID:numbe
                 列車.列車要素.push(列車要素);
                 return 列車;
             })
+
+        作成中時刻表データ.種別=サーバーデータ.trainTypes;
+        作成中時刻表データ.stations=サーバーデータ.stations;
 
 
 
