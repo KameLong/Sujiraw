@@ -17,6 +17,7 @@ export function use路線時刻表データ作成(companyID:number,routeID:numbe
             const 駅=new 時刻表駅();
             const 暫定routestationId=Math.max(item.depRouteStationID,item.ariRouteStationID);
             駅.stationId=サーバーデータ.routes[routeID].routeStations.find(rs=>rs.rsID==暫定routestationId).stationID;
+            駅.stationName=サーバーデータ.stations[駅.stationId].name;
             駅.路線別発RouteStation[routeID]=item.depRouteStationID;
             駅.路線別着RouteStation[routeID]=item.ariRouteStationID;
             駅.表示スタイル=item.showStyle;

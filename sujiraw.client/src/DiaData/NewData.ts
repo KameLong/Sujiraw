@@ -14,6 +14,7 @@ export class 時刻表データ{
 
 export class 時刻表駅{
     public stationId:number;
+    public stationName:string;
     /**
      * 路線別駅[routeId]=その路線に所属しているrouteStationId
      *
@@ -24,6 +25,28 @@ export class 時刻表駅{
     public 路線別着RouteStation:{[key:number]:number}={}
 
     public 表示スタイル:number=0x11;
+
+
+    /**
+     * 時刻表の表示で使う情報
+     */
+    public isShowDep(direction:number):boolean{
+        switch (direction) {
+            case 0:
+                return (this.表示スタイル & 0x01)>0;
+            case 1:
+                return (this.表示スタイル &0x10)>0;
+        }
+    }
+    public isShowAri(direction:number):boolean{
+        switch (direction) {
+            case 0:
+                return (this.表示スタイル & 0x02)>0;
+            case 1:
+                return (this.表示スタイル &0x20)>0;
+        }
+    }
+
 
 }
 
