@@ -12,6 +12,10 @@ import {CompanyPage} from "./CompanyPage/CompanyPage.tsx";
 import {TimeTableEditPage} from "./CompanyPage/TimeTableEditPage.tsx";
 import {CustomTimeTablePage} from "./TimeTablePage/CustomTimeTable/CustomTimeTablePage.tsx";
 import TestPage from "./TimeTablePage/NewTimeTable/TestPage.tsx";
+import {OffStationSearchPage} from "./Offline/OffStationSearchPage.tsx";
+import {OffStationPage} from "./Offline/OffStationPage.tsx";
+import {OffStationTimeTablePage} from "./Offline/OffStationTimeTablePage.tsx";
+import {OffTrainPage} from "./Offline/OffTrainPage.tsx";
 
 function App() {
   return (
@@ -50,9 +54,14 @@ function App() {
           <Route path="/Oudia" element={
               <OuDiaOpenDialog/>
           }></Route>
+          <Route path={"Off"} element={<OffStationSearchPage/>}></Route>
+          <Route path={"Off/station/:stationId"} element={<OffStationPage/>}></Route>
+          <Route path={"Off/stationTimetable/:stationId/:groupId"} element={<OffStationTimeTablePage/>}></Route>
+          <Route path={"Off/Train/:trainId"} element={<OffTrainPage/>}></Route>
           <Route path="*" element={
               <div>Page not found</div>
           }> </Route>
+
 
       </Routes>
       </BrowserRouter>

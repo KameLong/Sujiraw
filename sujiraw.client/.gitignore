@@ -5,6 +5,8 @@ logs
 #Jetbrains
 /.idea
 
+/public/offline/*
+
 #data
 /public/*.json.gz
 npm-debug.log*
