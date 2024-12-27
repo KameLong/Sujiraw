@@ -1,18 +1,18 @@
 import {StationDTO, TrainTypeDTO} from "./DiaData.ts";
 
-export class 時刻表データ{
+export class LineData {
 
-    public 駅リスト:Array<時刻表駅>=[]
+    public stationList:Array<Station>=[]
 
-    public 種別:{[key:number]:TrainTypeDTO}={};
+    public trainTypes:{[key:number]:TrainTypeDTO}={};
 
-    public stations:{[key:number]:StationDTO}={};
+    public stationInfo:{[key:number]:StationDTO}={};
 
-    public 下り列車:Array<時刻表列車>=[];
-    public 上り列車:Array<時刻表列車>=[];
+    public downTrains:Array<Train>=[];
+    public upTrains:Array<Train>=[];
 }
 
-export class 時刻表駅{
+export class Station {
     public stationId:number;
     public stationName:string;
     /**
@@ -21,10 +21,10 @@ export class 時刻表駅{
      * ただし、その駅を通過しない場合は0
      * その駅は通過する場合は-1
      */
-    public 路線別発RouteStation:{[key:number]:number}={}
-    public 路線別着RouteStation:{[key:number]:number}={}
+    public RouteStationDep:{[key:number]:number}={}
+    public RouteStationAri:{[key:number]:number}={}
 
-    public 表示スタイル:number=0x11;
+    public showStyle:number=0x11;
 
 
     /**
@@ -33,39 +33,39 @@ export class 時刻表駅{
     public isShowDep(direction:number):boolean{
         switch (direction) {
             case 0:
-                return (this.表示スタイル & 0x01)>0;
+                return (this.showStyle & 0x01)>0;
             case 1:
-                return (this.表示スタイル &0x10)>0;
+                return (this.showStyle &0x10)>0;
         }
     }
     public isShowAri(direction:number):boolean{
         switch (direction) {
             case 0:
-                return (this.表示スタイル & 0x02)>0;
+                return (this.showStyle & 0x02)>0;
             case 1:
-                return (this.表示スタイル &0x20)>0;
+                return (this.showStyle &0x20)>0;
         }
     }
 
 
 }
 
-export class 時刻表列車{
-    public 列車要素:Array<時刻表列車要素>=[];
+export class Train {
+    public trips:Array<Trip>=[];
 }
 
-export class 時刻表列車要素{
-    public 列車番号:string="";
-    public 列車名:string ="";
-    public 備考:string="";
-    public 列車種別:number=0;
+export class Trip {
+    public tripNumber:string="";
+    public tripName:string ="";
+    public comment:string="";
+    public trainTypeId:number=0;
 
     //下りでも上りでも、下り基準の順番の配列にすること
-    public 駅時刻リスト:Array<駅時刻>=[];
+    public stationTime:Array<StationTime>=[];
 }
-export class 駅時刻{
-    public 発時刻:発着時刻={time:-1,routeStationId:0}
-    public 着時刻:発着時刻={time:-1,routeStationId:0}
+export class StationTime {
+    public depTime:StopTime={time:-1,routeStationId:0}
+    public ariTime:StopTime={time:-1,routeStationId:0}
     /**
      *  0:運行なし
      *  1:停車
@@ -80,7 +80,7 @@ export class 駅時刻{
     public stopType:number=0;
 
 }
-export class 発着時刻{
+export class StopTime {
     public time:number;
     public routeStationId:number;
 }

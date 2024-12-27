@@ -11,6 +11,8 @@ import {TripView} from "../TripView.tsx";
 import {TripDTO} from "../../DiaData/DiaData.ts";
 import {useRouteTimeTableData} from "./RouteTimeTableData.ts";
 import {TimeTableTrain, TripData} from "../CustomTimeTable/CustomTimeTableData.ts";
+import {useMakeRouteTimeTable} from "../NewTimeTable/路線時刻表データ.ts";
+import TimeTableView from "../NewTimeTable/TimeTableView.tsx";
 export interface TimeTablePageSetting{
     fontSize:number,
     lineHeight:number,
@@ -20,165 +22,8 @@ export default function RouteTimeTablePage(){
     const companyID=parseInt(param.companyID??"0");
     const routeID=parseInt(param.routeID??"0");
     const direct=parseInt(param.direct??"0");
-
-    const timetableData=useRouteTimeTableData(companyID,routeID,direct);
-
-    const [setting,setSetting]=useState<TimeTablePageSetting>({
-        fontSize:13,
-        lineHeight:1.1
-    });
-
-    let setScrollX:undefined|((scrollX:number)=>void)=undefined;
-    let setScrollX2:undefined|((scrollX:number)=>void)=undefined;
-    const MemoTripView = memo(TripView);
-    const MemoTripNameView = memo(TripNameView);
-
-
-    const getStationProps=useMemo(()=>{
-        const stations=timetableData.timetableServerData.showStations;
-        function GetRouteStation(routeStationID:number){
-            return Object.values(timetableData.timetableServerData.routes).map((route)=>route.routeStations).flat().find((routeStation)=>routeStation.rsID===routeStationID);
-        }
-        const res= stations.map((station,_i)=>{
-            const routeStation=GetRouteStation(station.depRouteStationID===0?station.ariRouteStationID:station.depRouteStationID);
-            let border=station.border;
-            if(direct===1){
-                if(_i===0){
-                    border=false;
-                }
-                else{
-                    border=stations[_i-1].border;
-                }
-
-            }
-            return {
-                rsID:routeStation.rsID,
-                name:timetableData.timetableServerData.stations[routeStation.stationID]?.name??"",
-                style:station.showStyle===0?0b00110011:station.showStyle,
-                border:border
-            }
-        });
-        return res;
-    },[timetableData]);
-
-
-    const Column = ( index:number, style:any) => {
-        const trip:TimeTableTrain=timetableData.trains[index];
-
-        const selected=false;
-        return (
-            <div key={trip.trainID} className={selected?"selected":""} style={style}>
-                <MemoTripView trip={TripData.fromTimeTableTrain(trip)} type={timetableData.timetableServerData.trainTypes[trip.trainTypeID]}
-                              setting={setting} stations={getStationProps} allStations={timetableData.timetableServerData.stations}
-                              train={timetableData.timetableServerData.trains[trip.trainID]}
-
-                              direction={direct}/>
-            </div>
-        );
-    }
-    const Column2 = (index:number, style:any) => {
-        const trip=timetableData.trains[index];
-
-        const selected=false;
-        return (
-            <div className={selected?"selected":""} key={trip.trainID} style={{...style,height:`${getTripNameViewHeight(setting)}px`,borderBottom:'2px solid black'}}>
-                <MemoTripNameView trip={TripData.fromTimeTableTrain(trip)} type={timetableData.timetableServerData.trainTypes[trip.trainTypeID]}
-                                  setting={setting}
-                                  train={timetableData.timetableServerData.trains[trip.trainID]}
-                                  allStations={timetableData.timetableServerData.stations}
-                                  direction={direct}
-                />
-
-            </div>
-        );
-    }
-
-
-
-    if(timetableData.timetableServerData.showStations.length===0) {
-        return <div>loading</div>
-    }
+    const a=useMakeRouteTimeTable(companyID,routeID);
     return (
-        <div style={{background:'white',width: '100%',height:'100%',fontSize: `${setting.fontSize}px`, lineHeight: `${setting.fontSize * setting.lineHeight}px`}}>
-            <div style={{display: "flex", width: '100%', height: '100%', paddingBottom: "70px",zIndex:5,overflow:'visible'}}>
-                <div style={{
-                    width: `${getStationViewWidth(setting)}px`,
-                    borderRight: "2px solid black",
-                    borderBottom: "2px solid black",
-                    position: "fixed",
-                    height: `${getTripNameViewHeight(setting)}px`,
-                    background: "white",
-                    zIndex: 20
-                }}>
-                    <StationHeaderView  setting={setting}/>
-                </div>
-                <div style={{
-                    width: `${getStationViewWidth(setting)}px`,
-                    borderRight: "2px solid black",
-                    position: 'fixed',
-                    zIndex:1,
-                    paddingTop: `${getTripNameViewHeight(setting)}px`,
-                    background: "white"
-                }} id="stationViewLayout">
-                    <StationView stations={getStationProps} setting={setting} direction={direct}/>
-                </div>
-                <div style={{width: '0px', flexShrink: 1, flexGrow: 1, paddingRight: '10px',
-                    display:'flex',flexDirection:'column'}}>
-                    <div
-                        style={{
-                            paddingLeft: `${getStationViewWidth(setting)}px`,
-                            overflowX: "hidden",
-                            width: '100%',
-                            height:getTripNameViewHeight(setting)
-                        }}
-                    >
-                        <HolizontalBoxList
-                            itemCount={timetableData.trains.length}
-                            itemSize={(setting.fontSize * 2.2)}
-                            getSetScrollX={(_setScrollX)=> {
-                                setScrollX2=_setScrollX;
-                            }
-                            }
-                        >
-                            {Column2}
-                        </HolizontalBoxList>
-                    </div>
-
-                    <div
-                        style={{
-                            flexGrow: 1,
-                            height:0,
-                            paddingLeft: `${getStationViewWidth(setting)}px`,
-                            // paddingTop: `${getTripNameViewHeight(setting)}px`,
-                            overflowX: "hidden",
-                            width: '100%',
-                        }}
-                    >
-                        <HolizontalBoxList
-                            itemCount={timetableData.trains.length}
-                            itemSize={(setting.fontSize * 2.2)}
-                            onScroll={(_scrollX, scrollY)=>{
-                                const stationViewLayout=document.getElementById("stationViewLayout")
-                                if(stationViewLayout!==null){
-                                    stationViewLayout.style.top=-scrollY+"px";
-                                }
-                                if(setScrollX2!==undefined) {
-                                    setScrollX2(_scrollX);
-                                }
-                            }
-                            }
-                            getSetScrollX={(_setScrollX)=> {
-                                setScrollX=_setScrollX;
-                            }
-                            }
-
-                        >
-                            {Column}
-                        </HolizontalBoxList>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    );
+        <TimeTableView timetableData={a}  direction={direct}/>
+    )
 }

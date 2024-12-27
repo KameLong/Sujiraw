@@ -1,17 +1,17 @@
-import {時刻表駅} from "../../DiaData/NewData.ts";
+import {Station} from "../../DiaData/NewData.ts";
 import {時刻表時刻View} from "./時刻表時刻View.tsx";
 import {MatchTextLabel} from "./MatchTextLabel.tsx";
 
 
 interface TimeTableStationViewProp{
-    stations:時刻表駅[]
+    stations:Station[]
     direction:number,
     lineHeight:number
 }
 
 export function 時刻表駅View({stations,direction,lineHeight}:TimeTableStationViewProp){
     const stationList=direction===0?stations:stations.toReversed();
-    const 駅View=(駅:時刻表駅)=>{
+    const 駅View=(駅:Station)=>{
         if (駅.isShowAri(direction)&&駅.isShowDep(direction)) {
             return (
                 <div key={駅.stationId} style={{

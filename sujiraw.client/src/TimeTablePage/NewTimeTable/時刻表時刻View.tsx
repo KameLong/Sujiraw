@@ -1,11 +1,11 @@
-import {時刻表駅, 駅時刻} from "../../DiaData/NewData.ts";
+import {Station, StationTime} from "../../DiaData/NewData.ts";
 import styles from "./timetable.module.scss";
 import {TimeTablePageSetting} from "./TestPage.tsx";
 import {redirect} from "react-router-dom";
 interface 時刻表時刻ViewProps {
     direction: number;
-    時刻:駅時刻
-    駅:時刻表駅
+    時刻:StationTime
+    駅:Station
     setting:TimeTablePageSetting
 
 
@@ -49,12 +49,12 @@ export function 時刻表時刻View({時刻,駅,setting,direction}:時刻表時�
             break;
         default:
             if(isBothShow){
-                depStr=time2Str(時刻.発時刻.time);
-                ariStr=time2Str(時刻.着時刻.time);
+                depStr=time2Str(時刻.depTime.time);
+                ariStr=time2Str(時刻.ariTime.time);
 
             }else{
-                depStr=time2Str(getBetterTime(時刻.発時刻.time,時刻.着時刻.time));
-                ariStr=time2Str(getBetterTime(時刻.着時刻.time,時刻.発時刻.time));
+                depStr=time2Str(getBetterTime(時刻.depTime.time,時刻.ariTime.time));
+                ariStr=time2Str(getBetterTime(時刻.ariTime.time,時刻.depTime.time));
             }
             break;
 
