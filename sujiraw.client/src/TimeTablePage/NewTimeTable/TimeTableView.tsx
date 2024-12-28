@@ -1,6 +1,6 @@
 import {useMakeRouteTimeTable, useGetTimeTableData} from "./路線時刻表データ.ts";
 import React, {useEffect, useState} from "react";
-import {時刻表列車View} from "./時刻表列車View.tsx";
+import {TimeTableTrainView} from "./timeTableTrainView.tsx";
 import {HolizontalBoxList} from "../HolizontalBoxList.tsx";
 import {時刻表駅View} from "./時刻表駅View.tsx";
 import {時刻表列車名View} from "./時刻表列車名View.tsx";
@@ -43,11 +43,11 @@ export default function TimeTableView({timetableData,direction}:TimeTableViewPro
         const selected=false;
         return (
             <div key={index} className={selected?"selected":""} style={style}>
-                <時刻表列車View  train={trip} routeStation={timetableData.stationList}
-                               types={timetableData.trainTypes}
-                               stations={timetableData.stationInfo}
-                               setting={timetableSetting}>
-                </時刻表列車View>
+                <TimeTableTrainView train={trip} routeStation={timetableData.stationList}
+                                    types={timetableData.trainTypes}
+                                    stations={timetableData.stationInfo}
+                                    setting={timetableSetting}>
+                </TimeTableTrainView>
             </div>
         );
     }

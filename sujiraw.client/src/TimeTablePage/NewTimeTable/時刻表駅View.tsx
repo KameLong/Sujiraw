@@ -1,5 +1,5 @@
 import {Station} from "../../DiaData/NewData.ts";
-import {時刻表時刻View} from "./時刻表時刻View.tsx";
+import {TimeTableTimeView} from "./timeTableTimeView.tsx";
 import {MatchTextLabel} from "./MatchTextLabel.tsx";
 
 

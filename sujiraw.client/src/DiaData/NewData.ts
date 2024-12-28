@@ -10,6 +10,64 @@ export class LineData {
 
     public downTrains:Array<Train>=[];
     public upTrains:Array<Train>=[];
+
+    /**
+     * 列車の並び替えをします。
+     */
+    public sortTrain(direction:number,stationIndex:number){
+        const trains=this.downTrains;
+        //ここでtrainsをソートする
+        const sortTrains=trains.filter((train)=>{
+            return train.trips[0].stationTime[stationIndex].HasTime;
+        }).sort((a,b)=>{
+            return a.trips[0].stationTime[stationIndex].DepAriTime-b.trips[0].stationTime[stationIndex].DepAriTime;
+        });
+        const noSortTrains=trains.filter((train)=>{
+            return !train.trips[0].stationTime[stationIndex].HasTime;
+        });
+        for(let i=stationIndex+1;i<this.stationList.length;i++){
+            for(let t=0;t<noSortTrains.length;t++){
+                if(noSortTrains[t].trips[0].stationTime[i].HasTime){
+                    let f=false;
+                    for(let s=sortTrains.length-1;s>=0;s--){
+                        if(sortTrains[s].trips[0].stationTime[i].DepAriTime>=0&&sortTrains[s].trips[0].stationTime[i].AriDepTime<=noSortTrains[t].trips[0].stationTime[i].DepAriTime){
+                            sortTrains.splice(s+1,0,noSortTrains[t]);
+                            noSortTrains.splice(t,1);
+                            f=true;
+                            break;
+                        }
+                    }
+                    if(!f){
+                        sortTrains.splice(0,0,noSortTrains[t]);
+                        noSortTrains.splice(t,1);
+                    }
+                    t--;
+                }
+            }
+        }
+        for(let i=stationIndex-1;i>=0;i--){
+            for(let t=0;t<noSortTrains.length;t++){
+                if(noSortTrains[t].trips[0].stationTime[i].HasTime){
+                    let f=false;
+                    for(let s=0;s<sortTrains.length;s++){
+                        if(sortTrains[s].trips[0].stationTime[i].HasTime
+                            &&sortTrains[s].trips[0].stationTime[i].DepAriTime>=noSortTrains[t].trips[0].stationTime[i].AriDepTime){
+                            sortTrains.splice(s,0,noSortTrains[t]);
+                            noSortTrains.splice(t,1);
+                            f=true;
+                            break;
+                        }
+                    }
+                    if(!f){
+                        sortTrains.splice(sortTrains.length,0,noSortTrains[t]);
+                        noSortTrains.splice(t,1);
+                    }
+                    t--;
+                }
+            }
+        }
+        this.downTrains=sortTrains.concat(noSortTrains);
+    }
 }
 
 export class Station {
@@ -78,6 +136,28 @@ export class StationTime {
      */
     //
     public stopType:number=0;
+
+    public get DepAriTime():number{
+        if(this.depTime.time>=0){
+            return this.depTime.time;
+        }
+        return this.ariTime.time;
+    }
+    public get AriDepTime():number{
+        if(this.ariTime.time>=0){
+            return this.ariTime.time;
+        }
+        return this.depTime.time;
+    }
+    public get DepTime():number{
+        return this.depTime.time;
+    }
+    public get AriTime():number{
+        return this.ariTime.time;
+    }
+    public get HasTime():boolean{
+        return this.depTime.time>=0||this.ariTime.time>=0;
+    }
 
 }
 export class StopTime {

@@ -1,11 +1,11 @@
 import {Train, Station } from "../../DiaData/NewData.ts";
 import {Station as StatoinInfo} from "../../oud/models/Station.ts";
 import {StationDTO, TrainTypeDTO} from "../../DiaData/DiaData.ts";
-import {時刻表時刻View} from "./時刻表時刻View.tsx";
+import {TimeTableTimeView} from "./timeTableTimeView.tsx";
 import {TimeTablePageSetting} from "./TestPage.tsx";
 
 
-interface 時刻表列車ViewProps {
+interface TimeTableTrainViewProps {
     train:Train;
     routeStation:Station[]
     setting:TimeTablePageSetting;
@@ -14,7 +14,7 @@ interface 時刻表列車ViewProps {
 
 
 }
-export function 時刻表列車View({train,routeStation,setting,types}:時刻表列車ViewProps){
+export function TimeTableTrainView({train,routeStation,setting,types}:TimeTableTrainViewProps){
     const divWidth=setting.fontSize*2.2;
 
     return(
@@ -24,9 +24,9 @@ export function 時刻表列車View({train,routeStation,setting,types}:時刻表
                     return(
                         <div key={index} style={{color:types[trip.trainTypeId].color,width:divWidth,borderRight:'1px solid black'}}>
                             {
-                                routeStation.map((駅,駅順)=>{
+                                routeStation.map((station,sIndex)=>{
                                     return(
-                                        <時刻表時刻View key={駅順} direction={0} 駅={駅} 時刻={trip.stationTime[駅順]} setting={setting}/>
+                                        <TimeTableTimeView key={sIndex} direction={0} 駅={station} 時刻={trip.stationTime[sIndex]} setting={setting}/>
                                     )
                                 })
                             }

@@ -2,7 +2,7 @@ import {Station, StationTime} from "../../DiaData/NewData.ts";
 import styles from "./timetable.module.scss";
 import {TimeTablePageSetting} from "./TestPage.tsx";
 import {redirect} from "react-router-dom";
-interface 時刻表時刻ViewProps {
+interface TimeTableTimeViewProps {
     direction: number;
     時刻:StationTime
     駅:Station
@@ -26,7 +26,7 @@ function getBetterTime(time1:number,time2:number):number{
 }
 
 
-export function 時刻表時刻View({時刻,駅,setting,direction}:時刻表時刻ViewProps){
+export function TimeTableTimeView({時刻,駅,setting,direction}:TimeTableTimeViewProps){
     // const divWidth=setting.fontSize*2.2;
     const isBothShow=駅.isShowDep(direction)&&駅.isShowAri(direction);
     const lineHeight=setting.lineHeight*setting.fontSize;

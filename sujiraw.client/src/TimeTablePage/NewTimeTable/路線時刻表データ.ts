@@ -77,6 +77,7 @@ export function useMakeRouteTimeTable(companyID:number, routeID:number){
 
         作成中時刻表データ.trainTypes=serverData.trainTypes;
         作成中時刻表データ.stationInfo=serverData.stations;
+        作成中時刻表データ.sortTrain(0,40);
 
 
 
