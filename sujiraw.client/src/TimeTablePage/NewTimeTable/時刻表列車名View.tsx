@@ -1,6 +1,6 @@
 import {Train, Station} from "../../DiaData/NewData.ts";
 import {StationDTO, TrainTypeDTO} from "../../DiaData/DiaData.ts";
-import {TimeTableTimeView} from "./timeTableTimeView.tsx";
+import {TimeTableTimeView} from "./TimeTableTimeView.tsx";
 import {TimeTablePageSetting} from "./TestPage.tsx";
 import styles from "./timetable.module.scss"
 import React, {createRef, useEffect} from "react";

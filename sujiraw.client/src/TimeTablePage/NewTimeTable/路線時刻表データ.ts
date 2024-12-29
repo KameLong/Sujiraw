@@ -77,7 +77,8 @@ export function useMakeRouteTimeTable(companyID:number, routeID:number){
 
         作成中時刻表データ.trainTypes=serverData.trainTypes;
         作成中時刻表データ.stationInfo=serverData.stations;
-        作成中時刻表データ.sortTrain(0,40);
+        作成中時刻表データ.sortTrain(0,0);
+        作成中時刻表データ.sortTrain(1,作成中時刻表データ.stationList.length-1);
 
 
 
@@ -85,7 +86,14 @@ export function useMakeRouteTimeTable(companyID:number, routeID:number){
 
     }, [serverData]);
 
-    return データ;
+    function sortTrain(direction:number, stationIndex:number) {
+        set時刻表(()=>{
+            データ.sortTrain(direction,stationIndex);
+            return データ;
+        });
+    }
+
+    return {timeTableData:データ,sortTrain};
 
 
 

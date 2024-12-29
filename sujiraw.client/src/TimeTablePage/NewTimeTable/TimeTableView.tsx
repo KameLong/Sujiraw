@@ -1,6 +1,6 @@
 import {useMakeRouteTimeTable, useGetTimeTableData} from "./路線時刻表データ.ts";
 import React, {useEffect, useState} from "react";
-import {TimeTableTrainView} from "./timeTableTrainView.tsx";
+import {TimeTableTrainView} from "./TimeTableTrainView.tsx";
 import {HolizontalBoxList} from "../HolizontalBoxList.tsx";
 import {時刻表駅View} from "./時刻表駅View.tsx";
 import {時刻表列車名View} from "./時刻表列車名View.tsx";
@@ -13,9 +13,10 @@ export interface TimeTablePageSetting{
 interface TimeTableViewProp{
     timetableData:LineData;
     direction:number;
+    onStationSelected?:(stationId:number,stationIndex:number)=>void;
 }
 
-export default function TimeTableView({timetableData,direction}:TimeTableViewProp) {
+export default function TimeTableView({timetableData,direction,onStationSelected}:TimeTableViewProp) {
     const [timetableSetting,setTimetableSetting] = useState<TimeTablePageSetting>({
         fontSize:13,
         lineHeight:1.1
@@ -33,17 +34,21 @@ export default function TimeTableView({timetableData,direction}:TimeTableViewPro
     const width=2.2*timetableSetting.fontSize;
     const stationNameWidth=4*timetableSetting.fontSize;
 
+    const trains=direction===0?timetableData.downTrains:timetableData.upTrains;
+
 
     if(timetableData.downTrains.length==0){
         return(<div></div>)
     }
 
     const TrainView = ( index:number, style:any) => {
-        const trip=timetableData.downTrains[index];
+        const train=trains[index];
         const selected=false;
         return (
             <div key={index} className={selected?"selected":""} style={style}>
-                <TimeTableTrainView train={trip} routeStation={timetableData.stationList}
+                <TimeTableTrainView train={train}
+                                    direction={direction}
+                                    routeStation={timetableData.stationList}
                                     types={timetableData.trainTypes}
                                     stations={timetableData.stationInfo}
                                     setting={timetableSetting}>
@@ -52,7 +57,7 @@ export default function TimeTableView({timetableData,direction}:TimeTableViewPro
         );
     }
     const TrainNameView = ( index:number, style:any) => {
-        const trip=timetableData.downTrains[index];
+        const trip=trains[index];
         const selected=false;
         return (
             <div key={index} className={selected?"selected":""} style={style}>
@@ -69,21 +74,28 @@ export default function TimeTableView({timetableData,direction}:TimeTableViewPro
             width: '100%',
             height: '100%',
             fontSize: `${fontSize}px`,
-            lineHeight: `${lineHeight}px`
+            lineHeight: `${lineHeight}px`,
+            paddingBottom: "70px",
+
         }}>
             <div style={{
                 display: "flex",
                 width: '100%',
                 height: '100%',
-                paddingBottom: "70px",
                 zIndex: 5,
-                overflow: 'visible'
             }}>
+                <div style={{
+                    height: '100%',
+                    width: `${stationNameWidth}px`,
+                    overflow: 'hidden',
+                    position:'relative'
+                }}>
+
                 <div style={{
                     width: `${stationNameWidth}px`,
                     borderRight: "2px solid black",
                     borderBottom: "2px solid black",
-                    position: "fixed",
+                    position: "absolute",
                     height: `${100}px`,
                     background: "white",
                     zIndex: 20
@@ -93,12 +105,22 @@ export default function TimeTableView({timetableData,direction}:TimeTableViewPro
                 <div style={{
                     width: `${stationNameWidth}px`,
                     borderRight: "2px solid black",
-                    position: 'fixed',
+                    position: 'absolute',
                     zIndex: 1,
                     paddingTop: `${100}px`,
+                    // paddingBottom: "70px",
+                    overflow: 'hidden',
                     background: "white"
+
                 }} id="stationViewLayout">
-                    <時刻表駅View stations={timetableData.stationList} direction={0} lineHeight={lineHeight}/>
+                    <時刻表駅View stations={timetableData.stationList}
+                                  direction={direction}
+                                  lineHeight={lineHeight}
+                                  onDblClick={(station,index:number)=>{
+                                      onStationSelected?.(station.stationId,index);
+                                  }}
+                    />
+                </div>
                 </div>
                 <div style={{
                     width: '0px', flexShrink: 1, flexGrow: 1, paddingRight: '10px',
@@ -106,14 +128,13 @@ export default function TimeTableView({timetableData,direction}:TimeTableViewPro
                 }}>
                     <div
                         style={{
-                            paddingLeft: stationNameWidth,
                             overflowX: "hidden",
                             width: '100%',
                             height: 100
                         }}
                     >
                         <HolizontalBoxList
-                            itemCount={timetableData.downTrains.length}
+                            itemCount={trains.length}
                             itemSize={(fontSize * 2.2)}
                             getSetScrollX={(_setScrollX) => {
                                 setScrollX2 = _setScrollX;
@@ -130,13 +151,12 @@ export default function TimeTableView({timetableData,direction}:TimeTableViewPro
                         style={{
                             flexGrow: 1,
                             height: 0,
-                            paddingLeft: stationNameWidth,
                             overflowX: "hidden",
                             width: '100%',
                         }}
                     >
                         <HolizontalBoxList
-                            itemCount={timetableData.downTrains.length}
+                            itemCount={trains.length}
                             itemSize={(fontSize * 2.2)}
                             onScroll={(_scrollX, scrollY) => {
                                 const stationViewLayout = document.getElementById("stationViewLayout")
@@ -156,6 +176,7 @@ export default function TimeTableView({timetableData,direction}:TimeTableViewPro
                     </div>
 
                 </div>
+
             </div>
         </div>
 

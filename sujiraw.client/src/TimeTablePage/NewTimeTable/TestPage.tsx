@@ -1,6 +1,6 @@
 import {useMakeRouteTimeTable, useGetTimeTableData} from "./路線時刻表データ.ts";
 import React, {useEffect, useState} from "react";
-import {TimeTableTrainView} from "./timeTableTrainView.tsx";
+import {TimeTableTrainView} from "./TimeTableTrainView.tsx";
 import {HolizontalBoxList} from "../HolizontalBoxList.tsx";
 import {時刻表駅View} from "./時刻表駅View.tsx";
 import {時刻表列車名View} from "./時刻表列車名View.tsx";

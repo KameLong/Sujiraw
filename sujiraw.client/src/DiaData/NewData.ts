@@ -15,58 +15,115 @@ export class LineData {
      * 列車の並び替えをします。
      */
     public sortTrain(direction:number,stationIndex:number){
-        const trains=this.downTrains;
-        //ここでtrainsをソートする
-        const sortTrains=trains.filter((train)=>{
-            return train.trips[0].stationTime[stationIndex].HasTime;
-        }).sort((a,b)=>{
-            return a.trips[0].stationTime[stationIndex].DepAriTime-b.trips[0].stationTime[stationIndex].DepAriTime;
-        });
-        const noSortTrains=trains.filter((train)=>{
-            return !train.trips[0].stationTime[stationIndex].HasTime;
-        });
-        for(let i=stationIndex+1;i<this.stationList.length;i++){
-            for(let t=0;t<noSortTrains.length;t++){
-                if(noSortTrains[t].trips[0].stationTime[i].HasTime){
-                    let f=false;
-                    for(let s=sortTrains.length-1;s>=0;s--){
-                        if(sortTrains[s].trips[0].stationTime[i].DepAriTime>=0&&sortTrains[s].trips[0].stationTime[i].AriDepTime<=noSortTrains[t].trips[0].stationTime[i].DepAriTime){
-                            sortTrains.splice(s+1,0,noSortTrains[t]);
-                            noSortTrains.splice(t,1);
-                            f=true;
-                            break;
+        if(direction===0) {
+            const trains = this.downTrains;
+            //ここでtrainsをソートする
+            const sortTrains = trains.filter((train) => {
+                return train.trips[0].stationTime[stationIndex].HasTime;
+            }).sort((a, b) => {
+                return a.trips[0].stationTime[stationIndex].DepAriTime - b.trips[0].stationTime[stationIndex].DepAriTime;
+            });
+            const noSortTrains = trains.filter((train) => {
+                return !train.trips[0].stationTime[stationIndex].HasTime;
+            });
+            for (let i = stationIndex + 1; i < this.stationList.length; i++) {
+                for (let t = 0; t < noSortTrains.length; t++) {
+                    if (noSortTrains[t].trips[0].stationTime[i].HasTime) {
+                        let f = false;
+                        for (let s = sortTrains.length - 1; s >= 0; s--) {
+                            if (sortTrains[s].trips[0].stationTime[i].DepAriTime >= 0 && sortTrains[s].trips[0].stationTime[i].AriDepTime <= noSortTrains[t].trips[0].stationTime[i].DepAriTime) {
+                                sortTrains.splice(s + 1, 0, noSortTrains[t]);
+                                noSortTrains.splice(t, 1);
+                                f = true;
+                                break;
+                            }
                         }
+                        if (!f) {
+                            sortTrains.splice(0, 0, noSortTrains[t]);
+                            noSortTrains.splice(t, 1);
+                        }
+                        t--;
                     }
-                    if(!f){
-                        sortTrains.splice(0,0,noSortTrains[t]);
-                        noSortTrains.splice(t,1);
-                    }
-                    t--;
                 }
             }
-        }
-        for(let i=stationIndex-1;i>=0;i--){
-            for(let t=0;t<noSortTrains.length;t++){
-                if(noSortTrains[t].trips[0].stationTime[i].HasTime){
-                    let f=false;
-                    for(let s=0;s<sortTrains.length;s++){
-                        if(sortTrains[s].trips[0].stationTime[i].HasTime
-                            &&sortTrains[s].trips[0].stationTime[i].DepAriTime>=noSortTrains[t].trips[0].stationTime[i].AriDepTime){
-                            sortTrains.splice(s,0,noSortTrains[t]);
-                            noSortTrains.splice(t,1);
-                            f=true;
-                            break;
+            for (let i = stationIndex - 1; i >= 0; i--) {
+                for (let t = 0; t < noSortTrains.length; t++) {
+                    if (noSortTrains[t].trips[0].stationTime[i].HasTime) {
+                        let f = false;
+                        for (let s = 0; s < sortTrains.length; s++) {
+                            if (sortTrains[s].trips[0].stationTime[i].HasTime
+                                && sortTrains[s].trips[0].stationTime[i].DepAriTime >= noSortTrains[t].trips[0].stationTime[i].AriDepTime) {
+                                sortTrains.splice(s, 0, noSortTrains[t]);
+                                noSortTrains.splice(t, 1);
+                                f = true;
+                                break;
+                            }
                         }
+                        if (!f) {
+                            sortTrains.splice(sortTrains.length, 0, noSortTrains[t]);
+                            noSortTrains.splice(t, 1);
+                        }
+                        t--;
                     }
-                    if(!f){
-                        sortTrains.splice(sortTrains.length,0,noSortTrains[t]);
-                        noSortTrains.splice(t,1);
-                    }
-                    t--;
                 }
             }
+            this.downTrains = sortTrains.concat(noSortTrains);
+        }else{
+            const trains = this.upTrains;
+            //ここでtrainsをソートする
+            const sortTrains = trains.filter((train) => {
+                return train.trips[0].stationTime[stationIndex].HasTime;
+            }).sort((a, b) => {
+                return a.trips[0].stationTime[stationIndex].DepAriTime - b.trips[0].stationTime[stationIndex].DepAriTime;
+            });
+            const noSortTrains = trains.filter((train) => {
+                return !train.trips[0].stationTime[stationIndex].HasTime;
+            });
+            //let i = stationIndex - 1; i >= 0; i--
+            for (let i = stationIndex - 1; i >= 0; i--) {
+                for (let t = 0; t < noSortTrains.length; t++) {
+                    if (noSortTrains[t].trips[0].stationTime[i].HasTime) {
+                        let f = false;
+                        for (let s = sortTrains.length - 1; s >= 0; s--) {
+                            if (sortTrains[s].trips[0].stationTime[i].DepAriTime >= 0 && sortTrains[s].trips[0].stationTime[i].AriDepTime <= noSortTrains[t].trips[0].stationTime[i].DepAriTime) {
+                                sortTrains.splice(s + 1, 0, noSortTrains[t]);
+                                noSortTrains.splice(t, 1);
+                                f = true;
+                                break;
+                            }
+                        }
+                        if (!f) {
+                            sortTrains.splice(0, 0, noSortTrains[t]);
+                            noSortTrains.splice(t, 1);
+                        }
+                        t--;
+                    }
+                }
+            }
+            for (let i = stationIndex + 1; i < this.stationList.length; i++) {
+                for (let t = 0; t < noSortTrains.length; t++) {
+                    if (noSortTrains[t].trips[0].stationTime[i].HasTime) {
+                        let f = false;
+                        for (let s = 0; s < sortTrains.length; s++) {
+                            if (sortTrains[s].trips[0].stationTime[i].HasTime
+                                && sortTrains[s].trips[0].stationTime[i].DepAriTime >= noSortTrains[t].trips[0].stationTime[i].AriDepTime) {
+                                sortTrains.splice(s, 0, noSortTrains[t]);
+                                noSortTrains.splice(t, 1);
+                                f = true;
+                                break;
+                            }
+                        }
+                        if (!f) {
+                            sortTrains.splice(sortTrains.length, 0, noSortTrains[t]);
+                            noSortTrains.splice(t, 1);
+                        }
+                        t--;
+                    }
+                }
+            }
+            this.upTrains = sortTrains.concat(noSortTrains);
+
         }
-        this.downTrains=sortTrains.concat(noSortTrains);
     }
 }
 
