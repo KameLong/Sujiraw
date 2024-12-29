@@ -189,9 +189,8 @@ namespace Sujiraw.Server.Controllers
                         route})
                     .Where(item => item.route.CompanyId == route.CompanyId)
                     .Select(item=>item.rs)
-                    .OrderBy(item=>item.Sequence)
                     .GroupBy(item=>item.RouteId)
-                    .ToDictionary(item=>item.Key,item=>item.ToList());
+                    .ToDictionary(item=>item.Key,item=>item.OrderBy(item=>item.Sequence).ToList());
                     
 
                 result.Routes= dbContext.Route.Where(item => item.CompanyId == route.CompanyId).ToList().ToDictionary(item => item.RouteId, item =>
