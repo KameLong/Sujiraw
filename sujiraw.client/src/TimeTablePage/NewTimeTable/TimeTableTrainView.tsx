@@ -28,7 +28,9 @@ export function TimeTableTrainView({train,routeStation,setting,types,direction}:
                             {
                                 orderedRouteStation.map((station,sIndex)=>{
                                     return(
-                                        <TimeTableTimeView key={sIndex} direction={1} 駅={station} 時刻={orderedStationTime[sIndex]} setting={setting} />
+                                        <TimeTableTimeView key={sIndex} direction={1}
+                                                           befTime={orderedStationTime[sIndex-1]} aftTime={orderedStationTime[sIndex+1]}
+                                                           駅={station} 時刻={orderedStationTime[sIndex]} setting={setting} />
                                     )
                                 })
                             }

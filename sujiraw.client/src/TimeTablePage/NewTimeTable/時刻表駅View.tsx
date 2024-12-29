@@ -27,7 +27,7 @@ export function 時刻表駅View({stations,direction,lineHeight,onDblClick}:Time
                      onDoubleClick={()=>onDblClick?.(駅,index)}
                 ><MatchTextLabel>
                         {駅.stationName}
-                    </MatchTextLabel></div>
+                </MatchTextLabel></div>
             )
         }else{
             return (
