@@ -13,7 +13,10 @@ export interface TimeTablePageSetting{
 export default function TestPage() {
     const a=useMakeRouteTimeTable(5438111112826774,6052917633425697);
     return (
-        <TimeTableView timetableData={a}  direction={0}/>
+        <TimeTableView
+            timetableData={a.timeTableData}
+            direction={0}
+        />
     )
 
 
