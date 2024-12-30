@@ -111,61 +111,6 @@ namespace Sujiraw.Server.Controllers
             }
         }
         [HttpGet("Route/{routeID}")]
-        public ActionResult GetRouteTimeTableData(long routeID)
-        {
-            var result = new TimeTableDataDTO();
-            try
-            {
-                using var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!);
-                var route = service.GetRoute(routeID);
-                if (route == null)
-                {
-                    return NotFound();
-                }
-                result.Stations = service.GetStationByCompany(route.CompanyID)
-                    .ToDictionary(item => item.StationID, item => new JsonStation(item));
-                result.TrainTypes = service.GetTrainTypeByCompany(route.CompanyID)
-                    .ToDictionary(item => item.TrainTypeID, item => new JsonTrainType(item));
-                result.Routes = service.GetRouteByCompany(route.CompanyID).ToDictionary(item => item.RouteID, item =>
-                {
-                    var route = new JsonRoute(item);
-                    route.routeStations = service.GetRouteStationByRoute(item.RouteID)
-                        .Select(rs => new JsonRouteStation(rs)).ToList();
-                    return route;
-                });
-
-                //Route基準なので、Routeに関係ある列車だけ抽出します。
-                result.Trains = service.GetTrainByRoute(route.CompanyID,route.RouteID)
-                    .ToDictionary(item => item.TrainID, item => new JsonTrain(item));
-                
-                var stopTimes = service.GetStopTimeFromRoute(routeID);
-                var trainTrip = service.GetTrainTripByRoute(routeID);
-                result.Trains.Values.ToList().ForEach(train =>
-                {
-                    train.tripInfos = trainTrip[train.trainID].Select(trip => new JsonTripInfo(trip)).ToList();
-                });
-
-                result.Trips=service.GetTripByRoute(routeID).ToDictionary(item => item.TripID, item =>
-                {
-                    var trip = new JsonTrip(item);
-                    trip.times = stopTimes[trip.tripID].Select(st=>new JsonStopTime(st)).ToList();
-                    return trip;
-                }
-                );
-
-                result.ShowStations = result.Routes[routeID].routeStations.Select(item => new ShowStationDTO(item)).ToList();
-                result.ShowStations.First().AriRouteStationID = 0;
-                result.ShowStations.Last().DepRouteStationID = 0;
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
-            }
-
-        }
-        [HttpGet("Route2/{routeID}")]
         public ActionResult GetRouteTimeTableData2(long routeID)
         {
             var result = new TimeTableDataDTO();

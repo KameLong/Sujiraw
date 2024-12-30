@@ -3,12 +3,13 @@ import Box from "@mui/material/Box";
 import {Alert, Dialog, Fab} from "@mui/material";
 import {Settings} from "@mui/icons-material";
 import React, {memo, useEffect, useState} from "react";
-import {useDiagramViewHook} from "../hook/DiagramHook.ts";
+import {useDiagramViewHook, useDiagramViewHook2} from "../hook/DiagramHook.ts";
 import {styled} from "@mui/styles";
 import {DiagramPDFSetting, DiagramPDFSettingView} from "./DiagramPDFSetting";
 import {DiagramPDFDocument} from "./DiagramPDFDocument";
 import {PDFDownloadLink, PDFViewer} from "@react-pdf/renderer";
 import {isMobile} from 'react-device-detect';
+import {useDiagramServer} from "../hook/DiagramServerHook.ts";
 
 
 
@@ -21,9 +22,6 @@ const CustomDialog = styled(Dialog)({
 });
 const MemoDiagramPDFDocument=memo(DiagramPDFDocument);
 
-function CheckIcon(props: { fontSize: string }) {
-    return null;
-}
 
 export function DiagramPDFPage(){
     const params = useParams<{ routeID: string,companyID:string }>();
@@ -46,8 +44,9 @@ export function DiagramPDFPage(){
 
     });
     const [settingOpen,setSettingOpen]=useState(false);
+    const lineData=useDiagramServer(routeID);
+    const {routeStations, downLines, upLines} = useDiagramViewHook2(lineData);
 
-    const {routeStations, downLines, upLines, routeInfo} = useDiagramViewHook(companyID,routeID);
 
     if(routeStations.length===0){
         return <div>loading...</div>
@@ -77,9 +76,10 @@ export function DiagramPDFPage(){
                 <PDFDownloadLink
                     style={{fontSize:20}}
                     document={
-                        <DiagramPDFDocument upLines={upLines} downLines={downLines} routeStations={routeStations} routeInfo={routeInfo} layout={layout}/>
+                        <DiagramPDFDocument upLines={upLines} downLines={downLines} routeStations={routeStations}  layout={layout}/>
                     }
-                    fileName={`Diagram_${routeInfo[routeID].name}.pdf`}
+                    // fileName={`Diagram_${routeInfo[routeID].name}.pdf`}
+                    fileName={`Diagram.pdf`}
                 >
                      {/*<span>PDF ready for download</span>*/}
                     <Alert severity="success" sx={{mt:40}}>
@@ -90,7 +90,7 @@ export function DiagramPDFPage(){
                 </PDFDownloadLink>
                 :
                 <PDFViewer style={{width: '100%', height: '100%'}}>
-                    <MemoDiagramPDFDocument upLines={upLines} downLines={downLines} routeStations={routeStations} routeInfo={routeInfo} layout={layout}/>
+                    <MemoDiagramPDFDocument upLines={upLines} downLines={downLines} routeStations={routeStations}  layout={layout}/>
                 </PDFViewer>
             }
         </div>

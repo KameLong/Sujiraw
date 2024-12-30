@@ -39,13 +39,12 @@ const zoomY:Gesture={
     transform:transform
 }
 interface DiagramViewProps{
-    lineData:DiagramDataDTO;
     routeStations:DiagramStation[];
     downLines:DiagramLine[];
     upLines:DiagramLine[];
 
 }
-export function DiagramView({lineData,routeStations, downLines, upLines}:DiagramViewProps) {
+export function DiagramView({routeStations, downLines, upLines}:DiagramViewProps) {
 
     const SCALE:number=window.devicePixelRatio;
     const [diagramCanvas,setDiagramCanvas]=useState<DiagramCanvas>(new DiagramCanvas(undefined));

@@ -1,9 +1,7 @@
 
 
-import React, {Profiler, useCallback, useEffect, useRef, useState} from 'react';
+import React, { useEffect} from 'react';
 import {useNavigate, useParams} from "react-router-dom";
-import {DiaData, fetchGzipJson, RouteDTO, RouteInfo, StationDTO, StopTimeDTO, TrainDTO, TrainTypeDTO} from "../DiaData/DiaData";
-import {useMakeRouteTimeTableData} from "../TimeTablePage/NewTimeTable/MakeRouteTimeTableDataHook.ts";
 import {DiagramView} from "./DiagramView.tsx";
 import {useDiagramServer} from "./hook/DiagramServerHook.ts";
 import {useDiagramViewHook2} from "./hook/DiagramHook.ts";
@@ -17,7 +15,7 @@ import {BsArrowReturnLeft} from "react-icons/bs";
 
 
 
-function DiagramPage() {
+export function DiagramPage() {
     const params = useParams<{ routeID: string,companyID:string }>();
     const routeID = Number.parseInt(params.routeID??"0");
     const companyID = Number.parseInt(params.companyID??"0");
@@ -35,7 +33,6 @@ function DiagramPage() {
             <div style={{height:'calc(100% - 50px)',
             overflow:'hidden'}}>
             <DiagramView
-                lineData={lineData}
                 routeStations={routeStations}
                 upLines={upLines}
                 downLines={downLines}
@@ -45,11 +42,6 @@ function DiagramPage() {
             <BottomNavigation
                 showLabels
                 style={{backgroundColor: '#eee'}}
-
-                // value={value}
-                // onChange={(event, newValue) => {
-                //     setValue(newValue);
-                // }}
             >
                 <BottomNavigationAction
                     label="下り時刻表" icon={<ArrowCircleDownRoundedIcon />}
@@ -81,11 +73,7 @@ function DiagramPage() {
     );
 }
 
-export default DiagramPage;
 
 
-const hasTime=(stopTime:StopTimeDTO)=>{
-    return stopTime.depTime>=0||stopTime.ariTime>=0;
-}
 
 

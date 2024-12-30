@@ -16,10 +16,9 @@ export interface DiagramPDFDocumentProps{
     routeStations:DiagramStation[],
     downLines:DiagramLine[],
     upLines:DiagramLine[],
-    routeInfo:{[key:number]:RouteInfo}
 }
 
-export  function DiagramPDFDocument({layout,routeStations,downLines,upLines,routeInfo}:DiagramPDFDocumentProps){
+export  function DiagramPDFDocument({layout,routeStations,downLines,upLines}:DiagramPDFDocumentProps){
     // ttfファイルのフォント定義
     Font.register({
         family: "NotoSansJP",

@@ -2,7 +2,6 @@ import React from 'react';
 import './App.css';
 import RouteTimeTablePage from "./TimeTablePage/RouteTimeTable/RouteTimeTablePage.tsx";
 import {BrowserRouter, Route, Routes } from 'react-router-dom';
-import DiagramPage from "./Diagram/DiagramPage";
 import { TimeTablePDF } from './TimeTablePage/TimeTablePDF/TimeTablePDF';
 import {LicensePage} from "./Help/LicensePage";
 import {DiagramPDFPage} from "./Diagram/DiagramPDF/DiagramPDFPage";
@@ -12,6 +11,7 @@ import {CompanyPage} from "./CompanyPage/CompanyPage.tsx";
 import {TimeTableEditPage} from "./CompanyPage/TimeTableEditPage.tsx";
 import {CustomTimeTablePage} from "./TimeTablePage/CustomTimeTable/CustomTimeTablePage.tsx";
 import TestPage from "./TimeTablePage/NewTimeTable/TestPage.tsx";
+import {DiagramPage} from "./Diagram/DiagramPage.tsx";
 
 function App() {
   return (
