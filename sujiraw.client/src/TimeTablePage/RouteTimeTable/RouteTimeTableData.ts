@@ -196,7 +196,7 @@ export function useRouteTimeTableServerData(routeID:number){
 
     });
     useEffect(() => {
-        axiosClient.get(`/api/NewTimeTable/Route/${routeID}`).then((res)=> {
+        axiosClient.get(`/api/NewTimeTable/Route2/${routeID}`).then((res)=> {
             setTimetableServerData(res.data);
         }).catch((ex)=>{
             console.error(ex);

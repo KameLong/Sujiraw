@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Npgsql;
 using Sujiraw.Data;
+using Sujiraw.Data.Entity;
 using Sujiraw.Server.SignalR;
+using StopTime = Sujiraw.Data.StopTime;
+using Trip = Sujiraw.Data.Trip;
 
 namespace Sujiraw.Server.Controllers
 {
@@ -122,10 +124,8 @@ namespace Sujiraw.Server.Controllers
                 }
                 result.Stations = service.GetStationByCompany(route.CompanyID)
                     .ToDictionary(item => item.StationID, item => new JsonStation(item));
-
                 result.TrainTypes = service.GetTrainTypeByCompany(route.CompanyID)
                     .ToDictionary(item => item.TrainTypeID, item => new JsonTrainType(item));
-
                 result.Routes = service.GetRouteByCompany(route.CompanyID).ToDictionary(item => item.RouteID, item =>
                 {
                     var route = new JsonRoute(item);
@@ -134,8 +134,10 @@ namespace Sujiraw.Server.Controllers
                     return route;
                 });
 
+                //Route基準なので、Routeに関係ある列車だけ抽出します。
                 result.Trains = service.GetTrainByRoute(route.CompanyID,route.RouteID)
                     .ToDictionary(item => item.TrainID, item => new JsonTrain(item));
+                
                 var stopTimes = service.GetStopTimeFromRoute(routeID);
                 var trainTrip = service.GetTrainTripByRoute(routeID);
                 result.Trains.Values.ToList().ForEach(train =>
@@ -151,6 +153,86 @@ namespace Sujiraw.Server.Controllers
                 }
                 );
 
+                result.ShowStations = result.Routes[routeID].routeStations.Select(item => new ShowStationDTO(item)).ToList();
+                result.ShowStations.First().AriRouteStationID = 0;
+                result.ShowStations.Last().DepRouteStationID = 0;
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+
+        }
+        [HttpGet("Route2/{routeID}")]
+        public ActionResult GetRouteTimeTableData2(long routeID)
+        {
+            var result = new TimeTableDataDTO();
+            try
+            {
+                var dbContext = new SujirawContext(Configuration["ConnectionStrings:postgres"]!);
+                var route = dbContext.Route.Find(routeID);
+                if (route == null)
+                {
+                    return NotFound();
+                }
+                result.Stations = dbContext.Station.Where(item => item.CompanyId == route.CompanyId)
+                    .ToDictionary(item => item.StationId, item => new JsonStation(item));
+                result.TrainTypes = dbContext.TrainType.Where(item => item.CompanyId == route.CompanyId)
+                    .ToDictionary(item => item.TrainTypeId, item => new JsonTrainType(item));
+                var routeStationInCompany = dbContext.RouteStation.Join(dbContext.Route,
+                    rs => rs.RouteId,
+                    route => route.RouteId,
+                    (rs,route)=>new{
+                        rs,
+                        route})
+                    .Where(item => item.route.CompanyId == route.CompanyId)
+                    .Select(item=>item.rs)
+                    .GroupBy(item=>item.RouteId)
+                    .ToDictionary(item=>item.Key,item=>item.OrderBy(item=>item.Sequence).ToList());
+                    
+
+                result.Routes= dbContext.Route.Where(item => item.CompanyId == route.CompanyId).ToList().ToDictionary(item => item.RouteId, item =>
+                {
+                    var r = new JsonRoute(item);
+                    r.routeStations = routeStationInCompany[item.RouteId].Select(rs => new JsonRouteStation(rs)).ToList();
+                    return r;
+                });
+                result.Trains= dbContext.Train.Where(item => item.CompanyId == route.CompanyId)
+                    .ToDictionary(item => item.TrainId, item => new JsonTrain(item));
+
+                var stopTimes = dbContext.StopTime.Join(dbContext.Trip,
+                        st => st.TripId,
+                        trip => trip.TripId,
+                        (st, trip) => new
+                        {
+                            st,
+                            trip
+                        }).Where(item => item.trip.RouteId == route.RouteId)
+                    .Select(item => item.st)
+                    .GroupBy(item => item.TripId)
+                    .ToDictionary(item=>item.Key,item=>item.ToList());
+                    
+               
+                var tripInTrain=dbContext.Trip.Join(dbContext.Route,trip=>trip.RouteId,route=>route.RouteId,(trip,route)=>new {trip,route})
+                    .Where(item=>item.route.CompanyId==route.CompanyId)
+                    .Select(item=>item.trip).GroupBy(item=>item.TrainId)
+                    .ToDictionary(item=>item.Key,item=>item);
+                result.Trains.Values.ToList().ForEach(train =>
+                    {
+                        train.tripInfos=tripInTrain[train.trainID].Select(trip=>new JsonTripInfo(trip)).ToList();
+                    }
+                );
+                result.Trips=dbContext.Trip.Where(item => item.RouteId == route.RouteId).ToDictionary(item => item.TripId, item =>
+                {
+                    var trip = new JsonTrip(item);
+                    trip.times=stopTimes[item.TripId].Select(st=>new JsonStopTime(st)).ToList();
+                    return trip;
+                }
+                );
+
+                
                 result.ShowStations = result.Routes[routeID].routeStations.Select(item => new ShowStationDTO(item)).ToList();
                 result.ShowStations.First().AriRouteStationID = 0;
                 result.ShowStations.Last().DepRouteStationID = 0;

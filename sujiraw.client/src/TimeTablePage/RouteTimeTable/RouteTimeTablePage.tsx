@@ -1,184 +1,109 @@
 import {useLocation} from "react-use";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {getStationViewWidth, StationView} from "../StationView.tsx";
 import {getTripNameViewHeight, TripNameView} from "../TripNameView.tsx";
 import {StationHeaderView} from "../StationHeaderView.tsx";
 import {HolizontalBoxList} from "../HolizontalBoxList.tsx";
 import {BottomMenu} from "../../Menu/BottomMenu.tsx";
-import React, {memo, useMemo, useState} from "react";
+import React, {memo, useEffect, useMemo, useState} from "react";
 import {TripView} from "../TripView.tsx";
 
 import {TripDTO} from "../../DiaData/DiaData.ts";
 import {useRouteTimeTableData} from "./RouteTimeTableData.ts";
 import {TimeTableTrain, TripData} from "../CustomTimeTable/CustomTimeTableData.ts";
-export interface TimeTablePageSetting{
-    fontSize:number,
-    lineHeight:number,
+import {useMakeRouteTimeTable} from "../NewTimeTable/路線時刻表データ.ts";
+import TimeTableView from "../NewTimeTable/TimeTableView.tsx";
+import {StationSelectedModal, StationSelectedState} from "./StationSelectedModal.tsx";
+import {LineData} from "../../DiaData/NewData.ts";
+import {BottomNavigation, BottomNavigationAction} from "@mui/material";
+import RestoreIcon from '@mui/icons-material/Restore';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import ArrowCircleDownRoundedIcon from '@mui/icons-material/ArrowCircleDownRounded';
+import ArrowCircleUpRoundedIcon from '@mui/icons-material/ArrowCircleUpRounded';
+import { GoGraph } from "react-icons/go";
+import { BsGraphDown } from "react-icons/bs";
+import { BsArrowReturnLeft } from "react-icons/bs";
+
+export interface TimeTablePageSetting {
+    fontSize: number,
+    lineHeight: number,
 }
-export default function RouteTimeTablePage(){
-    const param = useParams<{ companyID:string,routeID:string,direct: string  }>();
-    const companyID=parseInt(param.companyID??"0");
-    const routeID=parseInt(param.routeID??"0");
-    const direct=parseInt(param.direct??"0");
 
-    const timetableData=useRouteTimeTableData(companyID,routeID,direct);
+export default function RouteTimeTablePage() {
+    const param = useParams<{ companyID: string, routeID: string, direct: string }>();
+    const navigate=useNavigate();
 
-    const [setting,setSetting]=useState<TimeTablePageSetting>({
-        fontSize:13,
-        lineHeight:1.1
+    const companyID = parseInt(param.companyID ?? "0");
+    const routeID = parseInt(param.routeID ?? "0");
+    const direct = parseInt(param.direct ?? "0");
+    const timetableData = useMakeRouteTimeTable(companyID, routeID);
+    const [stationSelectedState, setStationSelectedState] = useState<StationSelectedState>({
+        open: false, station: undefined, stationIndex: 0
     });
-
-    let setScrollX:undefined|((scrollX:number)=>void)=undefined;
-    let setScrollX2:undefined|((scrollX:number)=>void)=undefined;
-    const MemoTripView = memo(TripView);
-    const MemoTripNameView = memo(TripNameView);
-
-
-    const getStationProps=useMemo(()=>{
-        const stations=timetableData.timetableServerData.showStations;
-        function GetRouteStation(routeStationID:number){
-            return Object.values(timetableData.timetableServerData.routes).map((route)=>route.routeStations).flat().find((routeStation)=>routeStation.rsID===routeStationID);
-        }
-        const res= stations.map((station,_i)=>{
-            const routeStation=GetRouteStation(station.depRouteStationID===0?station.ariRouteStationID:station.depRouteStationID);
-            let border=station.border;
-            if(direct===1){
-                if(_i===0){
-                    border=false;
-                }
-                else{
-                    border=stations[_i-1].border;
-                }
-
-            }
-            return {
-                rsID:routeStation.rsID,
-                name:timetableData.timetableServerData.stations[routeStation.stationID]?.name??"",
-                style:station.showStyle===0?0b00110011:station.showStyle,
-                border:border
-            }
-        });
-        return res;
-    },[timetableData]);
-
-
-    const Column = ( index:number, style:any) => {
-        const trip:TimeTableTrain=timetableData.trains[index];
-
-        const selected=false;
-        return (
-            <div key={trip.trainID} className={selected?"selected":""} style={style}>
-                <MemoTripView trip={TripData.fromTimeTableTrain(trip)} type={timetableData.timetableServerData.trainTypes[trip.trainTypeID]}
-                              setting={setting} stations={getStationProps} allStations={timetableData.timetableServerData.stations}
-                              train={timetableData.timetableServerData.trains[trip.trainID]}
-
-                              direction={direct}/>
-            </div>
-        );
-    }
-    const Column2 = (index:number, style:any) => {
-        const trip=timetableData.trains[index];
-
-        const selected=false;
-        return (
-            <div className={selected?"selected":""} key={trip.trainID} style={{...style,height:`${getTripNameViewHeight(setting)}px`,borderBottom:'2px solid black'}}>
-                <MemoTripNameView trip={TripData.fromTimeTableTrain(trip)} type={timetableData.timetableServerData.trainTypes[trip.trainTypeID]}
-                                  setting={setting}
-                                  train={timetableData.timetableServerData.trains[trip.trainID]}
-                                  allStations={timetableData.timetableServerData.stations}
-                                  direction={direct}
-                />
-
-            </div>
-        );
-    }
-
-
-
-    if(timetableData.timetableServerData.showStations.length===0) {
-        return <div>loading</div>
-    }
     return (
-        <div style={{background:'white',width: '100%',height:'100%',fontSize: `${setting.fontSize}px`, lineHeight: `${setting.fontSize * setting.lineHeight}px`}}>
-            <div style={{display: "flex", width: '100%', height: '100%', paddingBottom: "70px",zIndex:5,overflow:'visible'}}>
-                <div style={{
-                    width: `${getStationViewWidth(setting)}px`,
-                    borderRight: "2px solid black",
-                    borderBottom: "2px solid black",
-                    position: "fixed",
-                    height: `${getTripNameViewHeight(setting)}px`,
-                    background: "white",
-                    zIndex: 20
-                }}>
-                    <StationHeaderView  setting={setting}/>
-                </div>
-                <div style={{
-                    width: `${getStationViewWidth(setting)}px`,
-                    borderRight: "2px solid black",
-                    position: 'fixed',
-                    zIndex:1,
-                    paddingTop: `${getTripNameViewHeight(setting)}px`,
-                    background: "white"
-                }} id="stationViewLayout">
-                    <StationView stations={getStationProps} setting={setting} direction={direct}/>
-                </div>
-                <div style={{width: '0px', flexShrink: 1, flexGrow: 1, paddingRight: '10px',
-                    display:'flex',flexDirection:'column'}}>
-                    <div
-                        style={{
-                            paddingLeft: `${getStationViewWidth(setting)}px`,
-                            overflowX: "hidden",
-                            width: '100%',
-                            height:getTripNameViewHeight(setting)
-                        }}
-                    >
-                        <HolizontalBoxList
-                            itemCount={timetableData.trains.length}
-                            itemSize={(setting.fontSize * 2.2)}
-                            getSetScrollX={(_setScrollX)=> {
-                                setScrollX2=_setScrollX;
-                            }
-                            }
-                        >
-                            {Column2}
-                        </HolizontalBoxList>
-                    </div>
-
-                    <div
-                        style={{
-                            flexGrow: 1,
-                            height:0,
-                            paddingLeft: `${getStationViewWidth(setting)}px`,
-                            // paddingTop: `${getTripNameViewHeight(setting)}px`,
-                            overflowX: "hidden",
-                            width: '100%',
-                        }}
-                    >
-                        <HolizontalBoxList
-                            itemCount={timetableData.trains.length}
-                            itemSize={(setting.fontSize * 2.2)}
-                            onScroll={(_scrollX, scrollY)=>{
-                                const stationViewLayout=document.getElementById("stationViewLayout")
-                                if(stationViewLayout!==null){
-                                    stationViewLayout.style.top=-scrollY+"px";
-                                }
-                                if(setScrollX2!==undefined) {
-                                    setScrollX2(_scrollX);
-                                }
-                            }
-                            }
-                            getSetScrollX={(_setScrollX)=> {
-                                setScrollX=_setScrollX;
-                            }
-                            }
-
-                        >
-                            {Column}
-                        </HolizontalBoxList>
-                    </div>
-
-                </div>
+        <>
+            <div style={{height:'calc(100% - 50px)'}}>
+            <TimeTableView
+                timetableData={timetableData.timeTableData}
+                direction={direct}
+                onStationSelected={(stationId: number, stationIndex: number) => {
+                    setStationSelectedState({
+                        open: true,
+                        station: timetableData.timeTableData.stationInfo[stationId],
+                        stationIndex: stationIndex
+                    });
+                    console.log(stationId);
+                }}
+            />
             </div>
-        </div>
-    );
+
+            <StationSelectedModal
+                state={stationSelectedState}
+                onClose={() => setStationSelectedState({open: false, station: undefined, stationIndex: 0})}
+                onSortButtonClicked={() => {
+                    console.log("sort");
+                    setStationSelectedState({open: false, station: undefined, stationIndex: 0});
+                    let stationIndex = stationSelectedState.stationIndex;
+                    if (direct === 1) {
+                        stationIndex = timetableData.timeTableData.stationList.length - 1 - stationIndex;
+                    }
+                    timetableData.sortTrain(direct, stationIndex);
+                }}
+            />
+            <BottomNavigation
+                showLabels
+                style={{backgroundColor: '#eee'}}
+
+                // value={value}
+                // onChange={(event, newValue) => {
+                //     setValue(newValue);
+                // }}
+            >
+                <BottomNavigationAction
+                    label="下り時刻表" icon={<ArrowCircleDownRoundedIcon />}
+                    onClick={() => {
+                        navigate(`/timetable/${companyID}/${routeID}/0`);
+                    }}
+                />
+                <BottomNavigationAction label="上り時刻表" icon={<ArrowCircleUpRoundedIcon />}
+                    onClick={() => {
+                        navigate(`/timetable/${companyID}/${routeID}/1`);
+                    }}
+                />
+                <BottomNavigationAction label="ダイヤグラム" icon={<GoGraph/>}
+                onClick={() => {
+                    navigate(`/diagram/${companyID}/${routeID}`);
+
+                }}
+                />
+                <BottomNavigationAction
+                    label="戻る" icon={<BsArrowReturnLeft />}
+                    onClick={() => {
+                        navigate(`/company/${companyID}`);
+                    }}
+                />
+            </BottomNavigation>
+        </>
+    )
 }

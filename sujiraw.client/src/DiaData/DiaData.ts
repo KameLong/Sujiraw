@@ -271,6 +271,36 @@ export interface DiaData {
     trains: { [key: number]: TrainDTO };
     trainTypes: { [key: number]: TrainTypeDTO };
     timetables?: { [key: number]: TimeTable };
-
-
 }
+
+export interface DiagramDataDTO{
+    route:RouteDTO;
+    stations:{[key:number]:StationDTO};
+    trainTypes:{[key:number]:TrainTypeDTO};
+}
+
+// export class DiagramData{
+//     public stations:DiagramStation[]=[];
+//     public upTrips:DiagramTrip[]=[];
+//     public downTrips:DiagramTrip[]=[];
+// }
+// export class DiagramStation implements RouteStationDTO{
+//     public main: boolean;
+//     public routeID: number;
+//     public rsID: number;
+//     public showStyle: number;
+//     public stationID: number;
+//     public stationIndex: number;
+//
+//     public stationTime: number;
+//     public station: StationDTO;
+//
+//     static fromRouteStationDTO(routeStationDTO:RouteStationDTO,station:StationDTO):DiagramStation{
+//         return {
+//             ...routeStationDTO,
+//             stationTime:0,
+//             station:station
+//         }
+//     }
+//
+// }
