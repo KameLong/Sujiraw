@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import {Alert, Dialog, Fab} from "@mui/material";
 import {Settings} from "@mui/icons-material";
 import React, {memo, useEffect, useState} from "react";
-import {useDiagramHook} from "../DiagramHook";
+import {useDiagramViewHook} from "../hook/DiagramHook.ts";
 import {styled} from "@mui/styles";
 import {DiagramPDFSetting, DiagramPDFSettingView} from "./DiagramPDFSetting";
 import {DiagramPDFDocument} from "./DiagramPDFDocument";
@@ -47,7 +47,7 @@ export function DiagramPDFPage(){
     });
     const [settingOpen,setSettingOpen]=useState(false);
 
-    const {routeStations, downLines, upLines, routeInfo} = useDiagramHook(companyID,routeID);
+    const {routeStations, downLines, upLines, routeInfo} = useDiagramViewHook(companyID,routeID);
 
     if(routeStations.length===0){
         return <div>loading...</div>

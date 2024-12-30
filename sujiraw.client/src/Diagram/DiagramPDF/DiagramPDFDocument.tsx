@@ -6,7 +6,7 @@ import React, {useEffect, useState} from "react";
 import {Document, Font, Line, Page, PDFDownloadLink, PDFViewer, Rect, StyleSheet, Svg, Text, View} from "@react-pdf/renderer";
 import {OrderType} from "../../TimeTablePage/TimeTablePDF/SettingView";
 import {loadCompany, loadRoute, RouteDTO, RouteInfo, StationDTO, TrainDTO, TrainTypeDTO} from "../../DiaData/DiaData";
-import {useDiagramHook} from "../DiagramHook";
+import {useDiagramViewHook} from "../hook/DiagramHook.ts";
 import {DiagramLine} from "../DiagramCanvas";
 import {DiagramStation} from "../DiagramData";
 import {DiagramPDFSetting} from "./DiagramPDFSetting";
