@@ -1,12 +1,17 @@
 
 
 import React, {Profiler, useCallback, useEffect, useRef, useState} from 'react';
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {DiaData, fetchGzipJson, RouteDTO, RouteInfo, StationDTO, StopTimeDTO, TrainDTO, TrainTypeDTO} from "../DiaData/DiaData";
 import {useMakeRouteTimeTable} from "../TimeTablePage/NewTimeTable/路線時刻表データ.ts";
 import {DiagramView} from "./DiagramView.tsx";
 import {useDiagramServer} from "./hook/DiagramServerHook.ts";
 import {useDiagramViewHook2} from "./hook/DiagramHook.ts";
+import {BottomNavigation, BottomNavigationAction} from "@mui/material";
+import ArrowCircleDownRoundedIcon from "@mui/icons-material/ArrowCircleDownRounded";
+import ArrowCircleUpRoundedIcon from "@mui/icons-material/ArrowCircleUpRounded";
+import {GoGraph} from "react-icons/go";
+import {BsArrowReturnLeft} from "react-icons/bs";
 
 
 
@@ -18,32 +23,59 @@ function DiagramPage() {
     const companyID = Number.parseInt(params.companyID??"0");
     const lineData=useDiagramServer(routeID);
     const {routeStations, downLines, upLines} = useDiagramViewHook2(lineData);
+    const navigate=useNavigate();
 
     useEffect(() => {
-        console.log(lineData);
-    }, [lineData]);
-    console.log("AAAA");
 
-    function onRenderCallback(
-        id, // the "id" prop of the Profiler tree that has just committed
-        phase, // either "mount" (if the tree just mounted) or "update" (if it re-rendered)
-        actualDuration, // time spent rendering the committed update
-        baseDuration, // estimated time to render the entire subtree without memoization
-        startTime, // when React began rendering this update
-        commitTime, // when React committed this update
-    ) {
-        // Aggregate or log render timings...
-    }
+    }, [lineData]);
+
 
     return (
-        <Profiler id="MyComponent" onRender={onRenderCallback}>
-        <DiagramView
-            lineData={lineData}
-            routeStations={routeStations}
-            upLines={upLines}
-            downLines={downLines}
-        ></DiagramView>
-        </Profiler>
+        <>
+            <div style={{height:'calc(100% - 50px)',
+            overflow:'hidden'}}>
+            <DiagramView
+                lineData={lineData}
+                routeStations={routeStations}
+                upLines={upLines}
+                downLines={downLines}
+            ></DiagramView>
+            </div>
+
+            <BottomNavigation
+                showLabels
+                style={{backgroundColor: '#eee'}}
+
+                // value={value}
+                // onChange={(event, newValue) => {
+                //     setValue(newValue);
+                // }}
+            >
+                <BottomNavigationAction
+                    label="下り時刻表" icon={<ArrowCircleDownRoundedIcon />}
+                    onClick={() => {
+                        navigate(`/timetable/${companyID}/${routeID}/0`);
+                    }}
+                />
+                <BottomNavigationAction label="上り時刻表" icon={<ArrowCircleUpRoundedIcon />}
+                                        onClick={() => {
+                                            navigate(`/timetable/${companyID}/${routeID}/1`);
+                                        }}
+                />
+                <BottomNavigationAction label="ダイヤグラム" icon={<GoGraph/>}
+                                        onClick={() => {
+                                            navigate(`/diagram/${companyID}/${routeID}`);
+
+                                        }}
+                />
+                <BottomNavigationAction
+                    label="戻る" icon={<BsArrowReturnLeft />}
+                    onClick={() => {
+                        navigate(`/company/${companyID}`);
+                    }}
+                />
+            </BottomNavigation>
+        </>
 
 
     );

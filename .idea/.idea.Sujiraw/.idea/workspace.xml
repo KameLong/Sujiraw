@@ -10,18 +10,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1bb00e88-cb44-43c8-b96f-5412e48ef747" name="変更" comment="">
-      <change afterPath="$PROJECT_DIR$/Sujiraw.Server/Controllers/DiagramDataController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sujiraw.client/src/Diagram/DiagramView.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sujiraw.client/src/Diagram/hook/DiagramServerHook.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Sujiraw/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Sujiraw/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sujiraw.Server/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Sujiraw.Server/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sujiraw.client/src/CMN/axiosHook.ts" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/CMN/axiosHook.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sujiraw.client/src/DiaData/DiaData.ts" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/DiaData/DiaData.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sujiraw.client/src/Diagram/DiagramHook.ts" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/Diagram/hook/DiagramHook.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sujiraw.client/src/Diagram/DiagramPDF/DiagramPDFDocument.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/Diagram/DiagramPDF/DiagramPDFDocument.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sujiraw.client/src/Diagram/DiagramPDF/DiagramPDFPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/Diagram/DiagramPDF/DiagramPDFPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sujiraw.client/src/Diagram/DiagramPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/Diagram/DiagramPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sujiraw.client/tsconfig.app.tsbuildinfo" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/tsconfig.app.tsbuildinfo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Sujiraw.Server/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/Sujiraw.Server/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sujiraw.client/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sujiraw.client/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sujiraw.client/src/TimeTablePage/RouteTimeTable/RouteTimeTablePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/TimeTablePage/RouteTimeTable/RouteTimeTablePage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -132,7 +125,7 @@
       <workItem from="1732371777019" duration="5000" />
       <workItem from="1732371795176" duration="6318000" />
       <workItem from="1732413957193" duration="32258000" />
-      <workItem from="1735475800624" duration="5296000" />
+      <workItem from="1735475800624" duration="7230000" />
     </task>
     <servers />
   </component>

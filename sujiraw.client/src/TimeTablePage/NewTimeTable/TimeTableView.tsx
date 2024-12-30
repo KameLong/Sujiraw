@@ -75,7 +75,6 @@ export default function TimeTableView({timetableData,direction,onStationSelected
             height: '100%',
             fontSize: `${fontSize}px`,
             lineHeight: `${lineHeight}px`,
-            paddingBottom: "70px",
 
         }}>
             <div style={{
@@ -88,39 +87,38 @@ export default function TimeTableView({timetableData,direction,onStationSelected
                     height: '100%',
                     width: `${stationNameWidth}px`,
                     overflow: 'hidden',
-                    position:'relative'
+                    position: 'relative'
                 }}>
 
-                <div style={{
-                    width: `${stationNameWidth}px`,
-                    borderRight: "2px solid black",
-                    borderBottom: "2px solid black",
-                    position: "absolute",
-                    height: `${100}px`,
-                    background: "white",
-                    zIndex: 20
-                }}>
-                    {/*<StationHeaderView setting={setting}/>*/}
-                </div>
-                <div style={{
-                    width: `${stationNameWidth}px`,
-                    borderRight: "2px solid black",
-                    position: 'absolute',
-                    zIndex: 1,
-                    paddingTop: `${100}px`,
-                    // paddingBottom: "70px",
-                    overflow: 'hidden',
-                    background: "white"
+                    <div style={{
+                        width: `${stationNameWidth}px`,
+                        borderRight: "2px solid black",
+                        borderBottom: "2px solid black",
+                        position: "absolute",
+                        height: `${100}px`,
+                        background: "white",
+                        zIndex: 20
+                    }}>
+                        {/*<StationHeaderView setting={setting}/>*/}
+                    </div>
+                    <div style={{
+                        width: `${stationNameWidth}px`,
+                        borderRight: "2px solid black",
+                        position: 'absolute',
+                        zIndex: 1,
+                        paddingTop: `${100}px`,
+                        overflow: 'hidden',
+                        background: "white"
 
-                }} id="stationViewLayout">
-                    <時刻表駅View stations={timetableData.stationList}
-                                  direction={direction}
-                                  lineHeight={lineHeight}
-                                  onDblClick={(station,index:number)=>{
-                                      onStationSelected?.(station.stationId,index);
-                                  }}
-                    />
-                </div>
+                    }} id="stationViewLayout">
+                        <時刻表駅View stations={timetableData.stationList}
+                                      direction={direction}
+                                      lineHeight={lineHeight}
+                                      onDblClick={(station, index: number) => {
+                                          onStationSelected?.(station.stationId, index);
+                                      }}
+                        />
+                    </div>
                 </div>
                 <div style={{
                     width: '0px', flexShrink: 1, flexGrow: 1, paddingRight: '10px',
@@ -178,6 +176,8 @@ export default function TimeTableView({timetableData,direction,onStationSelected
                 </div>
 
             </div>
+            <div style={{height: '10px'}}></div>
+
         </div>
 
 
