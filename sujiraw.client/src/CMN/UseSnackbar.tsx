@@ -27,8 +27,6 @@ export function useSnackbar() {
 
 
 export function Snackbar ({props}: {props: SnackbarHandles}) {
-
-
     return (
         <MuiSnackbar
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}

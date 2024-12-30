@@ -3,7 +3,7 @@
 import React, {Profiler, useCallback, useEffect, useRef, useState} from 'react';
 import {useNavigate, useParams} from "react-router-dom";
 import {DiaData, fetchGzipJson, RouteDTO, RouteInfo, StationDTO, StopTimeDTO, TrainDTO, TrainTypeDTO} from "../DiaData/DiaData";
-import {useMakeRouteTimeTable} from "../TimeTablePage/NewTimeTable/路線時刻表データ.ts";
+import {useMakeRouteTimeTableData} from "../TimeTablePage/NewTimeTable/MakeRouteTimeTableDataHook.ts";
 import {DiagramView} from "./DiagramView.tsx";
 import {useDiagramServer} from "./hook/DiagramServerHook.ts";
 import {useDiagramViewHook2} from "./hook/DiagramHook.ts";

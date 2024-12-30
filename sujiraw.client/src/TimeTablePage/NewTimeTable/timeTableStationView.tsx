@@ -11,12 +11,12 @@ interface TimeTableStationViewProp{
     onDblClick?:(station:Station,index:number)=>void
 }
 
-export function 時刻表駅View({stations,direction,lineHeight,onDblClick}:TimeTableStationViewProp){
+export function TimeTableStationView({stations,direction,lineHeight,onDblClick}:TimeTableStationViewProp){
     const stationList=direction===0?stations:stations.toReversed();
-    const 駅View=(駅:Station,index:number)=>{
-        if (駅.isShowAri(direction)&&駅.isShowDep(direction)) {
+    const StationView=(station:Station,index:number)=>{
+        if (station.isShowAri(direction)&&station.isShowDep(direction)) {
             return (
-                <div key={駅.stationId}
+                <div key={station.stationId}
                      style={{
                         height: `${lineHeight * 2 + 1}px`,
                         lineHeight: `${lineHeight * 2 + 1}px`,
@@ -24,14 +24,14 @@ export function 時刻表駅View({stations,direction,lineHeight,onDblClick}:Time
                         whiteSpace: 'nowrap',
                         margin:'0px 3px'
                 }}
-                     onDoubleClick={()=>onDblClick?.(駅,index)}
+                     onDoubleClick={()=>onDblClick?.(station,index)}
                 ><MatchTextLabel>
-                        {駅.stationName}
+                        {station.stationName}
                 </MatchTextLabel></div>
             )
         }else{
             return (
-                <div key={駅.stationId}
+                <div key={station.stationId}
                      style={{
                         lineHeight: `${lineHeight }px`,
                         height: `${lineHeight }px`,
@@ -39,9 +39,9 @@ export function 時刻表駅View({stations,direction,lineHeight,onDblClick}:Time
                         whiteSpace: 'nowrap',
                         margin:'0px 3px',
                     }}
-                        onDoubleClick={()=>onDblClick?.(駅,index)}
+                        onDoubleClick={()=>onDblClick?.(station,index)}
                 ><MatchTextLabel>
-                    {駅.stationName}
+                    {station.stationName}
                 </MatchTextLabel></div>
             )
         }
@@ -50,7 +50,7 @@ export function 時刻表駅View({stations,direction,lineHeight,onDblClick}:Time
     return (
         <div>
             {
-                stationList.map((駅, 駅順) => 駅View(駅,駅順))
+                stationList.map((station, stationIndex) => StationView(station,stationIndex))
             }
         </div>
     )

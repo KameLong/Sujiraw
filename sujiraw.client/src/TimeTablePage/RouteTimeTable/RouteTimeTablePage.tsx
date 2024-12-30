@@ -11,7 +11,7 @@ import {TripView} from "../TripView.tsx";
 import {TripDTO} from "../../DiaData/DiaData.ts";
 import {useRouteTimeTableData} from "./RouteTimeTableData.ts";
 import {TimeTableTrain, TripData} from "../CustomTimeTable/CustomTimeTableData.ts";
-import {useMakeRouteTimeTable} from "../NewTimeTable/路線時刻表データ.ts";
+import {useMakeRouteTimeTableData} from "../NewTimeTable/MakeRouteTimeTableDataHook.ts";
 import TimeTableView from "../NewTimeTable/TimeTableView.tsx";
 import {StationSelectedModal, StationSelectedState} from "./StationSelectedModal.tsx";
 import {LineData} from "../../DiaData/NewData.ts";
@@ -37,7 +37,7 @@ export default function RouteTimeTablePage() {
     const companyID = parseInt(param.companyID ?? "0");
     const routeID = parseInt(param.routeID ?? "0");
     const direct = parseInt(param.direct ?? "0");
-    const timetableData = useMakeRouteTimeTable(companyID, routeID);
+    const timetableData = useMakeRouteTimeTableData(companyID, routeID);
     const [stationSelectedState, setStationSelectedState] = useState<StationSelectedState>({
         open: false, station: undefined, stationIndex: 0
     });

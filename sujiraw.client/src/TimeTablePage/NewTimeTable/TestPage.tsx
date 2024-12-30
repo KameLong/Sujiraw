@@ -1,9 +1,5 @@
-import {useMakeRouteTimeTable, useGetTimeTableData} from "./路線時刻表データ.ts";
-import React, {useEffect, useState} from "react";
-import {TimeTableTrainView} from "./TimeTableTrainView.tsx";
-import {HolizontalBoxList} from "../HolizontalBoxList.tsx";
-import {時刻表駅View} from "./時刻表駅View.tsx";
-import {時刻表列車名View} from "./時刻表列車名View.tsx";
+import {useMakeRouteTimeTableData, useGetTimeTableData} from "./MakeRouteTimeTableDataHook.ts";
+import React from "react";
 import TimeTableView from "./TimeTableView.tsx";
 export interface TimeTablePageSetting{
     fontSize:number,
@@ -11,7 +7,7 @@ export interface TimeTablePageSetting{
 }
 
 export default function TestPage() {
-    const a=useMakeRouteTimeTable(5438111112826774,6052917633425697);
+    const a=useMakeRouteTimeTableData(5438111112826774,6052917633425697);
     return (
         <TimeTableView
             timetableData={a.timeTableData}

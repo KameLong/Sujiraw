@@ -1,9 +1,9 @@
-import {useMakeRouteTimeTable, useGetTimeTableData} from "./路線時刻表データ.ts";
+import {useMakeRouteTimeTableData, useGetTimeTableData} from "./MakeRouteTimeTableDataHook.ts";
 import React, {useEffect, useState} from "react";
 import {TimeTableTrainView} from "./TimeTableTrainView.tsx";
 import {HolizontalBoxList} from "../HolizontalBoxList.tsx";
-import {時刻表駅View} from "./時刻表駅View.tsx";
-import {時刻表列車名View} from "./時刻表列車名View.tsx";
+import {TimeTableStationView} from "./timeTableStationView.tsx";
+import {TimeTableTrainNameView} from "./timeTableTrainNameView.tsx";
 import {LineData} from "../../DiaData/NewData.ts";
 export interface TimeTablePageSetting{
     fontSize:number,
@@ -61,8 +61,8 @@ export default function TimeTableView({timetableData,direction,onStationSelected
         const selected=false;
         return (
             <div key={index} className={selected?"selected":""} style={style}>
-                <時刻表列車名View train={trip} routeStation={timetableData.stationList} types={timetableData.trainTypes} stations={timetableData.stationInfo}
-                                  setting={timetableSetting}></時刻表列車名View>
+                <TimeTableTrainNameView train={trip} routeStation={timetableData.stationList} types={timetableData.trainTypes} stations={timetableData.stationInfo}
+                                        setting={timetableSetting}></TimeTableTrainNameView>
             </div>
         );
     }
@@ -111,10 +111,10 @@ export default function TimeTableView({timetableData,direction,onStationSelected
                         background: "white"
 
                     }} id="stationViewLayout">
-                        <時刻表駅View stations={timetableData.stationList}
-                                      direction={direction}
-                                      lineHeight={lineHeight}
-                                      onDblClick={(station, index: number) => {
+                        <TimeTableStationView stations={timetableData.stationList}
+                                              direction={direction}
+                                              lineHeight={lineHeight}
+                                              onDblClick={(station, index: number) => {
                                           onStationSelected?.(station.stationId, index);
                                       }}
                         />
