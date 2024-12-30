@@ -28,8 +28,10 @@ export function TripNameView({trip, type, setting, allStations, direction,train}
         const routeID=trip.routeID;
         const tripInfo=train.tripInfos.find((value)=>value.routeID===routeID);
         if(tripInfo===undefined){
+            console.log(tripInfo,train,trip)
             return false;
         }
+        console.log(tripInfo,train)
         return tripInfo.depStationID!==train.depStationID||tripInfo.depTime!==train.depTime;
     }
     function outerStationName(){

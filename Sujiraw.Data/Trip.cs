@@ -213,7 +213,8 @@ namespace Sujiraw.Data
             var result=new Dictionary<long,List<Trip>>();
             using (var command = conn.CreateCommand())
             {
-                command.CommandText = $"select {Trip.TABLE_NAME}.* from {Trip.TABLE_NAME} " +
+                command.CommandText = 
+                    $"select {Trip.TABLE_NAME}.* from {Trip.TABLE_NAME} " +
                     $"left join {Trip.TABLE_NAME} as B " +
                     $"on {Trip.TABLE_NAME}.{nameof(Trip.TrainID)}=B.{nameof(Trip.TrainID)} and " +
                     $"B.{nameof(Trip.RouteID)}=@routeID " +
