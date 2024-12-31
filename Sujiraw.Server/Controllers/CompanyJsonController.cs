@@ -5,6 +5,10 @@ using Sujiraw.Data;
 using Sujiraw.Data.Common;
 using System.Diagnostics;
 using Route = Sujiraw.Data.Route;
+using Sujiraw.Data.Entity;
+using Train = Sujiraw.Data.Train;
+using TrainType = Sujiraw.Data.TrainType;
+using Station = Sujiraw.Data.Station;
 
 namespace Sujiraw.Server.Controllers
 {
@@ -28,7 +32,7 @@ namespace Sujiraw.Server.Controllers
             try
             {
 
-                var company = new Company
+                var company = new Data.Company
                 {
                     CompanyID = companyID,
                     Name = oudia.name
@@ -68,7 +72,7 @@ namespace Sujiraw.Server.Controllers
                 Debug.WriteLine("TrainType Inserted " + sw.ElapsedMilliseconds);
                 var trains = oudia.trains.Values.Select(item =>
                 {
-                    Train train = new Train(companyID);
+                    Data.Train train = new Train(companyID);
                     train.TrainID = item.trainID;
                     train.CompanyID = companyID;
                     train.DepStationID = item.depStationID;
@@ -91,7 +95,7 @@ namespace Sujiraw.Server.Controllers
                     //routeStationsの処理
                     var routeStations = Jroute.routeStations.Select(item =>
                     {
-                        RouteStation rs = new RouteStation(routeID, item.stationID);
+                        Data.RouteStation rs = new Data.RouteStation(routeID, item.stationID);
                         rs.RouteStationID = item.rsID;
                         rs.RouteID = routeID;
                         rs.Sequence = item.stationIndex;
@@ -100,12 +104,12 @@ namespace Sujiraw.Server.Controllers
                     });
                     service.InsertRouteStation(routeStations.ToList());
                     Debug.WriteLine("RouteStation Inserted " + sw.ElapsedMilliseconds);
-                    var stopTimes = new List<StopTime>();
+                    var stopTimes = new List<Data.StopTime>();
 
                     //tripの処理
                     var trips = Jroute.downTrips.Concat(Jroute.upTrips).Select(item =>
                     {
-                        Trip trip = new Trip(routeID, item.trainID, item.trainTypeID);
+                        Data.Trip trip = new Data.Trip(routeID, item.trainID, item.trainTypeID);
                         trip.TripID = item.tripID;
                         trip.Direction = item.direction;
                         trip.TrainID = item.trainID;
@@ -113,7 +117,7 @@ namespace Sujiraw.Server.Controllers
 
                         var times = item.times.Select((time, i) =>
                         {
-                            StopTime stopTime = new StopTime(time.tripID);
+                            Data.StopTime stopTime = new Data.StopTime(time.tripID);
                             stopTime.Sequence = i;
                             stopTime.StopType = time.stopType;
                             if (time.ariTime >= 0)
@@ -156,35 +160,39 @@ namespace Sujiraw.Server.Controllers
         [HttpGet("Company/{companyID}/{routeID}")]
         public ActionResult GetCompany(long companyID, long routeID)
         {
-            using var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!);
+            var dbContext = new SujirawContext(Configuration["ConnectionStrings:postgres"]!);
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            service.BeginTransaction();
             try
             {
-                var company = service.GetCompany(companyID);
+                var company = dbContext.Company.FirstOrDefault(item => item.CompanyId == companyID);
+                if (company == null)
+                {
+                    return NotFound();
+                }
                 var jsonCompany = new JsonCompany();
-                jsonCompany.routes = service.GetRouteByCompany(companyID).ToDictionary(item => item.RouteID.ToString(), item =>
+                jsonCompany.routes = dbContext.Route.Where(route=> route.CompanyId==companyID).ToDictionary(item => item.RouteId.ToString(), item =>
                 {
                     var route = new JsonRouteInfo();
-                    route.routeID = item.RouteID;
+                    route.routeID = item.RouteId;
                     route.name = item.Name;
-                    route.stations = service.GetRouteStationByRoute(item.RouteID).Select(rs => rs.StationID).ToList();
+                    route.stations = dbContext.RouteStation.Where(rs=>rs.RouteId==item.RouteId)
+                        .OrderBy(rs=>rs.Sequence).Select(rs => rs.StationId).ToList();
                     return route;
                 });
-                jsonCompany.stations = service.GetStationByCompany(companyID).ToDictionary(item => item.StationID.ToString(), item =>
+                jsonCompany.stations = dbContext.Station.Where(station=>station.CompanyId==companyID).ToDictionary(item => item.StationId.ToString(), item =>
                 {
                     var station = new JsonStation();
-                    station.stationID = item.StationID;
+                    station.stationID = item.StationId;
                     station.name = item.Name;
                     station.lat = item.Lat;
                     station.lon = item.Lon;
                     return station;
                 });
-                jsonCompany.trainTypes = service.GetTrainTypeByCompany(companyID).ToDictionary(item => item.TrainTypeID.ToString(), item =>
+                jsonCompany.trainTypes = dbContext.TrainType.Where(tt=>tt.CompanyId==companyID).ToDictionary(item => item.TrainTypeId.ToString(), item =>
                 {
                     var trainType = new JsonTrainType();
-                    trainType.trainTypeID = item.TrainTypeID;
+                    trainType.trainTypeID = item.TrainTypeId;
                     trainType.name = item.Name;
                     trainType.shortName = item.ShortName;
                     trainType.color = item.Color;
@@ -193,20 +201,23 @@ namespace Sujiraw.Server.Controllers
                     return trainType;
                 });
 
-                var trainTrip = service.GetTrainTripByRoute(routeID);
+                var trainTrip = dbContext.Trip.Where(trip => trip.RouteId == routeID).GroupBy(item => item.TrainId)
+                    .ToDictionary(item => item.Key, item => item.ToList());
 
-                jsonCompany.trains = service.GetTrainByRoute(companyID, routeID).ToList().ToDictionary(item => item.TrainID.ToString(), item =>
+
+                jsonCompany.trains = dbContext.Train.Where(train=>train.CompanyId==companyID)
+                    .ToDictionary(item => item.TrainId.ToString(), item =>
                 {
                     var train = new JsonTrain();
                     train.companyID = companyID;
-                    train.trainID = item.TrainID;
+                    train.trainID = item.TrainId;
                     train.name = "";
                     train.remark = "";
-                    train.depStationID = item.DepStationID;
-                    train.ariStationID = item.AriStationID;
+                    train.depStationID = item.DepStationId;
+                    train.ariStationID = item.AriStationId;
                     train.depTime = item.DepTime;
                     train.ariTime = item.AriTime;
-                    train.tripInfos = (trainTrip[train.trainID] ?? (new List<Trip>())).Select(trip =>
+                    train.tripInfos = (trainTrip[train.trainID] ?? (new List<Data.Entity.Trip>())).Select(trip =>
                     {
                         var tripInfo = new JsonTripInfo(trip);
                         return tripInfo;
@@ -309,7 +320,7 @@ namespace Sujiraw.Server.Controllers
         public float lon { get; set; } = 0;
 
         public JsonStation() { }
-        public JsonStation(Station station)
+        public JsonStation(Data.Station station)
         {
             this.stationID = station.StationID;
             this.name = station.Name;
@@ -335,7 +346,7 @@ namespace Sujiraw.Server.Controllers
         public bool dot { get; set; } = false;
 
         public JsonTrainType() { }
-        public JsonTrainType(TrainType trainType)
+        public JsonTrainType(Data.TrainType trainType)
         {
             this.trainTypeID = trainType.TrainTypeID;
             this.name = trainType.Name;
@@ -366,7 +377,7 @@ namespace Sujiraw.Server.Controllers
         public int ariTime { get; set; } = 0;
         public List<JsonTripInfo> tripInfos { get; set; } = new List<JsonTripInfo>();
         public JsonTrain() { }
-        public JsonTrain(Train train)
+        public JsonTrain(Data.Train train)
         {
             this.companyID = train.CompanyID;
             this.trainID = train.TrainID;
@@ -397,7 +408,7 @@ namespace Sujiraw.Server.Controllers
         public int depTime { get; set; } = 0;
         public int ariTime { get; set; } = 0;
 
-        public JsonTripInfo(Trip trip)
+        public JsonTripInfo(Data.Trip trip)
         {
             this.tripID = trip.TripID;
             this.routeID = trip.RouteID;
@@ -427,7 +438,7 @@ namespace Sujiraw.Server.Controllers
         public List<JsonStopTime> times { get; set; } = new List<JsonStopTime>();
 
         public JsonTrip() { }
-        public JsonTrip(Trip trip)
+        public JsonTrip(Data.Trip trip)
         {
             this.tripID = trip.TripID;
             this.routeID = trip.RouteID;
@@ -454,7 +465,7 @@ namespace Sujiraw.Server.Controllers
         public int showStyle { get; set; } = 0;
         public bool main { get; set; } = false;
         public JsonRouteStation() { }
-        public JsonRouteStation(RouteStation rs)
+        public JsonRouteStation(Data.RouteStation rs)
         {
             this.rsID = rs.RouteStationID;
             this.routeID = rs.RouteID;
@@ -481,7 +492,7 @@ namespace Sujiraw.Server.Controllers
         public int ariTime { get; set; } = 0;
         public int depTime { get; set; } = 0;
         public JsonStopTime() { }
-        public JsonStopTime(StopTime st)
+        public JsonStopTime(Data.StopTime st)
         {
             this.tripID = st.TripID;
             this.stopType = st.StopType;
