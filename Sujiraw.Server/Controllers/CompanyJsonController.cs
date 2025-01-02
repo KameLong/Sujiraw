@@ -9,6 +9,7 @@ using Sujiraw.Data.Entity;
 using Train = Sujiraw.Data.Train;
 using TrainType = Sujiraw.Data.TrainType;
 using Station = Sujiraw.Data.Station;
+using Company = Sujiraw.Data.Entity.Company;
 
 namespace Sujiraw.Server.Controllers
 {
@@ -21,44 +22,45 @@ namespace Sujiraw.Server.Controllers
         }
 
         [HttpPost("OuDia/{companyID}")]
+
         public ActionResult PostOuDia(long companyID, OuDiaCompanyJson oudia)
         {
             //とりあえず直接DBに突っ込む
             companyID = MyRandom.NextSafeLong();
-            using var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!);
+            using var service = new SujirawContext(Configuration["ConnectionStrings:postgres"]!);
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            service.BeginTransaction();
             try
             {
 
-                var company = new Data.Company
+                var company = new Company
                 {
-                    CompanyID = companyID,
+                    CompanyId = companyID,
                     Name = oudia.name
                 };
-                service.InsertCompany([company]);
+                service.Company.Add(company);
 
                 var stations = oudia.stations.Values.Select(item =>
                 {
-                    var station = new Station(companyID)
+                    var station = new Data.Entity.Station()
                     {
-                        StationID = item.stationID,
-                        CompanyID = companyID,
+                        StationId = item.stationID,
+                        CompanyId = companyID,
+                        ShortName=item.name,
                         Name = item.name,
                         Lat = item.lat,
                         Lon = item.lon
                     };
                     return station;
                 });
-                service.InsertStation(stations.ToList());
+                service.AddRange(stations);
                 Debug.WriteLine("Station Inserted " + sw.ElapsedMilliseconds);
                 var trainTypes = oudia.trainTypes.Values.Select(item =>
                 {
-                    var trainType = new TrainType(companyID)
+                    var trainType = new Data.Entity.TrainType()
                     {
-                        TrainTypeID = item.trainTypeID,
-                        CompanyID = companyID,
+                        TrainTypeId = item.trainTypeID,
+                        CompanyId = companyID,
                         Name = item.name,
                         ShortName = item.shortName,
                         Color = item.color,
@@ -68,57 +70,62 @@ namespace Sujiraw.Server.Controllers
                     };
                     return trainType;
                 });
-                service.InsertTrainType(trainTypes.ToList());
+                service.AddRange(trainTypes);
                 Debug.WriteLine("TrainType Inserted " + sw.ElapsedMilliseconds);
                 var trains = oudia.trains.Values.Select(item =>
                 {
-                    Data.Train train = new Train(companyID);
-                    train.TrainID = item.trainID;
-                    train.CompanyID = companyID;
-                    train.DepStationID = item.depStationID;
-                    train.AriStationID = item.ariStationID;
+                    Data.Entity.Train train = new Data.Entity.Train();
+                    train.TrainId = item.trainID;
+                    train.CompanyId = companyID;
+                    train.DepStationId = item.depStationID;
+                    train.AriStationId = item.ariStationID;
                     train.DepTime = item.depTime;
                     train.AriTime = item.ariTime;
                     return train;
                 });
-                service.InsertTrain(trains.ToList());
+                service.AddRange(trains);
                 Debug.WriteLine("Train Inserted " + sw.ElapsedMilliseconds);
                 //routeの処理
                 foreach (var Jroute in oudia.routes.Values)
                 {
 
-                    Route route = new Route(companyID);
-                    route.RouteID = Jroute.routeID;
+                    var route = new Data.Entity.Route();
+                    route.RouteId = Jroute.routeID;
+                    route.CompanyId = companyID;
                     route.Name = Jroute.name;
-                    service.InsertRoute(new List<Route> { route });
-                    long routeID = route.RouteID;
+                    service.Route.Add(route);
+                    long routeID = route.RouteId;
                     //routeStationsの処理
                     var routeStations = Jroute.routeStations.Select(item =>
                     {
-                        Data.RouteStation rs = new Data.RouteStation(routeID, item.stationID);
-                        rs.RouteStationID = item.rsID;
-                        rs.RouteID = routeID;
+                        var rs = new Data.Entity.RouteStation();
+                        rs.StationId = item.stationID;
+                        rs.RouteStationId = item.rsID;
+                        rs.RouteId = routeID;
                         rs.Sequence = item.stationIndex;
                         rs.ShowStyle = item.showStyle;
                         return rs;
                     });
-                    service.InsertRouteStation(routeStations.ToList());
+                    service.AddRange(routeStations);
                     Debug.WriteLine("RouteStation Inserted " + sw.ElapsedMilliseconds);
-                    var stopTimes = new List<Data.StopTime>();
+                    var stopTimes = new List<Data.Entity.StopTime>();
 
                     //tripの処理
                     var trips = Jroute.downTrips.Concat(Jroute.upTrips).Select(item =>
                     {
-                        Data.Trip trip = new Data.Trip(routeID, item.trainID, item.trainTypeID);
-                        trip.TripID = item.tripID;
+                        var trip = new Data.Entity.Trip();
+                        trip.RouteId = routeID;
+                        trip.TrainTypeId = item.trainTypeID;
+                        trip.TripId = item.tripID;
                         trip.Direction = item.direction;
-                        trip.TrainID = item.trainID;
+                        trip.TrainId = item.trainID;
 
 
                         var times = item.times.Select((time, i) =>
                         {
-                            Data.StopTime stopTime = new Data.StopTime(time.tripID);
-                            stopTime.Sequence = i;
+                            var stopTime = new Data.Entity.StopTime();
+                            stopTime.TripId = time.tripID;
+                            stopTime.RouteStationId = time.rsID;
                             stopTime.StopType = time.stopType;
                             if (time.ariTime >= 0)
                             {
@@ -135,13 +142,14 @@ namespace Sujiraw.Server.Controllers
                         //trip.TrainID = item.trainID;
                         return trip;
                     });
-                    service.InsertTrip(trips.ToList());
+                    service.AddRange(trips);
                     Debug.WriteLine("Trip Inserted " + sw.ElapsedMilliseconds);
 
-                    service.InsertStopTime(stopTimes);
+
+                    service.StopTime.AddRange(stopTimes);
                     Debug.WriteLine("StopTime Inserted " + sw.ElapsedMilliseconds);
                 }
-                service.Commit();
+                service.SaveChanges();
                 Debug.WriteLine("Commit " + sw.ElapsedMilliseconds);
 
                 var res = new OudRes();
@@ -152,7 +160,6 @@ namespace Sujiraw.Server.Controllers
             }
             catch (Exception ex)
             {
-                service.Rollback();
                 return BadRequest(ex.Message);
             }
         }
@@ -407,6 +414,10 @@ namespace Sujiraw.Server.Controllers
         public long ariStationID { get; set; } = 0;
         public int depTime { get; set; } = 0;
         public int ariTime { get; set; } = 0;
+        public JsonTripInfo()
+        {
+
+        }
 
         public JsonTripInfo(Data.Trip trip)
         {

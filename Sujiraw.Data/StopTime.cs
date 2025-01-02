@@ -10,6 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Npgsql;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Sujiraw.Data
 {
@@ -22,6 +23,7 @@ namespace Sujiraw.Data
         public int DepTime { get; set; } = -1;
         public int AriTime { get; set; } = -1;
         public int StopType { get; set; } = 0;
+        public long RouteStationId { get; set; } = 0;
         public StopTime(long tripID)
         {
             TripID = tripID;
