@@ -18,6 +18,8 @@ namespace Sujiraw.Data.Entity{
         public DbSet<Train> Train { get; set; }
         public DbSet<TrainType> TrainType { get; set; }
         public DbSet<RouteStation> RouteStation { get; set; }
+        public DbSet<TimeTable> TimeTable { get; set; }
+        public DbSet<TimeTableStation> TimeTableStation { get; set; }
 
         public SujirawContext(string connectionString) : base()
         {

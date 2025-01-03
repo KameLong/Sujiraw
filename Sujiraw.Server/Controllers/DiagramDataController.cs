@@ -95,9 +95,6 @@ public class DiagramDataController : SujiroAPIController
         public JsonRoute Route { get; set; } = new JsonRoute();
         public Dictionary<long,JsonStation> Stations { get; set; } = new Dictionary<long, JsonStation>();
         public Dictionary<long,JsonTrainType> TrainTypes { get; set; } = new Dictionary<long, JsonTrainType>();
-        
-        
-        
     }
 
 }

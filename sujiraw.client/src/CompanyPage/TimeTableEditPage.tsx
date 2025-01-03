@@ -276,6 +276,14 @@ export function TimeTableEditPage() {
                 </DialogActions>
             </Dialog>
 
+            {/*ここにダイアログを追加します。
+            まず、路線を選択して、
+            その後どの駅から開始するか選びます。
+
+            その後は、到着駅、その駅から延びる路線、次の路線の到着駅
+            の順に選んでいきます。
+            */}
+
             <Dialog
                 open={openInsertStation} onClose={()=>{}}>
                 <DialogTitle>路線を選択してください</DialogTitle>
@@ -295,8 +303,6 @@ export function TimeTableEditPage() {
                             </div>
                         )
                     })}
-
-
                 </DialogContent>
                 <DialogActions>
                     <Button
@@ -310,10 +316,9 @@ export function TimeTableEditPage() {
             </Dialog>
 
             <Dialog open={openSelectStation} onClose={()=>{}}>
-                <DialogTitle>追加駅選択</DialogTitle>
+                <DialogTitle>開始駅選択</DialogTitle>
                 <DialogContent sx={{width:'300px'}}>
-                    開始駅
-                    <Select label={"開始駅"} fullWidth={true} value={startStation} onChange={
+                     <Select label={"開始駅"} fullWidth={true} value={startStation} onChange={
                         (event)=>{
                             console.log(event.target.value);
                             setStartStation(event.target.value as number);
@@ -395,6 +400,77 @@ export function TimeTableEditPage() {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Dialog open={openSelectStation} onClose={()=>{}}>
+                <DialogTitle>終了駅選択</DialogTitle>
+                <DialogContent sx={{width:'300px'}}>
+                    <Select label={"終了駅"} fullWidth={true} value={endStation} onChange={
+                        (event)=>{
+                            console.log(event.target.value);
+                            setEndStation(event.target.value as number);
+                        }
+                    }>
+                        {selectedRoute.routeStations.map((station,_i)=>{
+                            return (
+                                <MenuItem value={_i}>{company.stations[station.stationID].name}</MenuItem>
+                            )
+                        })}
+                    </Select>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={()=>{
+                            setOpenSelectStation(false);
+                            setOpenInsertStation(true);
+                        }} >
+                        キャンセル
+                    </Button>
+                    <Button
+                        onClick={()=>{
+                            setTimeTable((prev:TimeTable)=>{
+                                console.log(startStation,endStation);
+                                let reverse=false;
+                                let [startS,endS]=[startStation,endStation+1];
+                                if(startStation>endStation){
+                                    [startS,endS]=[endStation,startStation+1];
+                                    reverse=true;
+                                }
+                                let newStations=selectedRoute.routeStations.slice(startS,endS);
+                                if(reverse){
+                                    newStations=newStations.reverse();
+                                }
+                                console.log(reverse)
+                                const oldStations=prev.timetableStations;
+                                console.log(oldStations.slice(-1)[0]);
+
+                                let flag=false;
+                                if(oldStations.length!==0&&newStations.length!==0&&getRouteStation(oldStations.slice(-1)[0].ariRouteStationID).stationID===newStations[0].stationID) {
+                                    oldStations.slice(-1)[0].depRouteStationID=newStations[0].rsID;
+                                    newStations = newStations.slice(1);
+                                    flag=true;
+                                }
+                                console.log(newStations);
+                                const newTimetable:TimeTable= {...prev,timetableStations:[...prev.timetableStations,...newStations.map((station,_i)=>{
+                                        const res= {depRouteStationID:station.rsID,ariRouteStationID:station.rsID,showStyle:17,main:false,direction:reverse?1:0,border:false};
+                                        if(!flag&&_i===0){
+                                            res.ariRouteStationID=0;
+                                        }
+                                        if(_i===newStations.length-1){
+                                            res.depRouteStationID=0;
+                                        }
+                                        return res;
+                                    })]};
+                                console.log(newTimetable);
+                                return newTimetable;
+
+                            })
+                            setOpenSelectStation(false);
+                            setOpenInsertStation(true);
+                        }} >
+                        確認
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
 
         </div>
     );
