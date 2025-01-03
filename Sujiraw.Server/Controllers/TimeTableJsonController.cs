@@ -257,6 +257,7 @@ namespace Sujiraw.Server.Controllers
             CompanyID = db.CompanyID;
             Name = db.Name;
         }
+
     }
 
     public class JsonTimeTableInfo
@@ -294,11 +295,12 @@ namespace Sujiraw.Server.Controllers
             DepRouteStationID = timeTableStation.DepRouteStationID;
             ShowStyle = timeTableStation.ShowStyle;
         }
-        //public JsonTimeTableStation(RouteStation routeStation)
-        //{
-        //    AriRouteStationID = routeStation.RouteStationID;
-        //    DepRouteStationID = routeStation.RouteStationID;
-        //    ShowStyle = routeStation.ShowStyle;
-        //}
+
+        public JsonTimeTableStation(Data.RouteStation routeStation)
+        {
+            AriRouteStationID = routeStation.RouteStationID;
+            DepRouteStationID = routeStation.RouteStationID;
+            ShowStyle = routeStation.ShowStyle;
+        }
     }
 }

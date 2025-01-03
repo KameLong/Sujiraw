@@ -243,35 +243,35 @@ namespace Sujiraw.Server.Controllers
         [HttpGet("{companyID}")]
         public ActionResult GetCompany(long companyID)
         {
-            using var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!);
+            using var service = new SujirawContext(Configuration["ConnectionStrings:postgres"]!);
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            service.BeginTransaction();
             try
             {
-                var company = service.GetCompany(companyID);
+                var company = service.Company.FirstOrDefault(item => item.CompanyId == companyID);
                 var jsonCompany = new JsonCompany();
-                jsonCompany.routes = service.GetRouteByCompany(companyID).ToDictionary(item => item.RouteID.ToString(), item =>
+                jsonCompany.routes=service.Route.Where(route => route.CompanyId == companyID).ToList().ToDictionary(item => item.RouteId.ToString(), item =>
                 {
                     var route = new JsonRouteInfo();
-                    route.routeID = item.RouteID;
+                    route.routeID = item.RouteId;
                     route.name = item.Name;
-                    route.stations = service.GetRouteStationByRoute(item.RouteID).Select(rs => rs.StationID).ToList();
+                    route.stations = service.RouteStation.Where(rs => rs.RouteId == item.RouteId)
+                        .OrderBy(rs => rs.Sequence).Select(rs => rs.StationId).ToList();
                     return route;
                 });
-                jsonCompany.stations = service.GetStationByCompany(companyID).ToDictionary(item => item.StationID.ToString(), item =>
+                jsonCompany.stations = service.Station.Where(station => station.CompanyId == companyID).ToDictionary(item => item.StationId.ToString(), item =>
                 {
                     var station = new JsonStation();
-                    station.stationID = item.StationID;
+                    station.stationID = item.StationId;
                     station.name = item.Name;
                     station.lat = item.Lat;
                     station.lon = item.Lon;
                     return station;
                 });
-                jsonCompany.trainTypes = service.GetTrainTypeByCompany(companyID).ToDictionary(item => item.TrainTypeID.ToString(), item =>
+                jsonCompany.trainTypes = service.TrainType.Where(tt => tt.CompanyId == companyID).ToDictionary(item => item.TrainTypeId.ToString(), item =>
                 {
                     var trainType = new JsonTrainType();
-                    trainType.trainTypeID = item.TrainTypeID;
+                    trainType.trainTypeID = item.TrainTypeId;
                     trainType.name = item.Name;
                     trainType.shortName = item.ShortName;
                     trainType.color = item.Color;
@@ -279,9 +279,10 @@ namespace Sujiraw.Server.Controllers
                     trainType.dot = item.LineDashed;
                     return trainType;
                 });
-                jsonCompany.timetables = service.GetTimeTableByCompany(companyID).ToDictionary(item => item.TimeTableID, item =>
+                jsonCompany.timetables=service.TimeTable.Where(tt => tt.CompanyID == companyID).ToDictionary(item => item.TimeTableID, item =>
                 {
-                    return new JsonTimeTable(item);
+                    var timetable = new JsonTimeTable(item);
+                    return timetable;
                 });
 
                 return Ok(jsonCompany);

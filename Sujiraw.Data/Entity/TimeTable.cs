@@ -17,7 +17,7 @@ namespace Sujiraw.Data.Entity
         [Column("timetableid")]
         public long TimeTableID { get; set; }
 
-        [Column("company")]
+        [Column("companyid")]
         public long CompanyID { get; set; }
 
         [Column("name")]

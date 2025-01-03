@@ -29,77 +29,106 @@ namespace Sujiraw.Server.Controllers
             var result = new TimeTableDataDTO();
             try
             {
-                using var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!);
-                var timetable = service.GetTimeTable(timetableID);
+                using var service = new SujirawContext(Configuration["ConnectionStrings:postgres"]!);
+                var timetable=service.TimeTable.Find(timetableID);
                 if (timetable == null)
                 {
                     return NotFound();
                 }
-                result.Stations = service.GetStationByCompany(timetable.CompanyID)
-                    .ToDictionary(item => item.StationID, item => new JsonStation(item));
+                result.Stations = service.Station.Where(item => item.CompanyId == timetable.CompanyID)
+                    .ToDictionary(item => item.StationId, item => new JsonStation(item));
+                result.TrainTypes=service.TrainType.Where(item => item.CompanyId == timetable.CompanyID)
+                    .ToDictionary(item => item.TrainTypeId, item => new JsonTrainType(item));
+                result.Routes = service.Route.Where(item => item.CompanyId == timetable.CompanyID)
+                    .ToDictionary(item => item.RouteId, item =>
+                    {
+                        var route = new JsonRoute(item);
+                        route.routeStations = service.RouteStation.Where(rs => rs.RouteId == item.RouteId)
+                            .OrderBy(rs => rs.Sequence)
+                            .Select(rs => new JsonRouteStation(rs)).ToList();
+                        return route;
+                    });
 
-                result.TrainTypes = service.GetTrainTypeByCompany(timetable.CompanyID)
-                    .ToDictionary(item => item.TrainTypeID, item => new JsonTrainType(item));
+                result.Trains = service.Train.Where(item => item.CompanyId == timetable.CompanyID)
+                    .ToDictionary(item => item.TrainId, item => new JsonTrain(item));
 
-                result.Routes = service.GetRouteByCompany(timetable.CompanyID).ToDictionary(item => item.RouteID, item =>
+
+                var t=from trip in service.Trip
+                      join route in service.Route on trip.RouteId equals route.RouteId
+                      join timetablestation in service.TimeTableStation on trip.RouteId equals timetablestation.DepRouteStationID
+                      where timetablestation.TimeTableID == timetableID
+                      select trip;
+                //using (var command = service.Command)
+                //{
+
+                //    command.CommandText = 
+                //        "select trip.* from trip left join route on route.routeID = trip.routeID " +
+                //        "left join (select routeID,routestationid from timetablestation " +
+                //        "left join routestation on routestation.routestationid = timetablestation.depRouteStationID " +
+                //        "and timetablestation.timetableID=@timetableID) as A on A.routeID=route.routeID " +
+                //        "where A.routeID is not null";
+                //    command.Parameters.Add(new NpgsqlParameter("timetableID", timetableID));
+                //    using var reader = command.ExecuteReader();
+                //    while (reader.Read())
+                //    {
+                //        var t = new Trip(reader);
+
+                //        var trip = new JsonTrip();
+                //        trip.tripID = t.TripID;
+                //        trip.routeID = t.RouteID;
+                //        trip.trainID = t.TrainID;
+                //        trip.trainTypeID = t.TrainTypeID;
+                //        trip.direction = t.Direction;
+                //        trip.times = new List<JsonStopTime>();
+
+                //        result.Trips[trip.tripID] = trip;
+                //    }
+                //}
+                result.Trips = t.ToDictionary(item => item.TripId, item =>
                 {
-                    var route = new JsonRoute(item);
-                    route.routeStations = service.GetRouteStationByRoute(item.RouteID)
-                        .Select(rs => new JsonRouteStation(rs)).ToList();
-                    return route;
+                    var trip = new JsonTrip(item);
+                    trip.times = new List<JsonStopTime>();
+                    return trip;
                 });
 
-                result.Trains = service.GetTrainByCompany(timetable.CompanyID)
-                    .ToDictionary(item => item.TrainID, item => new JsonTrain(item));
 
-                using (var command = service.Command)
+                var st=from stoptime in service.StopTime
+                       join trip in service.Trip on stoptime.TripId equals trip.TripId
+                       join route in service.Route on trip.RouteId equals route.RouteId
+                       join timetablestation in service.TimeTableStation on trip.RouteId equals timetablestation.DepRouteStationID
+                       where timetablestation.TimeTableID == timetableID
+                       select stoptime;
+                //using (var timeCommand = service.CreateCommand())
+                //{
+                //    timeCommand.CommandText = "select stoptime.* from stoptime left join trip on trip.tripID = stoptime.tripID left join route on route.routeID = trip.routeID join (select routeID from timetablestation left join routestation on routestation.routestationid = timetablestation.depRouteStationID and timetablestation.timetableID=@timetableID group by routeid) as A on A.routeID=route.routeID where A.routeID is not null order by sequence";
+                //    timeCommand.Parameters.Add(new NpgsqlParameter("timetableID", timetableID));
+                //    using var timeReader = timeCommand.ExecuteReader();
+                //    while (timeReader.Read())
+                //    {
+                //        var st = new StopTime(timeReader);
+                //        var stopTime = new JsonStopTime();
+                //        stopTime.tripID = st.TripID;
+                //        stopTime.ariTime = st.AriTime;
+                //        stopTime.depTime = st.DepTime;
+                //        stopTime.stopType = st.StopType;
+                //        stopTime.rsID = result.Routes[result.Trips[st.TripID].routeID].routeStations[st.Sequence].rsID;
+
+                //        result.Trips[stopTime.tripID].times.Add(stopTime);
+                //    }
+                //}
+                st.ToList().ForEach(item =>
                 {
+                    var stopTime = new JsonStopTime(item);
+                    stopTime.rsID = item.RouteStationId;
+//                    stopTime.rsID = result.Routes[result.Trips[item.TripId].routeID].routeStations[item.Sequence].rsID;
+                    result.Trips[stopTime.tripID].times.Add(stopTime);
+                });
 
-                    command.CommandText = "select trip.* from trip left join route on route.routeID = trip.routeID left join (select routeID,routestationid from timetablestation left join routestation on routestation.routestationid = timetablestation.depRouteStationID and timetablestation.timetableID=@timetableID) as A on A.routeID=route.routeID where A.routeID is not null";
-                    command.Parameters.Add(new NpgsqlParameter("timetableID", timetableID));
-                    using var reader = command.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        var t = new Trip(reader);
+                result.TimeTable = new JsonTimeTable(timetable);
+                result.TimeTable.TimetableStations=service.TimeTableStation.Where(item => item.TimeTableID == timetableID)
+                    .OrderBy(item => item.Sequence)
+                    .Select(item => new JsonTimeTableStation(item)).ToList();
 
-                        var trip = new JsonTrip();
-                        trip.tripID = t.TripID;
-                        trip.routeID = t.RouteID;
-                        trip.trainID = t.TrainID;
-                        trip.trainTypeID = t.TrainTypeID;
-                        trip.direction = t.Direction;
-                        trip.times = new List<JsonStopTime>();
-
-                        result.Trips[trip.tripID] = trip;
-                    }
-                }
-
-                using (var timeCommand = service.CreateCommand())
-                {
-                    timeCommand.CommandText = "select stoptime.* from stoptime left join trip on trip.tripID = stoptime.tripID left join route on route.routeID = trip.routeID join (select routeID from timetablestation left join routestation on routestation.routestationid = timetablestation.depRouteStationID and timetablestation.timetableID=@timetableID group by routeid) as A on A.routeID=route.routeID where A.routeID is not null order by sequence";
-                    timeCommand.Parameters.Add(new NpgsqlParameter("timetableID", timetableID));
-                    using var timeReader = timeCommand.ExecuteReader();
-                    while (timeReader.Read())
-                    {
-                        var st = new StopTime(timeReader);
-                        var stopTime = new JsonStopTime();
-                        stopTime.tripID = st.TripID;
-                        stopTime.ariTime = st.AriTime;
-                        stopTime.depTime = st.DepTime;
-                        stopTime.stopType = st.StopType;
-                        stopTime.rsID = result.Routes[result.Trips[st.TripID].routeID].routeStations[st.Sequence].rsID;
-
-                        result.Trips[stopTime.tripID].times.Add(stopTime);
-                    }
-                }
-
-                result.TimeTable = new JsonTimeTable(
-                    service.GetTimeTable(timetableID)
-                );
-                result.TimeTable.TimetableStations = service.GetTimeTableStationByTimeTable(timetableID).Select(item =>
-                {
-                    return new JsonTimeTableStation(item);
-                }).ToList();
 
                 result.ShowStations = result.TimeTable.TimetableStations.Select(item => new ShowStationDTO(item)).ToList();
 
