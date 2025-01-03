@@ -2,7 +2,7 @@ import {useMakeRouteTimeTableData, useGetTimeTableData} from "./MakeRouteTimeTab
 import React, {useEffect, useState} from "react";
 import {TimeTableTrainView} from "./TimeTableTrainView.tsx";
 import {HolizontalBoxList} from "../HolizontalBoxList.tsx";
-import {TimeTableStationView} from "./timeTableStationView.tsx";
+import {TimeTableStationView} from "./TimeTableStationView.tsx";
 import {TimeTableTrainNameView} from "./timeTableTrainNameView.tsx";
 import {LineData} from "../../DiaData/NewData.ts";
 export interface TimeTablePageSetting{

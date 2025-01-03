@@ -7,7 +7,6 @@ interface TimeTableStationViewProp{
     stations:Station[]
     direction:number,
     lineHeight:number,
-
     onDblClick?:(station:Station,index:number)=>void
 }
 
@@ -48,7 +47,9 @@ export function TimeTableStationView({stations,direction,lineHeight,onDblClick}:
     }
 
     return (
-        <div>
+        <div style={{
+            borderBottom:'2px solid black',
+        }}>
             {
                 stationList.map((station, stationIndex) => StationView(station,stationIndex))
             }

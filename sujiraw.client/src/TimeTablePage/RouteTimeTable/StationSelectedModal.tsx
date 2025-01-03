@@ -41,8 +41,7 @@ const style = {
     p: 4,
 };
 export function StationSelectedModal({state,onClose,onSortButtonClicked}:StationSelectedModalProps){
-
-    return(
+   return(
         <Modal
             open={state.open}
             onClose={onClose}

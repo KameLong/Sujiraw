@@ -4,8 +4,8 @@ import {TimeTablePageSetting} from "./TestPage.tsx";
 import {redirect} from "react-router-dom";
 interface TimeTableTimeViewProps {
     direction: number;
-    時刻:StationTime
-    駅:Station
+    stationTime:StationTime
+    station:Station
     // 直前の駅
     befTime?:StationTime
     // 直後の駅
@@ -30,15 +30,15 @@ function getBetterTime(time1:number,time2:number):number{
 }
 
 
-export function TimeTableTimeView({時刻,befTime,aftTime,駅,setting,direction}:TimeTableTimeViewProps){
+export function TimeTableTimeView({stationTime,befTime,aftTime,station,setting,direction}:TimeTableTimeViewProps){
     // const divWidth=setting.fontSize*2.2;
-    const isBothShow=駅.isShowDep(direction)&&駅.isShowAri(direction);
+    const isBothShow=station.isShowDep(direction)&&station.isShowAri(direction);
     const lineHeight=setting.lineHeight*setting.fontSize;
 
     let ariStr:string="";
     let depStr:string="";
 
-    switch (時刻.stopType){
+    switch (stationTime.stopType){
         case 0:
             depStr="‥";
             ariStr="‥";
@@ -54,9 +54,9 @@ export function TimeTableTimeView({時刻,befTime,aftTime,駅,setting,direction}
         default:
             if(isBothShow){
                 //発着表示の時
-                depStr=time2Str(時刻.depTime.time);
+                depStr=time2Str(stationTime.depTime.time);
                 //発着表示の時、かつ発時刻が存在しないときの処理、aftStationが運行なしなら運行なし、経由なしなら経由なし
-                if(時刻.depTime.time<0){
+                if(stationTime.depTime.time<0){
                     if(aftTime){
                         if(aftTime.stopType==0){
                             depStr="‥";
@@ -68,9 +68,9 @@ export function TimeTableTimeView({時刻,befTime,aftTime,駅,setting,direction}
                     }
                 }
 
-                ariStr=time2Str(時刻.ariTime.time);
+                ariStr=time2Str(stationTime.ariTime.time);
                 //発着表示の時、かつ着時刻が存在しないときの処理、befStationが運行なしなら運行なし、経由なしなら経由なし
-                if(時刻.ariTime.time<0){
+                if(stationTime.ariTime.time<0){
                     if(befTime){
                         if(befTime.stopType==0){
                             ariStr="‥";
@@ -84,26 +84,26 @@ export function TimeTableTimeView({時刻,befTime,aftTime,駅,setting,direction}
 
 
             }else{
-                depStr=time2Str(getBetterTime(時刻.depTime.time,時刻.ariTime.time));
-                ariStr=time2Str(getBetterTime(時刻.ariTime.time,時刻.depTime.time));
+                depStr=time2Str(getBetterTime(stationTime.depTime.time,stationTime.ariTime.time));
+                ariStr=time2Str(getBetterTime(stationTime.ariTime.time,stationTime.depTime.time));
             }
             break;
     }
 
     return <div>
-        {駅.isShowAri(direction)?
+        {station.isShowAri(direction)?
             <div className={styles.time} style={{
                 lineHeight: `${lineHeight}px`,
                 height: `${lineHeight}px`}}>
                 {ariStr}
             </div>:null
         }
-        {駅.isShowAri(direction)&&駅.isShowDep(direction) ?
-            <div style={{borderBottom:'1px solid black'}}>
+        {station.isShowAri(direction)&&station.isShowDep(direction) ?
+            <div style={{borderBottom:'1px solid black',height:'1px'}}>
             </div>:null
         }
 
-        {駅.isShowDep(direction)?
+        {station.isShowDep(direction)?
             <div className={styles.time} style={{lineHeight: `${lineHeight}px`,height: `${lineHeight}px`}}>
             {depStr}
             </div>:null

@@ -24,13 +24,19 @@ export function TimeTableTrainView({train,routeStation,setting,types,direction}:
                 train.trips.map((trip, index)=>{
                     const orderedStationTime=direction===0?trip.stationTime:trip.stationTime.toReversed();
                     return(
-                        <div key={index} style={{color:types[trip.trainTypeId].color,width:divWidth,borderRight:'1px solid black'}}>
+                        <div key={index}
+                             style={{
+                                 color:types[trip.trainTypeId].color,
+                                 width:divWidth,
+                                 borderRight:'1px solid black',
+                                 borderBottom:'2px solid black',
+                        }}>
                             {
                                 orderedRouteStation.map((station,sIndex)=>{
                                     return(
                                         <TimeTableTimeView key={sIndex} direction={1}
                                                            befTime={orderedStationTime[sIndex-1]} aftTime={orderedStationTime[sIndex+1]}
-                                                           駅={station} 時刻={orderedStationTime[sIndex]} setting={setting} />
+                                                           station={station} stationTime={orderedStationTime[sIndex]} setting={setting} />
                                     )
                                 })
                             }
