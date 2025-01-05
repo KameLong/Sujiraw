@@ -11,7 +11,7 @@ export function MatchTextLabel({children}){
         }
     }, [children]);
 
-    return <span style={{display:"inline-block"}} className={styles.matchTextLabel} ref={ref}>
+    return <span style={{display:"inline-block",overflow:'hidden'}} className={styles.matchTextLabel} ref={ref}>
         {children}
     </span>
 
