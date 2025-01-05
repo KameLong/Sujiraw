@@ -66,25 +66,6 @@ namespace Sujiraw.Server.Controllers.SujirawData
             return NotFound();
             // todo
 
-            //if (!AuthService.HasAccessPrivileges(Configuration["ConnectionStrings:DBdir"], User, companyID))
-            //{
-            //    return Forbid();
-            //}
-            try
-            {
-
-                string connectionString = Configuration["ConnectionStrings:postgres"]!;
-                using (var service = new PostgresDbService(connectionString))
-                {
-                    var companies = service.GetAllCompany();
-                    return Ok(companies);
-                }
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
         }
 
     }

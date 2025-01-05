@@ -6,9 +6,6 @@ using Sujiraw.Data.Common;
 using System.Diagnostics;
 using Route = Sujiraw.Data.Route;
 using Sujiraw.Data.Entity;
-using Train = Sujiraw.Data.Train;
-using TrainType = Sujiraw.Data.TrainType;
-using Station = Sujiraw.Data.Station;
 using Company = Sujiraw.Data.Entity.Company;
 
 namespace Sujiraw.Server.Controllers
@@ -354,15 +351,6 @@ namespace Sujiraw.Server.Controllers
         public bool dot { get; set; } = false;
 
         public JsonTrainType() { }
-        public JsonTrainType(Data.TrainType trainType)
-        {
-            this.trainTypeID = trainType.TrainTypeID;
-            this.name = trainType.Name;
-            this.shortName = trainType.ShortName;
-            this.color = trainType.Color;
-            this.bold = trainType.LineBold;
-            this.dot = trainType.LineDashed;
-        }
         public JsonTrainType(Sujiraw.Data.Entity.TrainType trainType)
         {
             this.trainTypeID = trainType.TrainTypeId;
@@ -504,13 +492,6 @@ namespace Sujiraw.Server.Controllers
         public int ariTime { get; set; } = 0;
         public int depTime { get; set; } = 0;
         public JsonStopTime() { }
-        public JsonStopTime(Data.StopTime st)
-        {
-            this.tripID = st.TripID;
-            this.stopType = st.StopType;
-            this.ariTime = st.AriTime;
-            this.depTime = st.DepTime;
-        }
         public JsonStopTime(Sujiraw.Data.Entity.StopTime st)
         {
             this.rsID = st.RouteStationId;
