@@ -371,16 +371,7 @@ namespace Sujiraw.Server.Controllers
         public int ariTime { get; set; } = 0;
         public List<JsonTripInfo> tripInfos { get; set; } = new List<JsonTripInfo>();
         public JsonTrain() { }
-        public JsonTrain(Data.Train train)
-        {
-            this.companyID = train.CompanyID;
-            this.trainID = train.TrainID;
-            this.depStationID = train.DepStationID;
-            this.ariStationID = train.AriStationID;
-            this.depTime = train.DepTime;
-            this.ariTime = train.AriTime;
 
-        }
         public JsonTrain(Sujiraw.Data.Entity.Train train)
         {
             this.companyID = train.CompanyId;
