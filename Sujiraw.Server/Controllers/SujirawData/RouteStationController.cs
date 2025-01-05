@@ -26,12 +26,12 @@ namespace Sujiraw.Server.Controllers.SujirawData
          * 新しいRouteStationを追加します
          **/
 
-        [HttpPut("{companyID}")]
-        public async Task<ActionResult> Put(long companyID, [FromBody] RouteStation routeStation)
-        {
-            throw new Exception("Not implemented");
+        //[HttpPut("{companyID}")]
+        //public async Task<ActionResult> Put(long companyID, [FromBody] RouteStation routeStation)
+        //{
+        //    throw new Exception("Not implemented");
 
-        }
+        //}
         [HttpDelete("{companyID}/{routeStationID}")]
         public async Task<ActionResult> Delete(long companyID, long routeStationID)
         {

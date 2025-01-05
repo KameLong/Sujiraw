@@ -463,15 +463,7 @@ namespace Sujiraw.Server.Controllers
         public int showStyle { get; set; } = 0;
         public bool main { get; set; } = false;
         public JsonRouteStation() { }
-        public JsonRouteStation(Data.RouteStation rs)
-        {
-            this.rsID = rs.RouteStationID;
-            this.routeID = rs.RouteID;
-            this.stationIndex = rs.Sequence;
-            this.stationID = rs.StationID;
-            this.showStyle = rs.ShowStyle;
 
-        }
         public JsonRouteStation(Sujiraw .Data.Entity.RouteStation rs)
         {
             this.rsID = rs.RouteStationId;

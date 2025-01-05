@@ -296,11 +296,6 @@ namespace Sujiraw.Server.Controllers
             ShowStyle = timeTableStation.ShowStyle;
         }
 
-        public JsonTimeTableStation(Data.RouteStation routeStation)
-        {
-            AriRouteStationID = routeStation.RouteStationID;
-            DepRouteStationID = routeStation.RouteStationID;
-            ShowStyle = routeStation.ShowStyle;
-        }
+
     }
 }
