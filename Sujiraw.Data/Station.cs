@@ -141,26 +141,12 @@ namespace Sujiraw.Data
     }
     partial class PostgresDbService
     {
-        public List<Station> GetAllStation()
-        {
-            return Station.GetAll(this.conn).ToList();
-        }
+
         public List<Station> GetStationsFromCompany(long companyID)
         {
             return Station.GetFromCompany(this.conn,companyID).ToList();
         }
-        public Station GetStation(long stationID)
-        {
-            return Station.GetByID(this.conn, stationID);
-        }
-        public void InsertStation(List<Station>stations)
-        {
-            Station.Insert(this.conn, stations);
-        }
-        public List<Station> GetStationByCompany(long companyID)
-        {
-            return Station.GetByCompany(this.conn, companyID).ToList();
-        }
+
     }
 
 }

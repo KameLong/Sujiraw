@@ -20,10 +20,10 @@ namespace Sujiraw.Server.Controllers.SujirawData
 
         }
 
-        [HttpGet]
-        public IEnumerable<Trip> Get(int direct)
-        {
-            throw new Exception("Not implemented");
-        }
+        //[HttpGet]
+        //public IEnumerable<Trip> Get(int direct)
+        //{
+        //    throw new Exception("Not implemented");
+        //}
     }
 }

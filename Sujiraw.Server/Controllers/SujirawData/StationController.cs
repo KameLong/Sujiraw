@@ -22,6 +22,7 @@ namespace Sujiraw.Server.Controllers.SujirawData
         {
             try
             {
+
                 string connectionString = Configuration["ConnectionStrings:postgres"]!;
                 using (var service = new PostgresDbService(connectionString))
                 {

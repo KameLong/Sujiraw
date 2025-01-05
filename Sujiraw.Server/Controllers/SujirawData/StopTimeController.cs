@@ -16,11 +16,11 @@ namespace Sujiraw.Server.Controllers.SujirawData
         {
         }
 
-        [HttpPut("{companyID}")]
-        public async Task<ActionResult> Put(long companyID, StopTime stopTime)
-        {
-            try
-            {
+        //[HttpPut("{companyID}")]
+        //public async Task<ActionResult> Put(long companyID, StopTime stopTime)
+        //{
+        //    try
+        //    {
                 //DateTime now = DateTime.Now;
                 //var dbpath = Configuration["ConnectionStrings:DBdir"] + "company_" + companyID + ".sqlite";
                 //using (var conn = new SqliteConnection("Data Source=" + dbpath))
@@ -31,14 +31,14 @@ namespace Sujiraw.Server.Controllers.SujirawData
                 //    tran.Commit();
                 //}
                 //await _hubContext.Clients.Group(companyID.ToString()).SendAsync("UpdateStoptimes", new List<StopTime> { stopTime });
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw ex;
-            }
-        }
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //        throw ex;
+        //    }
+        //}
 
     }
 }

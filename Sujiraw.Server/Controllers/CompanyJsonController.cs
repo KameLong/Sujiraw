@@ -397,15 +397,7 @@ namespace Sujiraw.Server.Controllers
 
         }
 
-        public JsonTripInfo(Data.Trip trip)
-        {
-            this.tripID = trip.TripID;
-            this.routeID = trip.RouteID;
-            this.depStationID = trip.DepStationID;
-            this.ariStationID = trip.AriStationID;
-            this.depTime = trip.DepTime;
-            this.ariTime = trip.AriTime;
-        }
+
         public JsonTripInfo(Sujiraw.Data.Entity.Trip trip)
         {
             this.tripID = trip.TripId;
@@ -427,14 +419,7 @@ namespace Sujiraw.Server.Controllers
         public List<JsonStopTime> times { get; set; } = new List<JsonStopTime>();
 
         public JsonTrip() { }
-        public JsonTrip(Data.Trip trip)
-        {
-            this.tripID = trip.TripID;
-            this.routeID = trip.RouteID;
-            this.direction = trip.Direction;
-            this.trainID = trip.TrainID;
-            this.trainTypeID = trip.TrainTypeID;
-        }
+
 
         public JsonTrip(Sujiraw.Data.Entity.Trip trip)
         {

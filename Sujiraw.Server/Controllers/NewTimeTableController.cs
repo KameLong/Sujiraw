@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Npgsql;
-using Sujiraw.Data;
 using Sujiraw.Data.Entity;
 using Sujiraw.Server.SignalR;
-using StopTime = Sujiraw.Data.StopTime;
-using Trip = Sujiraw.Data.Trip;
 
 namespace Sujiraw.Server.Controllers
 {
