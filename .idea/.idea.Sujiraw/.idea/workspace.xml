@@ -10,11 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1bb00e88-cb44-43c8-b96f-5412e48ef747" name="変更" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.Sujiraw/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Sujiraw/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Sujiraw/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sujiraw.Server/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/Sujiraw.Server/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sujiraw.client/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sujiraw.client/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sujiraw.client/src/TimeTablePage/RouteTimeTable/RouteTimeTablePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/TimeTablePage/RouteTimeTable/RouteTimeTablePage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Sujiraw.Server/Program.cs.bak" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sujiraw.client/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sujiraw.client/src/CMN/axiosHook.ts" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/CMN/axiosHook.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sujiraw.client/src/TimeTablePage/NewTimeTable/MatchTextLabel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/TimeTablePage/NewTimeTable/MatchTextLabel.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,7 +50,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     ".NET プロジェクト.Test.executor": "Run",
-    ".NET 起動設定プロファイル.Sujiraw.Server: http.executor": "Run",
+    ".NET 起動設定プロファイル.Sujiraw.Server: http.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "XThreadsFramesViewSplitterKey": "0.5007278",
@@ -126,6 +127,7 @@
       <workItem from="1732371795176" duration="6318000" />
       <workItem from="1732413957193" duration="32258000" />
       <workItem from="1735475800624" duration="7230000" />
+      <workItem from="1736073197449" duration="1335000" />
     </task>
     <servers />
   </component>
@@ -141,40 +143,27 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Sujiraw.Server/Controllers/SujirawData/CompanyController.cs</url>
-          <line>39</line>
-          <properties documentPath="$PROJECT_DIR$/Sujiraw.Server/Controllers/SujirawData/CompanyController.cs" containingFunctionPresentation="メソッド 'GetAllCompany'">
-            <startOffsets>
-              <option value="1406" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1436" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Sujiraw.Server/Controllers/NewTimeTableController.cs</url>
-          <line>243</line>
+          <line>213</line>
           <properties documentPath="$PROJECT_DIR$/Sujiraw.Server/Controllers/NewTimeTableController.cs" containingFunctionPresentation="メソッド 'GetRouteTimeTableData2'">
             <startOffsets>
-              <option value="11805" />
+              <option value="10933" />
             </startOffsets>
             <endOffsets>
-              <option value="11895" />
+              <option value="11023" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Sujiraw.Server/Controllers/DiagramDataController.cs</url>
-          <line>29</line>
+          <line>25</line>
           <properties documentPath="$PROJECT_DIR$/Sujiraw.Server/Controllers/DiagramController.cs" containingFunctionPresentation="メソッド 'GetRouteDiagramData'">
             <startOffsets>
-              <option value="723" />
+              <option value="617" />
             </startOffsets>
             <endOffsets>
-              <option value="3359" />
+              <option value="3253" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="7" />
