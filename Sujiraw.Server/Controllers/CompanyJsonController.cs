@@ -4,7 +4,6 @@ using Sujiraw.Server.SignalR;
 using Sujiraw.Data.Common;
 using System.Diagnostics;
 using Sujiraw.Data.Entity;
-using Company = Sujiraw.Data.Entity.Company;
 
 namespace Sujiraw.Server.Controllers
 {
@@ -323,14 +322,7 @@ namespace Sujiraw.Server.Controllers
         public float lon { get; set; } = 0;
 
         public JsonStation() { }
-        public JsonStation(Data.Station station)
-        {
-            this.stationID = station.StationID;
-            this.name = station.Name;
-            this.lat = station.Lat;
-            this.lon = station.Lon;
-        }
-        public JsonStation(Sujiraw.Data.Entity.Station station)
+        public JsonStation(Station station)
         {
             this.stationID = station.StationId;
             this.name = station.Name;

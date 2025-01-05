@@ -29,9 +29,10 @@ export const CompanyItem = styled(Paper)(({theme}) => ({
 
 export function CompanyView({company}:{company:Company}){
     const navigate=useNavigate()
+    console.log(company);
     return(
         <CompanyItem elevation={3} sx={{mt: 2}}
-                     onClick={() => navigate(`/Company/${company.companyID}`)}>
+                     onClick={() => navigate(`/Company/${company.companyId}`)}>
             <Typography
                 style={{
                     color: 'black',
@@ -140,7 +141,7 @@ export function CompanyListPage() {
                     <NewCompanyView></NewCompanyView>
                 </Grid>
                 {searchedCompany.map((c) => {
-                    return <Grid size={{xs: 12, sm: 6, lg: 4}} key={c.companyID}>
+                    return <Grid size={{xs: 12, sm: 6, lg: 4}} key={c.companyId}>
                         <CompanyView company={c}></CompanyView>
                     </Grid>
                 })}

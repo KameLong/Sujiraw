@@ -1,6 +1,6 @@
 //Sujiraw.Data Company class
 export interface Company {
     name:string,
-    companyID:number,
+    companyId:number,
     userID:string
 }

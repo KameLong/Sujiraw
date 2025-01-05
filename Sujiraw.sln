@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sujiraw.Data", "Sujiraw.Dat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OuDia", "OuDia\OuDia.csproj", "{EC0EEFB7-0641-43A8-B846-1BA583637773}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sujiraw.Data.Action", "Sujiraw.Data.Action\Sujiraw.Data.Action.csproj", "{3DDB5E67-561E-4740-B6F6-D8844C08702F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,10 +35,6 @@ Global
 		{EC0EEFB7-0641-43A8-B846-1BA583637773}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC0EEFB7-0641-43A8-B846-1BA583637773}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC0EEFB7-0641-43A8-B846-1BA583637773}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DDB5E67-561E-4740-B6F6-D8844C08702F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DDB5E67-561E-4740-B6F6-D8844C08702F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3DDB5E67-561E-4740-B6F6-D8844C08702F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DDB5E67-561E-4740-B6F6-D8844C08702F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

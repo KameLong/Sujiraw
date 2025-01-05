@@ -28,10 +28,13 @@ namespace Sujiraw.Server.Controllers.SujirawData
                     return NotFound();
                 }
                 var routes = service.Route.Where(Route => Route.CompanyId == companyID).ToList();
-                var stations = from rs in service.RouteStation
-                               join r in routes on rs.RouteId equals r.RouteId
-                               where r.CompanyId == companyID
-                               select rs;
+                var s = from rs in service.RouteStation
+                                join r in service.Route on rs.RouteId equals r.RouteId
+                                where r.CompanyId == companyID
+                                select rs;
+
+
+                var stations = s.ToList();
                 //var routes= service.GetRouteByCompany(companyID);
                     var res = routes.Select(item =>
                     {
@@ -58,7 +61,7 @@ namespace Sujiraw.Server.Controllers.SujirawData
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                6return BadRequest(e.Message);
             }
         }
 

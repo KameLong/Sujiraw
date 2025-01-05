@@ -17,48 +17,42 @@ namespace Sujiraw.Server.Controllers.SujirawData
         {
         }
 
-        [HttpGet("{companyID}")]
-        public async Task<ActionResult> Get(long companyID)
-        {
-            try
-            {
+        //[HttpGet("{companyID}")]
+        //public async Task<ActionResult> Get(long companyID)
+        //{
+        //    try
+        //    {
+        //        return BadRequest();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //}
 
-                string connectionString = Configuration["ConnectionStrings:postgres"]!;
-                using (var service = new PostgresDbService(connectionString))
-                {
-                    var stations = service.GetStationsFromCompany(companyID);
-                    return Ok(stations);
-                }
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
-
-        [HttpPut("{companyID}")]
-        public async Task<ActionResult> Update(long companyID, [FromBody] Station station)
-        {
-            try
-            {
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
-        [HttpDelete("{companyID}/{stationID}")]
-        public async Task<ActionResult> Delete(long companyID, long stationID)
-        {
-            try
-            {
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
+        //[HttpPut("{companyID}")]
+        //public async Task<ActionResult> Update(long companyID, [FromBody] Station station)
+        //{
+        //    try
+        //    {
+        //        return BadRequest();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //}
+        //[HttpDelete("{companyID}/{stationID}")]
+        //public async Task<ActionResult> Delete(long companyID, long stationID)
+        //{
+        //    try
+        //    {
+        //        return BadRequest();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest(e.Message);
+        //    }
+        //}
     }
 }

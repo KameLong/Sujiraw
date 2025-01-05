@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Sujiraw.Data.Action\Sujiraw.Data.Action.csproj" />
     <ProjectReference Include="..\Sujiraw.Data\Sujiraw.Data.csproj" />
   </ItemGroup>
 
