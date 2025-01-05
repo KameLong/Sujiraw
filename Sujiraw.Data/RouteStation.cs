@@ -136,43 +136,4 @@ namespace Sujiraw.Data
         }
 
     }
-    partial class PostgresDbService
-    {
-        public List<RouteStation> GetAllRouteStation()
-        {
-            return RouteStation.GetAll(this.conn).ToList();
-        }
-        public RouteStation GetRouteStation(long routeStationID)
-        {
-            return RouteStation.GetByID(this.conn, routeStationID);
-        }
-        public void InsertRouteStation(List<RouteStation> stations)
-        {
-            RouteStation.Insert(this.conn, stations);
-        }
-        public List<RouteStation> GetRouteStationByRoute(long routeID)
-        {
-            return RouteStation.GetByRouteID(this.conn, routeID).ToList();
-        }
-        public Dictionary<long, List<RouteStation>> GetRouteStationByCompany(long companyID)
-        {
-            using var command=conn.CreateCommand();
-            command.CommandText = $"SELECT {RouteStation.TABLE_NAME}.* FROM {RouteStation.TABLE_NAME} left join " +
-                $"{Route.TABLE_NAME} on {Route.TABLE_NAME}.{nameof(Route.RouteID)}={RouteStation.TABLE_NAME}.{nameof(RouteStation.RouteID)} " +
-                $"where {Route.TABLE_NAME}.{nameof(Route.CompanyID)}=@companyID order by {nameof(RouteStation.Sequence)}";
-            command.Parameters.Add(new NpgsqlParameter("companyID", companyID));
-            using var reader = command.ExecuteReader();
-            var result = new Dictionary<long, List<RouteStation>>();
-            while (reader.Read())
-            {
-                var item = new RouteStation(reader);
-                if (!result.ContainsKey(item.RouteID))
-                {
-                    result[item.RouteID] = new List<RouteStation>();
-                }
-                result[item.RouteID].Add(item);
-            }
-            return result;
-        }
-    }
 }

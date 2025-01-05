@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Sujiraw.Server.SignalR;
 using Sujiraw.Data;
-using Route = Sujiraw.Data.Route;
+using Sujiraw.Data.Entity;
+using System.Runtime.InteropServices;
 namespace Sujiraw.Server.Controllers.SujirawData
 {
     [Route("api/[controller]")]
@@ -20,25 +21,32 @@ namespace Sujiraw.Server.Controllers.SujirawData
         {
             try
             {
-                string connectionString = Configuration["ConnectionStrings:postgres"]!;
-                using (var service = new PostgresDbService(connectionString))
+                using var service = new SujirawContext(Configuration["ConnectionStrings:postgres"]!);
+                var company = service.Company.Find(companyID);
+                if (company == null)
                 {
-                    var routes= service.GetRouteByCompany(companyID);
-                    var stations = service.GetRouteStationByCompany(companyID);
+                    return NotFound();
+                }
+                var routes = service.Route.Where(Route => Route.CompanyId == companyID).ToList();
+                var stations = from rs in service.RouteStation
+                               join r in routes on rs.RouteId equals r.RouteId
+                               where r.CompanyId == companyID
+                               select rs;
+                //var routes= service.GetRouteByCompany(companyID);
                     var res = routes.Select(item =>
                     {
                         return new JsonRoute()
                         {
                             name = item.Name,
-                            routeID = item.RouteID,
-                            routeStations = stations[item.RouteID].Select(rs =>
+                            routeID = item.RouteId,
+                            routeStations = stations.Where(s=>s.RouteId==item.RouteId).OrderBy(s=>s.Sequence).ToList().Select(rs =>
                             {
                                 return new JsonRouteStation()
                                 {
-                                    rsID=rs.RouteStationID,
-                                    routeID=rs.RouteID,
+                                    rsID=rs.RouteStationId,
+                                    routeID=rs.RouteId,
                                     stationIndex = rs.Sequence,
-                                    stationID = rs.StationID,
+                                    stationID = rs.StationId,
                                     showStyle=rs.ShowStyle,
                                 };
                             }).ToList(),
@@ -47,7 +55,6 @@ namespace Sujiraw.Server.Controllers.SujirawData
                         };
                     });
                     return Ok(res);
-                }
             }
             catch (Exception e)
             {
@@ -55,11 +62,11 @@ namespace Sujiraw.Server.Controllers.SujirawData
             }
         }
 
-        [HttpPut("{companyID}")]
-        public async Task<ActionResult> Update(long companyID, [FromBody] Route route)
-        {
-            return NotFound();
-        }
+        //[HttpPut("{companyID}")]
+        //public async Task<ActionResult> Update(long companyID, [FromBody] Route route)
+        //{
+        //    return NotFound();
+        //}
         [HttpDelete("{companyID}/{routeID}")]
         public async Task<ActionResult> Delete(long companyID, long routeID)
         {

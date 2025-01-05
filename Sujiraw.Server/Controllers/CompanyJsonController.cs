@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Sujiraw.Server.SignalR;
-using Sujiraw.Data;
 using Sujiraw.Data.Common;
 using System.Diagnostics;
-using Route = Sujiraw.Data.Route;
 using Sujiraw.Data.Entity;
 using Company = Sujiraw.Data.Entity.Company;
 
@@ -510,11 +508,6 @@ namespace Sujiraw.Server.Controllers
         public List<JsonTrip> downTrips { get; set; } = new List<JsonTrip>();
         public List<JsonTrip> upTrips { get; set; } = new List<JsonTrip>();
         public JsonRoute() { }
-        public JsonRoute(Route route)
-        {
-            this.routeID = route.RouteID;
-            this.name = route.Name;
-        }
         public JsonRoute(Sujiraw.Data.Entity.Route route)
         {
             this.routeID = route.RouteId;

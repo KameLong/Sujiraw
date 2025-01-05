@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Sujiraw.Server.SignalR;
 using Sujiraw.Data;
-using Route = Sujiraw.Data.Route;
 
 namespace Sujiraw.Server.Controllers.SujirawData
 {
