@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Sujiraw.Server.SignalR;
-using Sujiraw.Data;
 using Sujiraw.Data.Entity;
 using System.Runtime.InteropServices;
 namespace Sujiraw.Server.Controllers.SujirawData

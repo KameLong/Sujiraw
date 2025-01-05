@@ -4,6 +4,7 @@ using Sujiraw.Server.SignalR;
 using Sujiraw.Data.Common;
 using System.Diagnostics;
 using Sujiraw.Data.Entity;
+using Route = Sujiraw.Data.Entity.Route;
 
 namespace Sujiraw.Server.Controllers
 {
@@ -36,7 +37,7 @@ namespace Sujiraw.Server.Controllers
 
                 var stations = oudia.stations.Values.Select(item =>
                 {
-                    var station = new Data.Entity.Station()
+                    var station = new Station()
                     {
                         StationId = item.stationID,
                         CompanyId = companyID,
@@ -51,7 +52,7 @@ namespace Sujiraw.Server.Controllers
                 Debug.WriteLine("Station Inserted " + sw.ElapsedMilliseconds);
                 var trainTypes = oudia.trainTypes.Values.Select(item =>
                 {
-                    var trainType = new Data.Entity.TrainType()
+                    var trainType = new TrainType()
                     {
                         TrainTypeId = item.trainTypeID,
                         CompanyId = companyID,
@@ -68,7 +69,7 @@ namespace Sujiraw.Server.Controllers
                 Debug.WriteLine("TrainType Inserted " + sw.ElapsedMilliseconds);
                 var trains = oudia.trains.Values.Select(item =>
                 {
-                    Data.Entity.Train train = new Data.Entity.Train();
+                    Train train = new Train();
                     train.TrainId = item.trainID;
                     train.CompanyId = companyID;
                     train.DepStationId = item.depStationID;
@@ -83,7 +84,7 @@ namespace Sujiraw.Server.Controllers
                 foreach (var Jroute in oudia.routes.Values)
                 {
 
-                    var route = new Data.Entity.Route();
+                    var route = new Route();
                     route.RouteId = Jroute.routeID;
                     route.CompanyId = companyID;
                     route.Name = Jroute.name;
@@ -92,7 +93,7 @@ namespace Sujiraw.Server.Controllers
                     //routeStationsの処理
                     var routeStations = Jroute.routeStations.Select(item =>
                     {
-                        var rs = new Data.Entity.RouteStation();
+                        var rs = new RouteStation();
                         rs.StationId = item.stationID;
                         rs.RouteStationId = item.rsID;
                         rs.RouteId = routeID;
@@ -102,12 +103,12 @@ namespace Sujiraw.Server.Controllers
                     });
                     service.AddRange(routeStations);
                     Debug.WriteLine("RouteStation Inserted " + sw.ElapsedMilliseconds);
-                    var stopTimes = new List<Data.Entity.StopTime>();
+                    var stopTimes = new List<StopTime>();
 
                     //tripの処理
                     var trips = Jroute.downTrips.Concat(Jroute.upTrips).Select(item =>
                     {
-                        var trip = new Data.Entity.Trip();
+                        var trip = new Trip();
                         trip.RouteId = routeID;
                         trip.TrainTypeId = item.trainTypeID;
                         trip.TripId = item.tripID;
@@ -117,7 +118,7 @@ namespace Sujiraw.Server.Controllers
 
                         var times = item.times.Select((time, i) =>
                         {
-                            var stopTime = new Data.Entity.StopTime();
+                            var stopTime = new StopTime();
                             stopTime.TripId = time.tripID;
                             stopTime.RouteStationId = time.rsID;
                             stopTime.StopType = time.stopType;
@@ -218,7 +219,7 @@ namespace Sujiraw.Server.Controllers
                     train.ariStationID = item.AriStationId;
                     train.depTime = item.DepTime;
                     train.ariTime = item.AriTime;
-                    train.tripInfos = (trainTrip[train.trainID] ?? (new List<Data.Entity.Trip>())).Select(trip =>
+                    train.tripInfos = (trainTrip[train.trainID] ?? (new List<Trip>())).Select(trip =>
                     {
                         var tripInfo = new JsonTripInfo(trip);
                         return tripInfo;
@@ -341,7 +342,7 @@ namespace Sujiraw.Server.Controllers
         public bool dot { get; set; } = false;
 
         public JsonTrainType() { }
-        public JsonTrainType(Sujiraw.Data.Entity.TrainType trainType)
+        public JsonTrainType(TrainType trainType)
         {
             this.trainTypeID = trainType.TrainTypeId;
             this.name = trainType.Name;
@@ -364,7 +365,7 @@ namespace Sujiraw.Server.Controllers
         public List<JsonTripInfo> tripInfos { get; set; } = new List<JsonTripInfo>();
         public JsonTrain() { }
 
-        public JsonTrain(Sujiraw.Data.Entity.Train train)
+        public JsonTrain(Train train)
         {
             this.companyID = train.CompanyId;
             this.trainID = train.TrainId;
@@ -390,7 +391,7 @@ namespace Sujiraw.Server.Controllers
         }
 
 
-        public JsonTripInfo(Sujiraw.Data.Entity.Trip trip)
+        public JsonTripInfo(Trip trip)
         {
             this.tripID = trip.TripId;
             this.routeID = trip.RouteId;
@@ -413,7 +414,7 @@ namespace Sujiraw.Server.Controllers
         public JsonTrip() { }
 
 
-        public JsonTrip(Sujiraw.Data.Entity.Trip trip)
+        public JsonTrip(Trip trip)
         {
             this.tripID = trip.TripId;
             this.routeID = trip.RouteId;
@@ -432,7 +433,7 @@ namespace Sujiraw.Server.Controllers
         public bool main { get; set; } = false;
         public JsonRouteStation() { }
 
-        public JsonRouteStation(Sujiraw .Data.Entity.RouteStation rs)
+        public JsonRouteStation(RouteStation rs)
         {
             this.rsID = rs.RouteStationId;
             this.routeID = rs.RouteId;
@@ -450,7 +451,7 @@ namespace Sujiraw.Server.Controllers
         public int ariTime { get; set; } = 0;
         public int depTime { get; set; } = 0;
         public JsonStopTime() { }
-        public JsonStopTime(Sujiraw.Data.Entity.StopTime st)
+        public JsonStopTime(StopTime st)
         {
             this.rsID = st.RouteStationId;
             this.tripID = st.TripId;
@@ -468,7 +469,7 @@ namespace Sujiraw.Server.Controllers
         public List<JsonTrip> downTrips { get; set; } = new List<JsonTrip>();
         public List<JsonTrip> upTrips { get; set; } = new List<JsonTrip>();
         public JsonRoute() { }
-        public JsonRoute(Sujiraw.Data.Entity.Route route)
+        public JsonRoute(Route route)
         {
             this.routeID = route.RouteId;
             this.name = route.Name;
