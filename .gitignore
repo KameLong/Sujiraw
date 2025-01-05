@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 /Sujiraw.Server/appsettings.json
 /Sujiraw.Server/appsettings.Development.json
+
+#MAC
+.DS_Store
