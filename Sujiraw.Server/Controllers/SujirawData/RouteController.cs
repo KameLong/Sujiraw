@@ -60,7 +60,7 @@ namespace Sujiraw.Server.Controllers.SujirawData
             }
             catch (Exception e)
             {
-                6return BadRequest(e.Message);
+                return BadRequest(e.Message);
             }
         }
 
