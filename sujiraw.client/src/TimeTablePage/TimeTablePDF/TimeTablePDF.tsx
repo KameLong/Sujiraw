@@ -20,7 +20,7 @@ import {
 import { styled } from '@mui/styles';
 import {Settings} from "@mui/icons-material";
 import Box from "@mui/material/Box";
-import {EditRouteDepreacted, loadCompany, loadRoute, RouteDTO, RouteInfo, StationDTO, TrainDTO, TrainTypeDTO} from "../../DiaData/DiaData";
+import { loadCompany,RouteDTO, RouteInfo, StationDTO, TrainDTO, TrainTypeDTO} from "../../DiaData/DiaData";
 import {OrderType, SettingView, TimetablePDFSetting} from "./SettingView";
 import {ClipLoader} from "react-spinners";
 import { TimeTablePDF2 } from './TimeTablePDF2';
@@ -84,16 +84,17 @@ export function TimeTablePDF() {
             navigate(`/TimeTablePDF/${res.routeID}`);
         }
         if(routes[routeID]===undefined){
-            loadRoute(companyID,routeID).then((route)=>{
-                EditRouteDepreacted.sortTrips(route,0,0);
-                setRoutes((prev)=>{
-                    const next  = {...prev};
-                    if(route!==undefined){
-                        next[route.routeID]=route;
-                    }
-                    return next;
-                })
-            });
+            //todo
+            // loadRoute(companyID,routeID).then((route)=>{
+            //     EditRouteDepreacted.sortTrips(route,0,0);
+            //     setRoutes((prev)=>{
+            //         const next  = {...prev};
+            //         if(route!==undefined){
+            //             next[route.routeID]=route;
+            //         }
+            //         return next;
+            //     })
+            // });
         }
 
     }, [routeInfo,routeID]);

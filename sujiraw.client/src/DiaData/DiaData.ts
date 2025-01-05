@@ -17,16 +17,6 @@ export async function fetchGzipJson(url: string): Promise<any> {
        return response.json();
     }
 }
-export async function  loadRoute(companyID:number,routeID:number):Promise<RouteDTO>{
-    try{
-        return (await axiosClient.get(`/api/RouteJson/${companyID}/${routeID}`)).data;
-    }catch(ex){
-        console.error(ex);
-        return new Promise((resolve, reject) => {
-            resolve({routeID: routeID, name: "読み込みエラー", routeStations: [], downTrips: [], upTrips: []});
-        });
-    }
-}
 export async function loadCompany(companyID:number,routeID:number|undefined):Promise<DiaData>{
     try{
         return (await axiosClient.get(`/api/CompanyJson/Company/${companyID}/${routeID??0}`)).data;

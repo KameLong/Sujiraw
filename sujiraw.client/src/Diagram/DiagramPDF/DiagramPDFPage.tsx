@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import {Alert, Dialog, Fab} from "@mui/material";
 import {Settings} from "@mui/icons-material";
 import React, {memo, useEffect, useState} from "react";
-import {useDiagramViewHook, useDiagramViewHook2} from "../hook/DiagramHook.ts";
+import {useDiagramViewHook2} from "../hook/DiagramHook.ts";
 import {styled} from "@mui/styles";
 import {DiagramPDFSetting, DiagramPDFSettingView} from "./DiagramPDFSetting";
 import {DiagramPDFDocument} from "./DiagramPDFDocument";

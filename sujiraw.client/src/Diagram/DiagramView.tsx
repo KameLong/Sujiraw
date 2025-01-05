@@ -13,9 +13,6 @@ import {
     TrainTypeDTO
 } from "../DiaData/DiaData";
 import {DiagramCanvas, DiagramLine, DiagramTransformC, Point} from "./DiagramCanvas";
-import {BottomMenu} from "../Menu/BottomMenu";
-import {useDiagramViewHook, useDiagramViewHook2} from "./hook/DiagramHook.ts";
-import {LineData} from "../DiaData/NewData.ts";
 
 
 const fontSize=10;

@@ -1,12 +1,5 @@
-import {useParams} from "react-router-dom";
-import Box from "@mui/material/Box";
-import {Fab} from "@mui/material";
-import {Settings} from "@mui/icons-material";
 import React, {useEffect, useState} from "react";
 import {Document, Font, Line, Page, PDFDownloadLink, PDFViewer, Rect, StyleSheet, Svg, Text, View} from "@react-pdf/renderer";
-import {OrderType} from "../../TimeTablePage/TimeTablePDF/SettingView";
-import {loadCompany, loadRoute, RouteDTO, RouteInfo, StationDTO, TrainDTO, TrainTypeDTO} from "../../DiaData/DiaData";
-import {useDiagramViewHook} from "../hook/DiagramHook.ts";
 import {DiagramLine} from "../DiagramCanvas";
 import {DiagramStation} from "../DiagramData";
 import {DiagramPDFSetting} from "./DiagramPDFSetting";
