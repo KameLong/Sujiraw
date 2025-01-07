@@ -76,6 +76,38 @@ namespace Sujiraw.Server.Controllers.SujirawData
             // todo
 
         }
+        [HttpGet("ByRoute/{routeID}")]
+        public ActionResult GetByRoute(long routeId)
+        {
+            try
+            {
+                using var service = new SujirawContext(Configuration["ConnectionStrings:postgres"]!);
+                return Ok(service.Route.Where(route=>route.RouteId==routeId).ToList()
+                    .Select(route=>new JsonRouteInfo(route)));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+        
+        [HttpGet("ByStation/{stationId}")]
+        public ActionResult GetByStation(long stationId)
+        {
+            try
+            {
+                using var service = new SujirawContext(Configuration["ConnectionStrings:postgres"]!);
+                var routeStations = service.RouteStation.Where(rs => rs.StationId == stationId);
+                var routes = routeStations.Join(service.Route, rs => rs.RouteId, r => r.RouteId, (rs, r) => r).Distinct().ToList();
+                return Ok(routes.Select(route=>new JsonRouteInfo(route)));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+
 
     }
 }

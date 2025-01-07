@@ -89,7 +89,6 @@ app.UseCors(MyAllowSpecificOrigins);
 
 app.MapControllers();
 app.MapHub<SujirawHub>("/ws/sujiraw");
-
-app.MapFallbackToFile("index.html");
+app.UseMiddleware<CustomMiddleware>();
 
 app.Run();

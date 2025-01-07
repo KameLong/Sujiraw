@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Sujiraw.Server.SignalR;
 using Sujiraw.Data;
+using Sujiraw.Data.Entity;
 
 namespace Sujiraw.Server.Controllers.SujirawData
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
 
     public class RouteStationController : SujiroAPIController
     {
@@ -62,6 +62,17 @@ namespace Sujiraw.Server.Controllers.SujirawData
             //    return BadRequest(e.Message);
             //}
         }
+        [HttpGet("DirectConnection/{stationID}")]
+        public ActionResult GetByStation(long stationId)
+        {
+            var service = new SujirawContext(Configuration["ConnectionStrings:postgres"]!);
+            var routes = service.RouteStation.Where(rs => rs.StationId == stationId)
+                .Join(service.Route, rs => rs.RouteId, r => r.RouteId, (rs, r) => r)
+                .Distinct();
+            var routeStations=service.RouteStation.Join(routes, rs => rs.RouteId, r => r.RouteId, (rs, r) => rs).ToList();
+            return Ok(routeStations.Select(rs=>new JsonRouteStation(rs)));
+        }
+
 
     }
 }

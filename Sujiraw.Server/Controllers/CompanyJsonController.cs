@@ -304,6 +304,12 @@ namespace Sujiraw.Server.Controllers
         public long routeID { get; set; } = 0;
         public string name { get; set; } = "";
         public List<long> stations { get; set; } = new List<long>();
+        public JsonRouteInfo() { }
+        public JsonRouteInfo(Route route)
+        {
+            this.routeID = route.RouteId;
+            this.name = route.Name;
+        }
     }
 
     public class OuDiaCompanyJson

@@ -125,10 +125,10 @@ code {
   transform: rotate(45deg);    /* くの字の向き */
 }
 
-.dialog, .dialog-content{
-display: flex !important;
-justify-content: center !important;
-align-items: center !important;
-padding-top: 0px !important;
-transform: initial !important;
-}
+/*.dialog, .dialog-content{*/
+/*display: flex !important;*/
+/*justify-content: center !important;*/
+/*align-items: center !important;*/
+/*padding-top: 0px !important;*/
+/*transform: initial !important;*/
+/*}*/
