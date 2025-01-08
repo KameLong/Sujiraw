@@ -55,11 +55,6 @@ export function StationSelectorDialog(
     {open,handleClose,stations,selectedStation,setSelectedStation,onSelected,onBacked} : StationSelectorDialogProps) {
 
     return (
-        <Dialog open={open}
-                maxWidth={"md"}
-        >
-            <DialogTitle>駅選択</DialogTitle>
-            <DialogContent>
                 <Autocomplete
                     sx={{width: 300}}
                     options={stations}
@@ -67,19 +62,9 @@ export function StationSelectorDialog(
                     value={selectedStation}
                     onChange={(event, newValue) => {
                         setSelectedStation(newValue);
+                        onSelected?.(newValue);
                     }}
                     renderInput={(params) => <TextField {...params} label="Select Station" />}
                 />
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    onClick={()=>onBacked?.()}
-                >BACK</Button>
-
-                <Button
-                    onClick={()=>onSelected?.(selectedStation)}
-                >OK</Button>
-            </DialogActions>
-        </Dialog>
     )
 }

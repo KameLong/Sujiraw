@@ -240,56 +240,56 @@ export function TimeTableEditPage() {
             <Button sx={{m: 1}} color={"primary"} variant={"contained"} onClick={() => {
                 navigate(`/MainTimeTable/${companyID}/${timetableID}/0`)
             }}>{t("下りカスタム時刻表へ移動する")}</Button>
-            <StationSelectorDialog
-                {...dialogSetting.getDialogProps()}
-                onSelected={(station)=>{
-                    dialogSetting.handleClose();
-                    console.log(station);
-                    //その駅が含まれる路線を選択するダイアログを開く
-                    //路線一覧を取得
-                    axiosClient.get(`/api/RouteStation/DirectConnection/${station.stationID}`).then(res=>{
-                        console.log(res.data);
-                        const routeStations=(res.data as RouteStationDTO[]).map(rs=>{
-                            return{
-                                rsID:rs.rsID,
-                                name:company.stations[rs.stationID]?.name ?? t("駅名不明"),
-                                routeName:[company.routes[rs.routeID]?.name ?? t("路線名不明")],
-                                stationID:rs.stationID,
-                            }
-                        });
-                        dialogSetting2.setRoutes(routeStations);
-                        dialogSetting2.setOpen(true);
-                    });
+            {/*<StationSelectorDialog*/}
+            {/*    {...dialogSetting.getDialogProps()}*/}
+            {/*    onSelected={(station)=>{*/}
+            {/*        dialogSetting.handleClose();*/}
+            {/*        console.log(station);*/}
+            {/*        //その駅が含まれる路線を選択するダイアログを開く*/}
+            {/*        //路線一覧を取得*/}
+            {/*        axiosClient.get(`/api/RouteStation/DirectConnection/${station.stationID}`).then(res=>{*/}
+            {/*            console.log(res.data);*/}
+            {/*            const routeStations=(res.data as RouteStationDTO[]).map(rs=>{*/}
+            {/*                return{*/}
+            {/*                    rsID:rs.rsID,*/}
+            {/*                    name:company.stations[rs.stationID]?.name ?? t("駅名不明"),*/}
+            {/*                    routeName:[company.routes[rs.routeID]?.name ?? t("路線名不明")],*/}
+            {/*                    stationID:rs.stationID,*/}
+            {/*                }*/}
+            {/*            });*/}
+            {/*            dialogSetting2.setRoutes(routeStations);*/}
+            {/*            dialogSetting2.setOpen(true);*/}
+            {/*        });*/}
 
-                }}
-                onBacked={()=>{
-                    dialogSetting.handleClose();
-                }}
-            >
-            </StationSelectorDialog>
-            <RouteSelectorDialog
-                {...dialogSetting2.getDialogProps()}
-                onBacked={()=>{
-                    dialogSetting2.handleClose();
-                }}
-                onSelected={(routeStation)=>{
-                    dialogSetting2.handleClose();
-                    axiosClient.get(`/api/RouteStation/DirectConnection/${routeStation.stationID}`).then(res=>{
-                        console.log(res.data);
-                        const routeStations=(res.data as RouteStationDTO[]).map(rs=>{
-                            return{
-                                rsID:rs.rsID,
-                                name:company.stations[rs.stationID]?.name ?? t("駅名不明"),
-                                routeName:[company.routes[rs.routeID]?.name ?? t("路線名不明")],
-                                stationID:rs.stationID,
-                            }
-                        });
-                        dialogSetting2.setRoutes(routeStations);
-                        dialogSetting2.setOpen(true);
-                    });
+            {/*    }}*/}
+            {/*    onBacked={()=>{*/}
+            {/*        dialogSetting.handleClose();*/}
+            {/*    }}*/}
+            {/*>*/}
+            {/*</StationSelectorDialog>*/}
+            {/*<RouteSelectorDialog*/}
+            {/*    {...dialogSetting2.getDialogProps()}*/}
+            {/*    onBacked={()=>{*/}
+            {/*        dialogSetting2.handleClose();*/}
+            {/*    }}*/}
+            {/*    onSelected={(routeStation)=>{*/}
+            {/*        dialogSetting2.handleClose();*/}
+            {/*        axiosClient.get(`/api/RouteStation/DirectConnection/${routeStation.stationID}`).then(res=>{*/}
+            {/*            console.log(res.data);*/}
+            {/*            const routeStations=(res.data as RouteStationDTO[]).map(rs=>{*/}
+            {/*                return{*/}
+            {/*                    rsID:rs.rsID,*/}
+            {/*                    name:company.stations[rs.stationID]?.name ?? t("駅名不明"),*/}
+            {/*                    routeName:[company.routes[rs.routeID]?.name ?? t("路線名不明")],*/}
+            {/*                    stationID:rs.stationID,*/}
+            {/*                }*/}
+            {/*            });*/}
+            {/*            dialogSetting2.setRoutes(routeStations);*/}
+            {/*            dialogSetting2.setOpen(true);*/}
+            {/*        });*/}
 
-                }}
-            ></RouteSelectorDialog>
+            {/*    }}*/}
+            {/*></RouteSelectorDialog>*/}
 
             <Dialog
                 open={openDeleteAlert}

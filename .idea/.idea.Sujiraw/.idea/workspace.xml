@@ -10,17 +10,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1bb00e88-cb44-43c8-b96f-5412e48ef747" name="変更" comment="">
-      <change afterPath="$PROJECT_DIR$/Sujiraw.Server/CustomMiddleware.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sujiraw.client/src/CompanyPage/TimeTableEdit/RouteSelectorDialog.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sujiraw.client/src/CompanyPage/TimeTableEdit/StationSelectorDialog.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sujiraw.client/src/CompanyPage/TimeTableEditStationPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Sujiraw/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Sujiraw/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sujiraw.Server/Controllers/CompanyJsonController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Sujiraw.Server/Controllers/CompanyJsonController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sujiraw.Server/Controllers/SujirawData/RouteController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Sujiraw.Server/Controllers/SujirawData/RouteController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Sujiraw.Server/Controllers/SujirawData/RouteStationController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Sujiraw.Server/Controllers/SujirawData/RouteStationController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Sujiraw.Server/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Sujiraw.Server/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sujiraw.client/src/CMN/axiosHook.ts" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/CMN/axiosHook.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sujiraw.client/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/App.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sujiraw.client/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sujiraw.client/src/CompanyPage/TimeTableEdit/RouteSelectorDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/CompanyPage/TimeTableEdit/RouteSelectorDialog.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sujiraw.client/src/CompanyPage/TimeTableEdit/StationSelectorDialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/CompanyPage/TimeTableEdit/StationSelectorDialog.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sujiraw.client/src/CompanyPage/TimeTableEditPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/CompanyPage/TimeTableEditPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sujiraw.client/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/sujiraw.client/src/index.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -133,7 +130,7 @@
       <workItem from="1732371795176" duration="6318000" />
       <workItem from="1732413957193" duration="32258000" />
       <workItem from="1735475800624" duration="7230000" />
-      <workItem from="1736073197449" duration="15722000" />
+      <workItem from="1736073197449" duration="23458000" />
     </task>
     <servers />
   </component>

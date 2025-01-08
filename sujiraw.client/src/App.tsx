@@ -12,6 +12,7 @@ import {TimeTableEditPage} from "./CompanyPage/TimeTableEditPage.tsx";
 import {CustomTimeTablePage} from "./TimeTablePage/CustomTimeTable/CustomTimeTablePage.tsx";
 import TestPage from "./TimeTablePage/NewTimeTable/TestPage.tsx";
 import {DiagramPage} from "./Diagram/DiagramPage.tsx";
+import {TimeTableEditStationPage} from "./CompanyPage/TimeTableEditStationPage.tsx";
 
 function App() {
   return (
@@ -38,6 +39,9 @@ function App() {
           <Route path={"/TimeTableEdit/:companyID/:timetableID"} element={
               <TimeTableEditPage/>
             }></Route>
+          <Route path={"/TimeTableEditStation/:companyID/:timetableID"} element={
+              <TimeTableEditStationPage/>
+          }></Route>
           <Route path="/Diagram/:companyID/:routeID" element={
               <DiagramPage/>
           }></Route>
