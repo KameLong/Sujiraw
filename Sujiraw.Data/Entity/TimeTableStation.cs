@@ -16,6 +16,7 @@ namespace Sujiraw.Data.Entity
 
         [Column("timetableid")]
         public long TimeTableID { get; set; } = 0;
+        public TimeTable TimeTable { get; set; }
 
         [Column("ariroutestationid")]
         public long AriRouteStationID { get; set; } = 0;

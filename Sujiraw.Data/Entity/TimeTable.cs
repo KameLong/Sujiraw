@@ -25,6 +25,8 @@ namespace Sujiraw.Data.Entity
 
         [Column("color")]
         public string Color { get; set; } = "#000000";
+        
+        public ICollection<TimeTableStation> TimeTableStations { get; set; }  
 
     }
 }

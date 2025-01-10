@@ -11,6 +11,7 @@ namespace Sujiraw.Data.Entity
         [Key] [Column("routestationid")] public long RouteStationId { get; set; }
 
         [Column("routeid")] public long RouteId { get; set; } = 0;
+        public Route Route { get; set; }
         [Column("stationid")] public long StationId { get; set; } = 0;
 
         [Column("sequence")] public int Sequence { get; set; } = 0;

@@ -427,6 +427,11 @@ namespace Sujiraw.Server.Controllers
             this.direction = trip.Direction;
             this.trainID = trip.TrainId;
             this.trainTypeID = trip.TrainTypeId;
+            if (trip.StopTimes != null)
+            {
+                times=trip.StopTimes
+                    .Select(item => new JsonStopTime(item)).ToList();
+            }
         }
     }
     public class JsonRouteStation

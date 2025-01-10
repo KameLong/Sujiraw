@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Sujiraw.Server.SignalR;
 using Npgsql;
 using Sujiraw.Data.Entity;
@@ -94,125 +96,173 @@ namespace Sujiraw.Server.Controllers
                 return BadRequest(ex.Message);
             }
         }
-    //    [HttpGet("data/{timetableID}")]
-    //    public ActionResult GetTimeTableData(long timetableID)
-    //    {
-    //        try
-    //        {
-    //            var sw = new Stopwatch();
-    //            sw.Start();
-    //            var result=new TimeTableData();
+    [HttpGet("data/{timetableID}")]
+    public ActionResult GetTimeTableData(long timetableID)
+    {
+        
+        try
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+            var result=new TimeTableData();
 
-    //            using var service = new PostgresDbService(Configuration["ConnectionStrings:postgres"]!);
-    //            var timetable= service.GetTimeTable(timetableID);
-    //            var timetableStation = service.GetTimeTableStationByTimeTable(timetableID);
-    //            result.Stations = service.GetStationByCompany(timetable.CompanyID).ToDictionary(item => item.StationID, item =>
-    //            {
-    //                var station = new JsonStation();
-    //                station.stationID = item.StationID;
-    //                station.name = item.Name;
-    //                station.lat = item.Lat;
-    //                station.lon = item.Lon;
-    //                return station;
-    //            });
-    //            result.TrainTypes=service.GetTrainTypeByCompany(timetable.CompanyID).ToDictionary(item => item.TrainTypeID, item =>
-    //            {
-    //                var trainType = new JsonTrainType();
-    //                trainType.trainTypeID = item.TrainTypeID;
-    //                trainType.name = item.Name;
-    //                trainType.color = item.Color;
-    //                trainType.shortName = item.ShortName;
+            var service = new SujirawContext(Configuration["ConnectionStrings:postgres"]!);
+            
+            var timetable= service.TimeTable
+                .Include(t=>t.TimeTableStations)
+                
+                .FirstOrDefault(item=>item.TimeTableID==timetableID);
+            if(timetable==null)
+            {
+                return NotFound();
+            }
+            result.Stations = service.Station.Where(s=>s.CompanyId==timetable.CompanyID)
+                .ToDictionary(item => item.StationId, item =>
+            {
+                var station = new JsonStation();
+                station.stationID = item.StationId;
+                station.name = item.Name;
+                station.lat = item.Lat;
+                station.lon = item.Lon;
+                return station;
+            });
+            result.TrainTypes=service.TrainType.Where(tt=>tt.CompanyId==timetable.CompanyID)
+                .ToDictionary(item => item.TrainTypeId, item =>
+            {
+                var trainType = new JsonTrainType();
+                trainType.trainTypeID = item.TrainTypeId;
+                trainType.name = item.Name;
+                trainType.color = item.Color;
+                trainType.shortName = item.ShortName;
+                return trainType;
+            });
 
+            Debug.WriteLine("140 " + sw.ElapsedMilliseconds);
 
-    //                return trainType;
-    //            });
-    //            result.Routes = service.GetRouteByCompany(timetable.CompanyID).ToDictionary(item => item.RouteID, item =>
-    //            {
-    //                var route = new JsonRoute();
-    //                route.routeID = item.RouteID;
-    //                route.name = item.Name;
-    //                route.routeStations = service.GetRouteStationByRoute(item.RouteID).Select(rs =>
-    //                {
-    //                    return new JsonRouteStation()
-    //                    {
-    //                        rsID = rs.RouteStationID,
-    //                        routeID = rs.RouteID,
-    //                        stationIndex = rs.Sequence,
-    //                        stationID = rs.StationID,
-    //                        showStyle = rs.ShowStyle,
-    //                    };
-    //                }).ToList();
-    //                return route;
-    //            });
+            var routes = service.Route
+                .Where(r => r.CompanyId == timetable.CompanyID)
+                .Include(r => r.RouteStations)
+                .Include(r => r.Trips);
+            Debug.WriteLine("146 " + sw.ElapsedMilliseconds);
 
-    //            result.Trains= service.GetTrainByCompany(timetable.CompanyID).ToDictionary(item => item.TrainID, item =>
-    //            {
-    //                var train = new JsonTrain();
-    //                train.trainID = item.TrainID;
-    //                train.depStationID = item.DepStationID;
-    //                train.ariStationID = item.AriStationID;
-    //                train.depTime = item.DepTime;
-    //                train.ariTime = item.AriTime;
-    //                return train;
-    //            });
+            var st = service.StopTime.Join(
+                    service.Trip,
+                    st => st.TripId,
+                    t => t.TripId,
+                    (st, t) => new { st, t.RouteId }
+                ).Join(
+                    service.Route,
+                    stt => stt.RouteId,
+                    r => r.RouteId,
+                    (str, r) => new { str.st, r.CompanyId }
+                ).Where(item => item.CompanyId == timetable.CompanyID).Join(
+                    service.RouteStation,
+                    stt => stt.st.RouteStationId,
+                    rs => rs.RouteStationId,
+                    (stt, rs) => new { stt.st, rs.Sequence }
+                )
+                .GroupBy(item => item.st.TripId)
+                .ToDictionary(item => item.Key,
+                    item => item.OrderBy(st => st.Sequence).Select(st => st.st));
+            Debug.WriteLine("167 " + sw.ElapsedMilliseconds);
 
-    //            using (var command = service.Command)
-    //            {
+            var routes2 = routes.ToList();
 
-    //                command.CommandText = "select trip.* from trip left join route on route.routeID = trip.routeID left join (select routeID,routestationid from timetablestation left join routestation on routestation.routestationid = timetablestation.depRouteStationID and timetablestation.timetableID=@timetableID) as A on A.routeID=route.routeID where A.routeID is not null";
-    //                command.Parameters.Add(new NpgsqlParameter("timetableID", timetableID));
-    //                using var reader = command.ExecuteReader();
-    //                while (reader.Read())
-    //                {
-    //                    var t = new Trip(reader);
+            Debug.WriteLine("167 " + sw.ElapsedMilliseconds);
 
-    //                    var trip = new JsonTrip();
-    //                    trip.tripID = t.TripID;
-    //                    trip.routeID = t.RouteID;
-    //                    trip.trainID = t.TrainID;
-    //                    trip.trainTypeID = t.TrainTypeID;
-    //                    trip.direction = t.Direction;
-    //                    trip.times = new List<JsonStopTime>();
+            result.Routes = routes2
+                .ToDictionary(item => item.RouteId, item =>
+            {
+                var route = new JsonRoute();
+                route.routeID = item.RouteId;
+                route.name = item.Name;
+                route.routeStations = item.RouteStations.OrderBy(item=>item.Sequence).Select(rs =>
+                {
+                    return new JsonRouteStation(rs);
+                }).ToList();
+                route.downTrips = item.Trips.Where(t=>t.Direction==0).Select(t =>
+                {
+                    t.StopTimes=st[t.TripId].ToList();
+                    return new JsonTrip(t);
+                }).ToList();
+                route.upTrips = item.Trips.Where(t=>t.Direction==1).Select(t =>
+                {
+                    t.StopTimes=st[t.TripId].ToList();
+                    return new JsonTrip(t);
+                }).ToList();
+                return route;
+            });
+            Debug.WriteLine("191 " + sw.ElapsedMilliseconds);
 
-    //                    result.Trips[trip.tripID] = trip;
-    //                }
-    //            }
+            result.Trains= service.Train.Where(t=>t.CompanyId==timetable.CompanyID)
+                .ToDictionary(item => item.TrainId, item =>
+            {
+                var train = new JsonTrain();
+                train.trainID = item.TrainId;
+                train.depStationID = item.DepStationId;
+                train.ariStationID = item.AriStationId;
+                train.depTime = item.DepTime;
+                train.ariTime = item.AriTime;
+                return train;
+            });
 
-    //            using (var timeCommand = service.CreateCommand())
-    //            {
-    //                timeCommand.CommandText = "select stoptime.* from stoptime left join trip on trip.tripID = stoptime.tripID left join route on route.routeID = trip.routeID join (select routeID from timetablestation left join routestation on routestation.routestationid = timetablestation.depRouteStationID and timetablestation.timetableID=@timetableID group by routeid) as A on A.routeID=route.routeID where A.routeID is not null order by sequence";
-    //                timeCommand.Parameters.Add(new NpgsqlParameter("timetableID", timetableID));
-    //                using var timeReader = timeCommand.ExecuteReader();
-    //                while (timeReader.Read())
-    //                {
-    //                    var st = new StopTime(timeReader);
-    //                    var stopTime = new JsonStopTime();
-    //                    stopTime.tripID = st.TripID;
-    //                    stopTime.ariTime = st.AriTime;
-    //                    stopTime.depTime = st.DepTime;
-    //                    stopTime.stopType = st.StopType;
-    //                    stopTime.rsID= result.Routes[result.Trips[st.TripID].routeID].routeStations[st.Sequence].rsID;
+            // using (var command = service.Command)
+            // {
+            //
+            //     command.CommandText = "select trip.* from trip left join route on route.routeID = trip.routeID left join (select routeID,routestationid from timetablestation left join routestation on routestation.routestationid = timetablestation.depRouteStationID and timetablestation.timetableID=@timetableID) as A on A.routeID=route.routeID where A.routeID is not null";
+            //     command.Parameters.Add(new NpgsqlParameter("timetableID", timetableID));
+            //     using var reader = command.ExecuteReader();
+            //     while (reader.Read())
+            //     {
+            //         var t = new Trip(reader);
+            //
+            //         var trip = new JsonTrip();
+            //         trip.tripID = t.TripID;
+            //         trip.routeID = t.RouteID;
+            //         trip.trainID = t.TrainID;
+            //         trip.trainTypeID = t.TrainTypeID;
+            //         trip.direction = t.Direction;
+            //         trip.times = new List<JsonStopTime>();
+            //
+            //         result.Trips[trip.tripID] = trip;
+            //     }
+            // }
+            //
+            // using (var timeCommand = service.CreateCommand())
+            // {
+            //     timeCommand.CommandText = "select stoptime.* from stoptime left join trip on trip.tripID = stoptime.tripID left join route on route.routeID = trip.routeID join (select routeID from timetablestation left join routestation on routestation.routestationid = timetablestation.depRouteStationID and timetablestation.timetableID=@timetableID group by routeid) as A on A.routeID=route.routeID where A.routeID is not null order by sequence";
+            //     timeCommand.Parameters.Add(new NpgsqlParameter("timetableID", timetableID));
+            //     using var timeReader = timeCommand.ExecuteReader();
+            //     while (timeReader.Read())
+            //     {
+            //         var st = new StopTime(timeReader);
+            //         var stopTime = new JsonStopTime();
+            //         stopTime.tripID = st.TripID;
+            //         stopTime.ariTime = st.AriTime;
+            //         stopTime.depTime = st.DepTime;
+            //         stopTime.stopType = st.StopType;
+            //         stopTime.rsID= result.Routes[result.Trips[st.TripID].routeID].routeStations[st.Sequence].rsID;
+            //
+            //         result.Trips[stopTime.tripID].times.Add(stopTime);
+            //     }
+            // }
+            //
+            result.TimeTable=new JsonTimeTable(
+                timetable
+            );
+            result.TimeTable.TimetableStations=timetable.TimeTableStations.Select(item =>
+            {
+                return new JsonTimeTableStation(item);
+            }).ToList();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
 
-    //                    result.Trips[stopTime.tripID].times.Add(stopTime);
-    //                }
-    //            }
- 
-    //            result.TimeTable=new JsonTimeTable(
-    //                service.GetTimeTable(timetableID)
-    //            );
-    //            result.TimeTable.TimetableStations=service.GetTimeTableStationByTimeTable(timetableID).Select(item =>
-    //            {
-    //                return new JsonTimeTableStation(item);
-    //            }).ToList();
-    //            return Ok(result);
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            return BadRequest(ex.Message);
+        }
 
-    //        }
-
-    //    }
+    }
 
 
     }

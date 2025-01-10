@@ -1,6 +1,9 @@
 
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace Sujiraw.Data.Entity{
     
@@ -32,10 +35,35 @@ namespace Sujiraw.Data.Entity{
         {
             modelBuilder.Entity<StopTime>()
                 .HasKey(st => new { st.TripId, routestationId = st.RouteStationId });
+            modelBuilder.Entity<TimeTableStation>()
+                .HasOne(s => s.TimeTable)
+                .WithMany(a => a.TimeTableStations);
+            modelBuilder.Entity<StopTime>()
+                .HasOne(st=>st.Trip)
+                .WithMany(trip=>trip.StopTimes);
+            modelBuilder.Entity<Trip>()
+                .HasOne(trip=>trip.Route)
+                .WithMany(route=>route.Trips);
+            modelBuilder.Entity<RouteStation>()
+                .HasOne(rs=>rs.Route)
+                .WithMany(route=>route.RouteStations);
+            
+            
             base.OnModelCreating(modelBuilder);
         }
-
+        
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseNpgsql(_connectionString);
+        {
+            optionsBuilder
+                // ここに注目
+                // .LogTo(
+                //     message => Debug.WriteLine(message),
+                //     new[] { DbLoggerCategory.Database.Name },
+                //     LogLevel.Debug, 
+                //     DbContextLoggerOptions.LocalTime)
+                .UseNpgsql(_connectionString);
+            
+        }
+
     }
 }

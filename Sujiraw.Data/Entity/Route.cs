@@ -16,5 +16,8 @@ namespace Sujiraw.Data.Entity
         public string Name { get; set; } = "";
         [Column("color")]
         public string Color { get; set; } = "#000000";
+
+        public ICollection<RouteStation> RouteStations { get; set; }
+        public ICollection<Trip> Trips { get; set; }
     }
 }

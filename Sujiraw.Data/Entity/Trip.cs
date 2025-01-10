@@ -10,6 +10,7 @@ namespace Sujiraw.Data.Entity
         [Key] [Column("tripid")] public long TripId { get; set; }
 
         [Column("routeid")] public long RouteId { get; set; }
+        public Route? Route { get; set; }
         [Column("trainid")] public long TrainId { get; set; }
         [Column("direction")] public int Direction { get; set; }
         [Column("tripseq")] public int TripSeq { get; set; }
@@ -23,6 +24,9 @@ namespace Sujiraw.Data.Entity
         [Column("aristationid")] public long AriStationId { get; set; } = 0;
         [Column("deptime")] public int DepTime { get; set; } = -1;
         [Column("aritime")] public int AriTime { get; set; } = -1;
+
+        public ICollection<StopTime>? StopTimes { get; set; }
+
         
 
     }
